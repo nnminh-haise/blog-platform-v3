@@ -1,22 +1,21 @@
--- Table: public.categories
+-- Table: public.subscribers
 
--- DROP TABLE IF EXISTS public.categories;
+-- DROP TABLE IF EXISTS public.subscribers;
 
-CREATE TABLE IF NOT EXISTS public.categories
+CREATE TABLE IF NOT EXISTS public.subscribers
 (
     id uuid NOT NULL DEFAULT uuid_generate_v4(),
-    name text COLLATE pg_catalog."default" NOT NULL,
-    slug text COLLATE pg_catalog."default" NOT NULL,
+    email text COLLATE pg_catalog."default" NOT NULL,
+    full_name text COLLATE pg_catalog."default" NOT NULL,
     create_at timestamp without time zone NOT NULL,
     update_at timestamp without time zone NOT NULL,
     delete_at timestamp without time zone,
-    CONSTRAINT categories_pkey PRIMARY KEY (id),
-    CONSTRAINT "unique-categories-name" UNIQUE (name),
-    CONSTRAINT "unique-categories-slug" UNIQUE (slug),
+    CONSTRAINT subscribers_pkey PRIMARY KEY (id),
+    CONSTRAINT "Unique subscriber email" UNIQUE (email),
     CONSTRAINT "valid-create-and-update-timestamp" CHECK (create_at <= update_at)
 )
 
-TABLESPACE pg_default;
+    TABLESPACE pg_default;
 
-ALTER TABLE IF EXISTS public.categories
+ALTER TABLE IF EXISTS public.subscribers
     OWNER to postgres;
