@@ -5,6 +5,7 @@ import com.example.javaee.dto.ErrorResponse;
 import com.example.javaee.dto.ResponseDto;
 import com.example.javaee.model.Blog;
 import com.example.javaee.service.BlogService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -40,7 +41,19 @@ public class BlogController {
     }
 
     @GetMapping("/editor.htm")
-    public String routeToEditor() {
+    public String routeToEditor(ModelMap model) {
+        model.addAttribute("createBlogDto", new CreateBlogDto());
+        return "blog/editor";
+    }
+
+    @PostMapping("/saver.htm")
+    public String saverBlog(
+            @ModelAttribute("createBlogDto") CreateBlogDto createBlogDto,
+            ModelMap model) {
+
+        System.out.println("title of the blog: " + createBlogDto.getTitle());
+        System.out.println("description of the blog: " + createBlogDto.getDescription() + " - " + createBlogDto.getDescription().length());
+        System.out.println("attachment of the blog: " + createBlogDto.getAttachment());
         return "blog/editor";
     }
 

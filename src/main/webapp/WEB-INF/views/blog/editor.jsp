@@ -6,12 +6,18 @@
   To change this template use File | Settings | File Templates.
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<!DOCTYPE html>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"  %>
+<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Extended Editor.js Tools Example</title>
+  <link href="${pageContext.request.contextPath}/css/editor.css" rel="stylesheet" />
 
+  <link
+          rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+  />
   <!-- Editor.js CDN -->
   <script src="https://cdn.jsdelivr.net/npm/@editorjs/editorjs@latest"></script>
 
@@ -40,60 +46,40 @@
   <script src="https://cdn.jsdelivr.net/npm/@editorjs/code@latest"></script>
 </head>
 <body>
+<%--@elvariable id="createBlogDto" type="com.example.javaee.dto.CreateBlogDto"--%>
+<form:form id="main-container" action="saver.htm" method="post" modelAttribute="createBlogDto">
+  <div id="header">
+    <div id="tools"></div>
+    <div id="background-container">
+      <img src="${pageContext.request.contextPath}/images/background.jpg" alt="background" />
+    </div>
+    <div id="save-icon">
+      <button onclick="saveData()" id="save-blog">
+        <i class="fas fa-save"></i>
+      </button>
+    </div>
+  </div>
+  <div id="editor">
+    <div id="title">
+      <form:input path="title" id="title" type="text" placeholder="Title"/>
+      <form:input path="description" id="description" type="text" hidden="true"/>
+      <form:input path="attachment" id="attachment" type="text" hidden="true"/>
+    </div>
+  </div>
+  <div id="footer">
+    <!-- <button onclick="saveData()" id="save-blog">Save</button> -->
+    <div id="error-message">
+    <c:if test="${not empty errorMessage}">
+      <div style="color: red;">
+        <p>Status: <c:out value="${errorMessage.status}" /></p>
+        <p>Error: <c:out value="${errorMessage.error}" /></p>
+        <p>Message: <c:out value="${errorMessage.message}" /></p>
+      </div>
+    </c:if>
+  </div>
+  </div>
+</form:form>
 
-<div id="editorjs"></div>
-
-<script>
-    // Initialize Editor.js
-    const editor = new EditorJS({
-        holder: 'editorjs',
-        tools: {
-            header: {
-                class: Header,
-                config: {
-                    placeholder: 'Enter header',
-                    levels: [1, 2, 3],
-                    defaultLevel: 1,
-                    inlineToolbar: true
-                }
-            },
-            list: {
-                class: List,
-                inlineToolbar: true
-            },
-            paragraph: {
-                class: Paragraph,
-                inlineToolbar: true
-            },
-            image: {
-                class: ImageTool,
-                config: {
-                    endpoints: {
-                        byFile: 'https://your-backend.com/uploadFile', // Replace with your backend endpoint
-                        byUrl: 'https://your-backend.com/fetchUrl' // Replace with your backend endpoint
-                    }
-                }
-            },
-            embed: {
-                class: Embed,
-                inlineToolbar: true
-            },
-            link: {
-                class: LinkTool,
-                config: {
-                    endpoint: 'https://your-backend.com/fetchUrl' // Replace with your backend endpoint
-                }
-            },
-            delimiter: Delimiter,
-            code: {
-                class: CodeTool,
-                inlineToolbar: true
-            }
-        }
-    });
-    console.log('editor', editor);
-</script>
-
+<script src="${pageContext.request.contextPath}/js/editor-settings.js"></script>
 </body>
 </html>
-

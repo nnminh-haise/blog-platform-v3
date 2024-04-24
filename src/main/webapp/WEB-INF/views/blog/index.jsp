@@ -14,7 +14,7 @@
   <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css">
 </head>
 <body>
-  <img src="${pageContext.request.contextPath}/images/image.jpeg" alt="Description">
+  <img src="${pageContext.request.contextPath}/images/background.jpg" alt="Description">
 
   <table border="1">
     <thead>
