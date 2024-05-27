@@ -11,5 +11,6 @@
   <p><a href="${pageContext.request.contextPath}/blogs/index.htm">Blogs index</a></p>
   <p><a href="${pageContext.request.contextPath}/blogs/edit.htm">Blogs edit</a></p>
   <p><a href="${pageContext.request.contextPath}/blogs/editor.htm">Editor</a></p>
+<%--  <p><a href="${pageContext.request.contextPath}/blogs/editor.htm">Category</a></p>--%>
 </body>
 </html>
