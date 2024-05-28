@@ -11,6 +11,7 @@
   <p><a href="${pageContext.request.contextPath}/blogs/index.htm">Blogs index</a></p>
   <p><a href="${pageContext.request.contextPath}/blogs/edit.htm">Blogs edit</a></p>
   <p><a href="${pageContext.request.contextPath}/blogs/editor.htm">Editor</a></p>
-<%--  <p><a href="${pageContext.request.contextPath}/blogs/editor.htm">Category</a></p>--%>
+  <p><a href="${pageContext.request.contextPath}/login/google.htm">Login with Google</a></p>
+  <p><a href="${pageContext.request.contextPath}/admin/index.htm">Admin page</a></p>
 </body>
 </html>

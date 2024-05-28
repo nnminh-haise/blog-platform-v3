@@ -11,6 +11,8 @@
   <title>Login</title>
 </head>
 <body>
-  <p>Login</p>
+  <p>This is the login page</p>
+  <a href="https://accounts.google.com/o/oauth2/auth?scope=profile&redirect_uri=http://localhost:8080/javaee_war_exploded/login/LoginGoogleHandler.htm&response_type=code
+		   &client_id=538789814527-5g9809t6hdge3qrh5jjhp3q3ab3vb9vd.apps.googleusercontent.com&approval_prompt=force">Login With Google</a>
 </body>
 </html>
