@@ -12,7 +12,6 @@
 <head>
   <title>Blogs</title>
   <link rel="stylesheet" href="${pageContext.request.contextPath}/css/main.css">
-  <script src="${pageContext.request.contextPath}/js/blog.js"></script>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
@@ -49,26 +48,45 @@
     </div>
   </div>
 </nav>
-<div class="post-container">
-  <c:forEach var="blog" items="${blogs}">
-    <div class="post mb-3 d-flex justify-content-between rounded" style="display: none;">
-      <div class="pr-3">
-        <h2 class="mb-1 h4 font-weight-bold">
-          <a class="text-dark" href="${pageContext.request.contextPath}/blog/${blog.slug}">${blog.title}</a>
-        </h2>
-        <p>${blog.description}</p>
-<%--        <div class="card-text text-muted small">--%>
-<%--            ${blog.author} in ${blog.category}--%>
-<%--        </div>--%>
-<%--        <small class="text-muted">${blog.create_at}</small>--%>
+<div class="container">
+  <div class="row justify-content-between">
+    <div class="col-md-8">
+      <h5 class="font-weight-bold spanborder"><span>All Stories</span></h5>
+      <div class="post-container">
+        <c:forEach var="blog" items="${blogs}">
+          <div class="post mb-3 d-flex justify-content-between rounded" style="display: none !important;">
+            <div class="pr-3">
+              <h2 class="mb-1 h4 font-weight-bold">
+                <a class="text-dark" href="${pageContext.request.contextPath}/blog/${blog.slug}">${blog.title}</a>
+              </h2>
+              <p>${blog.description}</p>
+            </div>
+            <img height="120" src="${pageContext.request.contextPath}/img/demo/blog8.jpg">
+          </div>
+        </c:forEach>
+        <div class="d-flex w-100 justify-content-center">
+          <button class="rounded my-2 btn-gray w-25" style="cursor: pointer" id="loadMore">Xem tiếp</button>
+        </div>
       </div>
-<%--      <img height="120" src="${blog.image}">--%>
     </div>
-  </c:forEach>
-  <div class="d-flex w-100 justify-content-center">
-    <button class="rounded my-2 btn-gray w-25" style="cursor: pointer" id="loadMore">Xem tiếp</button>
+      <div class="col-md-4 pl-4">
+          <h5 class="font-weight-bold spanborder"><span>Popular</span></h5>
+          <ol class="list-featured">
+              <c:forEach var="article" items="${popularArticles}">
+                  <li>
+            <span>
+              <h6 class="font-weight-bold">
+                <a href="${article.url}" class="text-dark">${article.title}</a>
+              </h6>
+              <p class="text-muted">
+                ${article.author} in ${article.category}
+              </p>
+            </span>
+                  </li>
+              </c:forEach>
+          </ol>
+      </div>
   </div>
-
 </div>
 <div class="container mt-5">
   <footer class="bg-white border-top p-3 text-muted small">
@@ -81,5 +99,21 @@
     </div>
   </footer>
 </div>
+<script>
+  $(document).ready(function(){
+    // Initially show only 5 posts
+    $(".post").slice(0, 5).show();
+
+    $("#loadMore").click(function(e){
+      e.preventDefault();
+      // Show next 5 posts on click
+      $(".post:hidden").slice(0, 5).slideDown();
+      // Hide the "Show More" button if all posts are visible
+      if($(".post:hidden").length === 0) {
+        $("#loadMore").fadeOut('slow');
+      }
+    });
+  });
+</script>
 </body>
 </html>

@@ -1,4 +1,5 @@
-    $(document).ready(() => {
+console.log('5')
+$(document).ready(() => {
     const postsToShow = 5; // Number of posts to show each time
     const totalPosts = $('.post').length; // Total number of posts
     let postsShown = 0; // Number of posts currently shown
