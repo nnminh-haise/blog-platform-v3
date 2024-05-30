@@ -1,9 +1,9 @@
 package com.example.javaee.constants;
 
 public class GoogleUserConstant {
-    public static String GOOGLE_CLIENT_ID = "538789814527-5g9809t6hdge3qrh5jjhp3q3ab3vb9vd.apps.googleusercontent.com";
+    public static String GOOGLE_CLIENT_ID = "";
 
-    public static String GOOGLE_CLIENT_SECRET = "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";
+    public static String GOOGLE_CLIENT_SECRET = "";
 
     public static String GOOGLE_REDIRECT_URI = "http://localhost:8080/javaee_war_exploded/login/LoginGoogleHandler.htm";
 
