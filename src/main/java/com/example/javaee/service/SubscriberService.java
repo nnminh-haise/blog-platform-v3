@@ -1,115 +1,90 @@
 package com.example.javaee.service;
 
 import com.example.javaee.dto.CreateSubscriberDto;
-import com.example.javaee.dto.ErrorResponse;
-import com.example.javaee.dto.ResponseDto;
 import com.example.javaee.dto.UpdateSubscriberDto;
-import com.example.javaee.exceptions.ResourceNotFoundException;
+import com.example.javaee.helper.RepositoryErrorType;
+import com.example.javaee.helper.RepositoryResponse;
+import com.example.javaee.helper.ServiceResponse;
 import com.example.javaee.model.Subscriber;
 import com.example.javaee.repository.SubscriberRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 @Service
 public class SubscriberService {
-    @Autowired
     private SubscriberRepository subscriberRepository;
 
-    public ResponseDto<Subscriber> create(CreateSubscriberDto dto) {
-        Date currentTimestamp = Timestamp.valueOf(LocalDateTime.now());
+    public SubscriberService(SubscriberRepository subscriberRepository) {
+        this.subscriberRepository = subscriberRepository;
+    }
+
+    public ServiceResponse<Subscriber> create(CreateSubscriberDto payload) {
+        LocalDateTime timestamp = LocalDateTime.now();
         Subscriber newSubscriber = new Subscriber();
-        newSubscriber.setEmail(dto.getEmail());
-        newSubscriber.setFullName(dto.getFullName());
-        newSubscriber.setCreateAt(currentTimestamp);
-        newSubscriber.setUpdateAt(currentTimestamp);
+        newSubscriber.setEmail(payload.getEmail());
+        newSubscriber.setFullName(payload.getFullName());
+        newSubscriber.setCreateAt(timestamp);
+        newSubscriber.setUpdateAt(timestamp);
 
-        ErrorResponse errorResponse = this.subscriberRepository.create(newSubscriber);
+        RepositoryResponse<Subscriber> response = this.subscriberRepository.create(newSubscriber);
+        if (response.getError().equals(RepositoryErrorType.CONSTRAINT_VIOLATION)) {
+            return ServiceResponse.ofBadRequest(
+                    response.getMessage(), response.getDescription());
+        }
 
-        return errorResponse.ifHasErrorOrElse(
-                () -> new ResponseDto<>(
-                        errorResponse.getStatus(),
-                        errorResponse.getMessage()),
-                // * otherwise
-                () -> new ResponseDto<>(
-                        HttpStatus.OK.value(),
-                        "Success", newSubscriber));
+        return ServiceResponse.ofSuccess(
+                "Created new subscriber!", null, newSubscriber);
     }
 
-    public ResponseDto<List<Subscriber>> findAll() {
-        try {
-            List<Subscriber> blogs = this.subscriberRepository.findAll();
-            return new ResponseDto<>(
-                    HttpStatus.OK.value(),
-                    "Success",
-                    blogs);
-        }
-        catch (ResourceNotFoundException exception) {
-            return new ResponseDto<>(
-                    HttpStatus.NOT_FOUND.value(),
-                    exception.getMessage());
-        }
+    public List<Subscriber> findAll() {
+        return this.subscriberRepository.findAll();
     }
 
-    public ResponseDto<Subscriber> findById(UUID id) {
+    public Optional<Subscriber> findById(UUID id) {
         if (id == null) {
-            return new ResponseDto<>(
-                    HttpStatus.BAD_REQUEST.value(),
-                    "Invalid ID");
+            return Optional.empty();
         }
 
-        Optional<Subscriber> subscriber = this.subscriberRepository.findById(id);
-        return subscriber.map(value -> new ResponseDto<>(
-                HttpStatus.OK.value(),
-                "Success",
-                value)).orElseGet(() -> new ResponseDto<>(
-                HttpStatus.NOT_FOUND.value(),
-                "Cannot find any blog with the given ID"));
+        return this.subscriberRepository.findById(id);
     }
 
-    public ResponseDto<Subscriber> update(UUID id, UpdateSubscriberDto dto) {
+    public ServiceResponse<Subscriber> update(UUID id, UpdateSubscriberDto payload) {
         Optional<Subscriber> targetingSubscriber = this.subscriberRepository.findById(id);
         if (!targetingSubscriber.isPresent()) {
-            return new ResponseDto<>(
-                    HttpStatus.NOT_FOUND.value(),
-                    "Cannot find any blog with the given ID");
+            return ServiceResponse.ofNotFound(
+                    "Subcriber not found", "Cannot find any subcriber with the given ID");
         }
 
-        Subscriber newSubscriber = targetingSubscriber.get();
-        if (dto.getEmail() != null) {
-            newSubscriber.setEmail(dto.getEmail());
+        Subscriber buffer = targetingSubscriber.get();
+        buffer.setEmail(payload.getEmail());
+        buffer.setFullName(payload.getEmail());
+        buffer.setUpdateAt(LocalDateTime.now());
+        RepositoryResponse<Subscriber> response = this.subscriberRepository.update(buffer);
+        if (response.getError().equals(RepositoryErrorType.CONSTRAINT_VIOLATION)) {
+            return ServiceResponse.ofUnknownServerError(response.getMessage(), response.getDescription());
         }
-        if (dto.getFullName() != null) {
-            newSubscriber.setFullName(dto.getFullName());
-        }
-
-        ErrorResponse errorResponse = this.subscriberRepository.update(newSubscriber);
-        return errorResponse.ifHasErrorOrElse(
-                () -> new ResponseDto<>(
-                        errorResponse.getStatus(),
-                        errorResponse.getMessage()),
-                // * otherwise
-                () -> new ResponseDto<>(
-                        HttpStatus.OK.value(),
-                        "Success"));
+        return ServiceResponse.ofSuccess(
+                "Subcriber updated successfully", response.getDescription(), buffer);
     }
 
-    public ResponseDto<Subscriber> remove(UUID id) {
-        ErrorResponse errorResponse = this.subscriberRepository.remove(id);
-        return errorResponse.ifHasErrorOrElse(
-                () -> new ResponseDto<>(
-                        errorResponse.getStatus(),
-                        errorResponse.getMessage()),
-                // * otherwise
-                () -> new ResponseDto<>(
-                        HttpStatus.OK.value(),
-                        "Success"));
+    public ServiceResponse<Subscriber> remove(UUID id) {
+        Optional<Subscriber> targetingSubscriber = this.subscriberRepository.findById(id);
+        if (!targetingSubscriber.isPresent()) {
+            return ServiceResponse.ofNotFound(
+                    "Subcriber not found", "Cannot find any subcriber with the given ID");
+        }
+
+        Subscriber buffer = targetingSubscriber.get();
+        buffer.setDeleteAt(LocalDateTime.now());
+        RepositoryResponse<Subscriber> response = this.subscriberRepository.update(buffer);
+        if (response.getError().equals(RepositoryErrorType.CONSTRAINT_VIOLATION)) {
+            return ServiceResponse.ofUnknownServerError(response.getMessage(), response.getDescription());
+        }
+        return ServiceResponse.ofSuccess(
+                "Subcriber deleted successfully", response.getDescription(), buffer);
     }
 }

@@ -1,17 +1,15 @@
 package com.example.javaee.service;
 
 import com.example.javaee.dto.CreateBlogDto;
-import com.example.javaee.dto.ErrorResponse;
-import com.example.javaee.dto.ResponseDto;
 import com.example.javaee.dto.UpdateBlogDto;
-import com.example.javaee.exceptions.ResourceNotFoundException;
+import com.example.javaee.helper.RepositoryErrorType;
+import com.example.javaee.helper.RepositoryResponse;
+import com.example.javaee.helper.ServiceResponse;
 import com.example.javaee.model.Blog;
 import com.example.javaee.repository.BlogRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -27,97 +25,75 @@ public class BlogService {
                 .replace(" ", "-");
     }
 
-    // TODO: update this method logic to remove the bypass constrains code
-    public ResponseDto<Blog> create(CreateBlogDto dto) {
-        Date currentTimestamp = Timestamp.valueOf(LocalDateTime.now());
+    public ServiceResponse<Blog> create(CreateBlogDto payload) {
         Blog newBlog = new Blog();
-        newBlog.setTitle(dto.getTitle());
-        newBlog.setDescription(dto.getDescription());
-        // ! This is a temporary dummy code to bypass the not null constrains
-        newBlog.setAttachment(dto.getTitle() + "'s attachments");
-        newBlog.setCreateAt(currentTimestamp);
-        newBlog.setUpdateAt(currentTimestamp);
-        newBlog.setSlug(getSlug(dto.getTitle()));
+        final LocalDateTime timestamp = LocalDateTime.now();
+        newBlog.setTitle(payload.getTitle());
+        newBlog.setDescription(payload.getDescription());
+        newBlog.setAttachment(payload.getAttachment());
+        newBlog.setCreateAt(timestamp);
+        newBlog.setUpdateAt(timestamp);
+        newBlog.setSlug(getSlug(payload.getTitle()));
 
-        ErrorResponse errorResponse = this.blogRepository.create(newBlog);
+        RepositoryResponse<Blog> response = this.blogRepository.create(newBlog);
+        if (response.getError().equals(RepositoryErrorType.CONSTRAINT_VIOLATION)) {
+            return ServiceResponse.ofBadRequest(
+                    response.getMessage(), response.getDescription());
+        }
 
-        return errorResponse.ifHasErrorOrElse(
-                () -> new ResponseDto<>(
-                        errorResponse.getStatus(),
-                        errorResponse.getMessage()),
-                // * otherwise
-                () -> new ResponseDto<>(
-                        HttpStatus.OK.value(),
-                        "Success", newBlog));
+        return ServiceResponse.ofSuccess(
+                "Created new category detail!", null, newBlog);
     }
 
-    public ResponseDto<List<Blog>> findAll() {
-        try {
-            List<Blog> blogs = this.blogRepository.findAll();
-            return new ResponseDto<>(
-                    HttpStatus.OK.value(),
-                    "Success",
-                    blogs);
-        }
-        catch (ResourceNotFoundException exception) {
-            return new ResponseDto<>(
-                    HttpStatus.NOT_FOUND.value(),
-                    exception.getMessage());
-        }
+    public List<Blog> findAll() {
+        return this.blogRepository.findAll();
     }
 
-    public ResponseDto<Blog> findById(UUID id) {
+    public Optional<Blog> findById(UUID id) {
         if (id == null) {
-            return new ResponseDto<>(
-                    HttpStatus.BAD_REQUEST.value(),
-                    "Invalid ID");
+            return Optional.empty();
         }
 
-        Optional<Blog> blog = this.blogRepository.findById(id);
-        return blog.map(value -> new ResponseDto<>(
-                HttpStatus.OK.value(),
-                "Success",
-                value)).orElseGet(() -> new ResponseDto<>(
-                HttpStatus.NOT_FOUND.value(),
-                "Cannot find any blog with the given ID"));
+        return this.blogRepository.findById(id);
     }
 
-    public ResponseDto<Blog> update(UUID id, UpdateBlogDto dto) {
+    public ServiceResponse<Blog> update(UUID id, UpdateBlogDto payload) {
         Optional<Blog> targetingBlog = this.blogRepository.findById(id);
         if (!targetingBlog.isPresent()) {
-            return new ResponseDto<>(
-                    HttpStatus.NOT_FOUND.value(),
-                    "Cannot find any blog with the given ID");
+            return ServiceResponse.ofNotFound(
+                    "Blog not found", "Cannot find any blog with the given ID");
         }
 
-        Blog newBlog = targetingBlog.get();
-        newBlog.setTitle(dto.getTitle());
-        newBlog.setDescription(dto.getDescription());
-        newBlog.setAttachment(dto.getAttachment());
-        newBlog.setSlug(getSlug(newBlog.getTitle()));
-        newBlog.setPublishAt(dto.getPublishAt());
-        newBlog.setHiddenStatus(dto.getHiddenStatus());
+        Blog buffer = targetingBlog.get();
+        buffer.setTitle(payload.getTitle());
+        buffer.setDescription(payload.getDescription());
+        buffer.setAttachment(payload.getAttachment());
+        buffer.setSlug(getSlug(buffer.getTitle()));
+        buffer.setPublishAt(payload.getPublishAt());
+        buffer.setHiddenStatus(payload.getHiddenStatus());
 
-        ErrorResponse errorResponse = this.blogRepository.update(newBlog);
-        return errorResponse.ifHasErrorOrElse(
-                () -> new ResponseDto<>(
-                        errorResponse.getStatus(),
-                        errorResponse.getMessage()),
-                // * otherwise
-                () -> new ResponseDto<>(
-                        HttpStatus.OK.value(),
-                        "Success"));
+        RepositoryResponse<Blog> response = this.blogRepository.update(buffer);
+        if (response.getError().equals(RepositoryErrorType.CONSTRAINT_VIOLATION)) {
+            return ServiceResponse.ofBadRequest(
+                    response.getMessage(), response.getDescription());
+        }
+        return ServiceResponse.ofSuccess("Blog updated successfully", null, buffer);
     }
 
-    public ResponseDto<Blog> remove(UUID id) {
-        ErrorResponse errorResponse = this.blogRepository.remove(id);
-        return errorResponse.ifHasErrorOrElse(
-                () -> new ResponseDto<>(
-                        errorResponse.getStatus(),
-                        errorResponse.getMessage()),
-                // * otherwise
-                () -> new ResponseDto<>(
-                        HttpStatus.OK.value(),
-                        "Success"));
+    public ServiceResponse<Blog> remove(UUID id) {
+        Optional<Blog> targetingBlog = this.blogRepository.findById(id);
+        if (!targetingBlog.isPresent()) {
+            return ServiceResponse.ofNotFound(
+                    "Blog not found", "Cannot find any blog with the given ID");
+        }
+
+        Blog buffer = targetingBlog.get();
+        buffer.setDeleteAt(LocalDateTime.now());
+        RepositoryResponse<Blog> response = this.blogRepository.update(buffer);
+        if (response.getError().equals(RepositoryErrorType.CONSTRAINT_VIOLATION)) {
+            return ServiceResponse.ofBadRequest(
+                    response.getMessage(), response.getDescription());
+        }
+        return ServiceResponse.ofSuccess("Blog deleted successfully", null, buffer);
     }
 }

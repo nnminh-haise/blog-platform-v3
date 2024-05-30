@@ -7,9 +7,8 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 
-
+import java.time.LocalDate;
 import java.util.Collection;
-import java.util.Date;
 import java.util.UUID;
 
 @Data
@@ -33,7 +32,7 @@ public class Blog extends BaseEntity {
 
     @DateTimeFormat(pattern = "yyyy/MM/dd")
     @Column(name = "publish_at")
-    private Date publishAt;
+    private LocalDate publishAt;
 
     @Column(name = "description", nullable = false)
     private String description;
