@@ -12,8 +12,6 @@ change this template use File | Settings | File Templates. --%>
     />
   </head>
   <body>
-    <!-- <img src="${pageContext.request.contextPath}/images/background.jpg" alt="Description"> -->
-
     <table border="1">
       <thead>
         <tr>
@@ -27,8 +25,8 @@ change this template use File | Settings | File Templates. --%>
           <tr>
             <td>
               <a
-                href="${pageContext.request.contextPath}/blogs/edit.htm?id=${blog.id}"
-                >${blog.id}</a
+                href="${pageContext.request.contextPath}/blogs/post.htm?slug=${blog.slug}"
+                >${blog.slug}</a
               >
             </td>
             <td>${blog.title}</td>
@@ -37,13 +35,5 @@ change this template use File | Settings | File Templates. --%>
         </c:forEach>
       </tbody>
     </table>
-    <div>
-      <button>
-        <a href="${pageContext.request.contextPath}/blogs/edit.htm">Edit</a>
-      </button>
-      <button>
-        <a href="${pageContext.request.contextPath}/blogs/edit.htm">New</a>
-      </button>
-    </div>
   </body>
 </html>

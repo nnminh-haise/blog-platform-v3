@@ -11,6 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,11 +30,6 @@ public class BlogController {
     }
 
     @GetMapping("/index.htm")
-    public String routeToBlogIndex() {
-        return "blog/index";
-    }
-
-    @GetMapping("/search.htm")
     public String searchBlog(
             ModelMap modelMap,
             @RequestParam(name = "page", defaultValue = "0") Integer page,
@@ -42,17 +38,25 @@ public class BlogController {
             @RequestParam(name = "category", required = false) String categorySlug) {
         List<CategoryDetail> details = this.categoryDetailService.findAllByCategorySlug(page, size, orderBy,
                 categorySlug);
+
+        List<Blog> blogs = new ArrayList<>();
         for (CategoryDetail detail : details) {
-            System.out.println("Blog: " + detail.getBlog().toString());
+            blogs.add(detail.getBlog());
         }
+        modelMap.addAttribute("blogs", blogs);
         return "blog/index";
     }
 
     @GetMapping("/post.htm")
-    public String blogViewer(ModelMap modelMap,
+    public String viewBlog(
+            ModelMap modelMap,
             @RequestParam(name = "slug", required = true) String slug) {
         Optional<Blog> blog = this.blogService.findBySlug(slug);
-        System.out.println(blog.toString());
-        return "blog/editor";
+        if (!blog.isPresent()) {
+            modelMap.addAttribute("message", "There is some error!");
+            return "blog/post";
+        }
+        modelMap.addAttribute("blog", blog.get());
+        return "blog/post";
     }
 }

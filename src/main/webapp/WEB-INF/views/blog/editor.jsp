@@ -46,40 +46,38 @@
   <script src="https://cdn.jsdelivr.net/npm/@editorjs/code@latest"></script>
 </head>
 <body>
-<%--@elvariable id="createBlogDto" type="com.example.javaee.dto.CreateBlogDto"--%>
-<form:form id="main-container" action="saver.htm" method="post" modelAttribute="createBlogDto">
-  <div id="header">
-    <div id="tools"></div>
-    <div id="background-container">
-      <img src="${pageContext.request.contextPath}/images/background.jpg" alt="background" />
-    </div>
-    <div id="save-icon">
-      <button onclick="saveData()" id="save-blog">
-        <i class="fas fa-save"></i>
-      </button>
-    </div>
-  </div>
-  <div id="editor">
-    <div id="title">
-      <form:input path="title" id="title" type="text" placeholder="Title"/>
-      <form:input path="description" id="description" type="text" hidden="true"/>
-      <form:input path="attachment" id="attachment" type="text" hidden="true"/>
-    </div>
-  </div>
-  <div id="footer">
-    <!-- <button onclick="saveData()" id="save-blog">Save</button> -->
-    <div id="error-message">
-    <c:if test="${not empty errorMessage}">
-      <div style="color: red;">
-        <p>Status: <c:out value="${errorMessage.status}" /></p>
-        <p>Error: <c:out value="${errorMessage.error}" /></p>
-        <p>Message: <c:out value="${errorMessage.message}" /></p>
+  <form:form id="main-container" action="saver.htm" method="post" modelAttribute="createBlogDto">
+    <div id="header">
+      <div id="tools"></div>
+      <div id="background-container">
+        <img src="${pageContext.request.contextPath}/images/background.jpg" alt="background" />
       </div>
-    </c:if>
-  </div>
-  </div>
-</form:form>
+      <div id="save-icon">
+        <button onclick="saveData()" id="save-blog">
+          <i class="fas fa-save"></i>
+        </button>
+      </div>
+    </div>
+    <div id="editor">
+      <div id="title">
+        <form:input path="title" id="title" type="text" placeholder="Title"/>
+        <form:input path="description" id="description" type="text" hidden="true"/>
+        <form:input path="attachment" id="attachment" type="text" hidden="true"/>
+      </div>
+    </div>
+    <div id="footer">
+      <div id="error-message">
+      <c:if test="${not empty errorMessage}">
+        <div style="color: red;">
+          <p>Status: <c:out value="${errorMessage.status}" /></p>
+          <p>Error: <c:out value="${errorMessage.error}" /></p>
+          <p>Message: <c:out value="${errorMessage.message}" /></p>
+        </div>
+      </c:if>
+    </div>
+    </div>
+  </form:form>
 
-<script src="${pageContext.request.contextPath}/js/editor-settings.js"></script>
+  <script src="${pageContext.request.contextPath}/js/editor-settings.js"></script>
 </body>
 </html>
