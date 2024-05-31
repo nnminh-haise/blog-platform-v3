@@ -18,11 +18,32 @@ public class BlogService {
     @Autowired
     private BlogRepository blogRepository;
 
-    private String getSlug(String title) {
-        return title
-                .toLowerCase()
-                .trim()
-                .replace(" ", "-");
+    public List<Blog> findAll() {
+        return this.blogRepository.findAll();
+    }
+
+    public List<Blog> findFirst(Integer amount) {
+        return this.blogRepository.findFirst(amount);
+    }
+
+    public Optional<Blog> findById(UUID id) {
+        if (id == null) {
+            return Optional.empty();
+        }
+
+        return this.blogRepository.findById(id);
+    }
+
+    public Optional<Blog> findBySlug(String slug) {
+        if (slug == null) {
+            return Optional.empty();
+        }
+
+        return this.blogRepository.findBySlug(slug);
+    }
+
+    public List<Blog> findPopular(Integer amount) {
+        return this.blogRepository.findPopularBlogs(amount);
     }
 
     public ServiceResponse<Blog> create(CreateBlogDto payload) {
@@ -43,18 +64,6 @@ public class BlogService {
 
         return ServiceResponse.ofSuccess(
                 "Created new category detail!", null, newBlog);
-    }
-
-    public List<Blog> findAll() {
-        return this.blogRepository.findAll();
-    }
-
-    public Optional<Blog> findById(UUID id) {
-        if (id == null) {
-            return Optional.empty();
-        }
-
-        return this.blogRepository.findById(id);
     }
 
     public ServiceResponse<Blog> update(UUID id, UpdateBlogDto payload) {
@@ -95,5 +104,12 @@ public class BlogService {
                     response.getMessage(), response.getDescription());
         }
         return ServiceResponse.ofSuccess("Blog deleted successfully", null, buffer);
+    }
+
+    private String getSlug(String title) {
+        return title
+                .toLowerCase()
+                .trim()
+                .replace(" ", "-");
     }
 }

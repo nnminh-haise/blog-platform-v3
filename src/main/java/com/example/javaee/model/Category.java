@@ -1,16 +1,13 @@
 package com.example.javaee.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import org.hibernate.annotations.GenericGenerator;
+import lombok.*;
 
 import jakarta.persistence.*;
 import java.util.Collection;
 import java.util.UUID;
 
-@Data
+@Getter
+@Setter
 @EqualsAndHashCode(callSuper = true)
 @AllArgsConstructor
 @NoArgsConstructor
@@ -34,4 +31,8 @@ public class Category extends BaseEntity {
 
     @OneToMany(mappedBy = "category", fetch = FetchType.EAGER)
     private Collection<CategoryDetail> categoryDetails;
+
+    public String toString() {
+        return "id = " + id + " name = " + name + " slug = " + slug;
+    }
 }

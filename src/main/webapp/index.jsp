@@ -1,17 +1,13 @@
-<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Blog platform</title>
+  <meta http-equiv="refresh" content="0; url=http://localhost:8080/javaee_war_exploded/index.htm">
 </head>
 <body>
-  <h1>Blog platform</h1>
-  <p>Welcome</p>
-
-  <p><a href="${pageContext.request.contextPath}/blogs/index.htm">Blogs index</a></p>
-  <p><a href="${pageContext.request.contextPath}/blogs/edit.htm">Blogs edit</a></p>
-  <p><a href="${pageContext.request.contextPath}/blogs/editor.htm">Editor</a></p>
-  <p><a href="${pageContext.request.contextPath}/login/google.htm">Login with Google</a></p>
-  <p><a href="${pageContext.request.contextPath}/admin/index.htm">Admin page</a></p>
 </body>
 </html>
+

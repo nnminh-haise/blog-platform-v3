@@ -24,7 +24,7 @@ import static org.springframework.core.NestedExceptionUtils.getRootCause;
 public class BlogRepository {
     private static final Logger logger = LoggerFactory.getLogger(CategoryDetailRepository.class);
 
-    private SessionFactory sessionFactory;
+    private final SessionFactory sessionFactory;
 
     public BlogRepository(SessionFactory sessionFactory) {
         this.sessionFactory = sessionFactory;
@@ -39,6 +39,15 @@ public class BlogRepository {
     }
 
     @Transactional
+    public List<Blog> findFirst(Integer amount) {
+        Session session = sessionFactory.getCurrentSession();
+        final String Q_FIND_ALL_BLOG = "SELECT b FROM Blog AS b WHERE b.deleteAt IS NULL";
+        Query<Blog> query = session.createQuery(Q_FIND_ALL_BLOG, Blog.class);
+        query.setMaxResults(amount);
+        return query.list();
+    }
+
+    @Transactional
     public Optional<Blog> findById(UUID id) {
         Session session = sessionFactory.getCurrentSession();
         final String Q_FIND_BLOG_BY_ID = "SELECT b FROM Blog AS b WHERE b.deleteAt IS NULL AND b.id = :id";
@@ -46,6 +55,25 @@ public class BlogRepository {
         query.setParameter("id", id);
         Blog blog = (Blog) query.uniqueResult();
         return Optional.ofNullable(blog);
+    }
+
+    @Transactional
+    public Optional<Blog> findBySlug(String slug) {
+        Session session = sessionFactory.getCurrentSession();
+        final String Q_FIND_BLOG_BY_SLUG = "SELECT b FROM Blog AS b WHERE b.deleteAt IS NULL AND b.slug = :slug";
+        Query<Blog> query = session.createQuery(Q_FIND_BLOG_BY_SLUG, Blog.class);
+        query.setParameter("slug", slug);
+        Blog blog = (Blog) query.uniqueResult();
+        return Optional.ofNullable(blog);
+    }
+
+    @Transactional
+    public List<Blog> findPopularBlogs(Integer amount) {
+        Session session = sessionFactory.getCurrentSession();
+        final String Q_FIND_POPULAR_BLOG_WITH_AMOUNT = "SELECT b FROM Blog AS b WHERE b.deleteAt IS NULL AND b.isPopular = true";
+        Query<Blog> query = session.createQuery(Q_FIND_POPULAR_BLOG_WITH_AMOUNT, Blog.class);
+        query.setMaxResults(amount);
+        return query.list();
     }
 
     public RepositoryResponse<Blog> create(Blog blog) {

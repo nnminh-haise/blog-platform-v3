@@ -55,6 +55,14 @@ public class CategoryService {
         return this.categoryRepository.findById(id);
     }
 
+    public Optional<Category> findBySlug(String slug) {
+        if (slug == null) {
+            return Optional.empty();
+        }
+
+        return this.categoryRepository.findBySlug(slug);
+    }
+
     public ServiceResponse<Category> remove(UUID id) {
         Optional<Category> deletingCategory = this.categoryRepository.findById(id);
         if (!deletingCategory.isPresent()) {

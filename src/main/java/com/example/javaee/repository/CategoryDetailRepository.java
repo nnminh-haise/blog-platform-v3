@@ -54,7 +54,7 @@ public class CategoryDetailRepository {
 
     @Transactional
     public List<CategoryDetail> findAllByCategoryId(UUID id) {
-        Session session = sessionFactory.openSession();
+        Session session = sessionFactory.getCurrentSession();
         final String Q_FIND_ALL_CATEGORY_DETAIL_BY_CATEGORY_ID = "SELECT cd FROM CategoryDetail AS cd WHERE cd.deleteAt IS NULL and cd.category.id = :id";
         logger.info("Fetching category detail by category id = " + id);
         Query<CategoryDetail> query = session.createQuery(
@@ -67,7 +67,7 @@ public class CategoryDetailRepository {
 
     @Transactional
     public List<CategoryDetail> findAllByBlogId(UUID id) {
-        Session session = sessionFactory.openSession();
+        Session session = sessionFactory.getCurrentSession();
         final String Q_FIND_ALL_CATEGORY_DETAIL_BY_BLOG_ID = "SELECT cd FROM CategoryDetail AS cd WHERE cd.deleteAt IS NULL and cd.blog.id = :id";
         logger.info("Fetching category detail by blog id = " + id);
         Query<CategoryDetail> query = session.createQuery(Q_FIND_ALL_CATEGORY_DETAIL_BY_BLOG_ID, CategoryDetail.class);
@@ -75,6 +75,23 @@ public class CategoryDetailRepository {
         List<CategoryDetail> categoryDetailList = query.list();
         logger.info("Fetching process completed");
         return categoryDetailList;
+    }
+
+    @Transactional
+    public List<CategoryDetail> findAllBlogHasCategoryWithOrder(
+            int page, int size, String orderBy, String categorySlug) {
+        Session session = sessionFactory.getCurrentSession();
+        final String Q_FIND_ALL_BLOG_BY_CATEGORY_SLUG = "SELECT CD FROM CategoryDetail AS CD " +
+                "WHERE CD.blog.deleteAt IS NULL" +
+                " AND CD.category.slug = :categorySlug ORDER BY " +
+                "CASE WHEN :orderBy = 'asc' THEN CD.blog.createAt END ASC, " +
+                "CASE WHEN :orderBy = 'desc' THEN CD.blog.createAt END DESC";
+        Query<CategoryDetail> query = session.createQuery(Q_FIND_ALL_BLOG_BY_CATEGORY_SLUG, CategoryDetail.class);
+        query.setParameter("orderBy", orderBy);
+        query.setParameter("categorySlug", categorySlug);
+        query.setFirstResult(page * size);
+        query.setMaxResults(size);
+        return query.list();
     }
 
     public RepositoryResponse<CategoryDetail> create(CategoryDetail categoryDetail) {

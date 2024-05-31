@@ -48,6 +48,16 @@ public class CategoryRepository {
         return Optional.ofNullable(category);
     }
 
+    @Transactional
+    public Optional<Category> findBySlug(String slug) {
+        Session session = sessionFactory.openSession();
+        final String Q_FIND_CATEGORY_BY_ID = "SELECT c FROM Category AS c WHERE c.deleteAt IS NULL AND c.slug = :slug";
+        Query<Category> query = session.createQuery(Q_FIND_CATEGORY_BY_ID, Category.class);
+        query.setParameter("slug", slug);
+        Category category = (Category) query.uniqueResult();
+        return Optional.ofNullable(category);
+    }
+
     public RepositoryResponse<Category> create(Category category) {
         RepositoryResponse<Category> response = new RepositoryResponse<>();
 
