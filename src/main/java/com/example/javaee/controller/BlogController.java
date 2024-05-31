@@ -1,5 +1,6 @@
 package com.example.javaee.controller;
 
+import com.example.javaee.dto.CreateBlogDto;
 import com.example.javaee.model.Blog;
 import com.example.javaee.model.Category;
 import com.example.javaee.model.CategoryDetail;
@@ -45,6 +46,25 @@ public class BlogController {
         modelMap.addAttribute("blogs", blogs);
 
         return "blog/index";
+    }
+
+    @GetMapping("/editor.htm")
+    public String routeToEditor(ModelMap model) {
+        model.addAttribute("createBlogDto", new CreateBlogDto());
+        return "blog/editor";
+    }
+
+    @PostMapping("/saver.htm")
+    public String saverBlog(
+            @ModelAttribute("createBlogDto") CreateBlogDto createBlogDto,
+            ModelMap model) {
+
+        System.out.println("from saver");
+
+        System.out.println("title of the blog: " + createBlogDto.getTitle());
+        System.out.println("description of the blog: " + createBlogDto.getDescription() + " - " + createBlogDto.getDescription().length());
+        System.out.println("attachment of the blog: " + createBlogDto.getAttachment());
+        return "blog/editor";
     }
 
     @RequestMapping(value = "/{slug}.htm", method = RequestMethod.GET)

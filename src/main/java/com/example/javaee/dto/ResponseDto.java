@@ -1,13 +1,9 @@
 package com.example.javaee.dto;
 
-import com.example.javaee.model.Blog;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.http.HttpStatus;
-
-import java.util.List;
-import java.util.Optional;
 
 @Getter
 @AllArgsConstructor
