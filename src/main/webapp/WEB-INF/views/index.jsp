@@ -1,9 +1,6 @@
-<%-- Created by IntelliJ IDEA. User: nnminh Date: 31/5/24 Time: 12:20 To change
-this template use File | Settings | File Templates. --%>
-<%--<%@ page contentType="text/html;charset=UTF-8" language="java" %>--%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
-<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %> <%@ taglib
+uri="http://www.springframework.org/tags/form" prefix="form" %> <%@ page
+contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <!DOCTYPE html>
 <html>
   <head>
@@ -181,7 +178,7 @@ MAIN
       </div>
     </div>
 
-    <%-- Main section   --%>
+    <%-- Main section --%>
     <div class="container">
       <div class="row justify-content-between">
         <div class="col-md-8">
@@ -190,7 +187,11 @@ MAIN
             <div class="mb-3 d-flex justify-content-between rounded-lg">
               <div class="pr-3">
                 <h2 class="mb-1 h4 font-weight-bold">
-                  <a class="text-dark" href="${pageContext.request.contextPath}/blogs/post.htm?slug=${blog.slug}">${blog.title}</a>
+                  <a
+                    class="text-dark"
+                    href="${pageContext.request.contextPath}/blogs/${blog.slug}.htm"
+                    >${blog.title}</a
+                  >
                 </h2>
                 <p>${blog.subTitle}</p>
                 <div class="card-text text-muted small">Author</div>
@@ -207,14 +208,16 @@ MAIN
           <ol class="list-featured">
             <c:forEach var="blog" items="${popularBlogs}">
               <li>
-              <span>
-                <h6 class="font-weight-bold">
-                  <a href="${pageContext.request.contextPath}/blogs/post.htm?slug=${blog.slug}" class="text-dark"
-                  >${blog.title}</a
-                  >
-                </h6>
-                <p class="text-muted">${blog.subTitle}</p>
-              </span>
+                <span>
+                  <h6 class="font-weight-bold">
+                    <a
+                      href="${pageContext.request.contextPath}/blogs/${blog.slug}.htm"
+                      class="text-dark"
+                      >${blog.title}</a
+                    >
+                  </h6>
+                  <p class="text-muted">${blog.subTitle}</p>
+                </span>
               </li>
             </c:forEach>
           </ol>

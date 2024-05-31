@@ -32,7 +32,7 @@ public class CategoryRepository {
 
     @Transactional
     public List<Category> findAll() {
-        Session session = sessionFactory.openSession();
+        Session session = sessionFactory.getCurrentSession();
         final String Q_FIND_ALL_CATEGORY = "SELECT c FROM Category AS c WHERE c.deleteAt IS NULL";
         Query<Category> query = session.createQuery(Q_FIND_ALL_CATEGORY, Category.class);
         return query.list();
@@ -40,7 +40,7 @@ public class CategoryRepository {
 
     @Transactional
     public Optional<Category> findById(UUID id) {
-        Session session = sessionFactory.openSession();
+        Session session = sessionFactory.getCurrentSession();
         final String Q_FIND_CATEGORY_BY_ID = "SELECT c FROM Category AS c WHERE c.deleteAt IS NULL AND c.id = :id";
         Query<Category> query = session.createQuery(Q_FIND_CATEGORY_BY_ID, Category.class);
         query.setParameter("id", id);
@@ -50,7 +50,7 @@ public class CategoryRepository {
 
     @Transactional
     public Optional<Category> findBySlug(String slug) {
-        Session session = sessionFactory.openSession();
+        Session session = sessionFactory.getCurrentSession();
         final String Q_FIND_CATEGORY_BY_ID = "SELECT c FROM Category AS c WHERE c.deleteAt IS NULL AND c.slug = :slug";
         Query<Category> query = session.createQuery(Q_FIND_CATEGORY_BY_ID, Category.class);
         query.setParameter("slug", slug);

@@ -6,6 +6,7 @@ import com.example.javaee.helper.RepositoryErrorType;
 import com.example.javaee.helper.RepositoryResponse;
 import com.example.javaee.helper.ServiceResponse;
 import com.example.javaee.model.Blog;
+import com.example.javaee.model.Category;
 import com.example.javaee.repository.BlogRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,10 @@ public class BlogService {
 
     public List<Blog> findFirst(Integer amount) {
         return this.blogRepository.findFirst(amount);
+    }
+
+    public List<Blog> findFirstOfCategories(Integer amount, List<Category> categories, UUID blogId) {
+        return this.blogRepository.findFirstOfCategories(amount, categories, blogId);
     }
 
     public Optional<Blog> findById(UUID id) {

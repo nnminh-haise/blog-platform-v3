@@ -26,23 +26,6 @@ public class CategoryService {
                 .replace(" ", "-");
     }
 
-    public ServiceResponse<Category> create(CreateCategoryDto payload) {
-        Category newCategory = new Category();
-        newCategory.setName(payload.getName());
-        newCategory.setCreateAt(LocalDateTime.now());
-        newCategory.setUpdateAt(LocalDateTime.now());
-        newCategory.setSlug(getSlug(payload.getName()));
-
-        RepositoryResponse<Category> response = this.categoryRepository.create(newCategory);
-        if (response.getError().equals(RepositoryErrorType.CONSTRAINT_VIOLATION)) {
-            return ServiceResponse.ofBadRequest(
-                    response.getMessage(), response.getDescription());
-        }
-
-        return ServiceResponse.ofSuccess(
-                "Created new category!", null, newCategory);
-    }
-
     public List<Category> findAll() {
         return this.categoryRepository.findAll();
     }
@@ -61,6 +44,23 @@ public class CategoryService {
         }
 
         return this.categoryRepository.findBySlug(slug);
+    }
+
+    public ServiceResponse<Category> create(CreateCategoryDto payload) {
+        Category newCategory = new Category();
+        newCategory.setName(payload.getName());
+        newCategory.setCreateAt(LocalDateTime.now());
+        newCategory.setUpdateAt(LocalDateTime.now());
+        newCategory.setSlug(getSlug(payload.getName()));
+
+        RepositoryResponse<Category> response = this.categoryRepository.create(newCategory);
+        if (response.getError().equals(RepositoryErrorType.CONSTRAINT_VIOLATION)) {
+            return ServiceResponse.ofBadRequest(
+                    response.getMessage(), response.getDescription());
+        }
+
+        return ServiceResponse.ofSuccess(
+                "Created new category!", null, newCategory);
     }
 
     public ServiceResponse<Category> remove(UUID id) {

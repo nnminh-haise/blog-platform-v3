@@ -5,6 +5,7 @@ import com.example.javaee.helper.RepositoryResponse;
 import com.example.javaee.helper.ResponseType;
 import com.example.javaee.model.Blog;
 
+import com.example.javaee.model.Category;
 import org.hibernate.*;
 import org.hibernate.query.Query;
 import org.postgresql.util.PSQLException;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Repository;
 
 import jakarta.transaction.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -41,8 +43,29 @@ public class BlogRepository {
     @Transactional
     public List<Blog> findFirst(Integer amount) {
         Session session = sessionFactory.getCurrentSession();
-        final String Q_FIND_ALL_BLOG = "SELECT b FROM Blog AS b WHERE b.deleteAt IS NULL";
+        final String Q_FIND_ALL_BLOG = "SELECT b FROM Blog AS b WHERE b.deleteAt IS NULL ORDER BY b.createAt ASC";
         Query<Blog> query = session.createQuery(Q_FIND_ALL_BLOG, Blog.class);
+        query.setMaxResults(amount);
+        return query.list();
+    }
+
+    @Transactional
+    public List<Blog> findFirstOfCategories(Integer amount, List<Category> categories, UUID blogId) {
+        List<UUID> categoryIds = new ArrayList<>();
+        for (Category category: categories) {
+            categoryIds.add(category.getId());
+        }
+
+        Session session = sessionFactory.getCurrentSession();
+        final String Q_FIND_ALL_BLOG =
+                "SELECT cd.blog FROM CategoryDetail AS cd " +
+                "WHERE cd.blog.deleteAt IS NULL AND " +
+                "NOT cd.blog.id = :blogId AND " +
+                "cd.category.id in :categoryIds " +
+                "ORDER BY cd.blog.createAt ASC";
+        Query<Blog> query = session.createQuery(Q_FIND_ALL_BLOG, Blog.class);
+        query.setParameter("categoryIds", categoryIds);
+        query.setParameter("blogId", blogId);
         query.setMaxResults(amount);
         return query.list();
     }

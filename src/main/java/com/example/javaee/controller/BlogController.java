@@ -1,9 +1,11 @@
 package com.example.javaee.controller;
 
 import com.example.javaee.model.Blog;
+import com.example.javaee.model.Category;
 import com.example.javaee.model.CategoryDetail;
 import com.example.javaee.service.BlogService;
 import com.example.javaee.service.CategoryDetailService;
+import com.example.javaee.service.CategoryService;
 
 import jakarta.validation.Valid;
 
@@ -20,13 +22,19 @@ import java.util.Optional;
 @Valid
 public class BlogController {
 
+    private final CategoryService categoryService;
+
     private final BlogService blogService;
 
     private final CategoryDetailService categoryDetailService;
 
-    public BlogController(BlogService blogService, CategoryDetailService categoryDetailService) {
+    public BlogController(
+            BlogService blogService,
+            CategoryService categoryService,
+            CategoryDetailService categoryDetailService) {
         this.blogService = blogService;
         this.categoryDetailService = categoryDetailService;
+        this.categoryService = categoryService;
     }
 
     @GetMapping("/index.htm")
@@ -47,16 +55,37 @@ public class BlogController {
         return "blog/index";
     }
 
-    @GetMapping("/post.htm")
+    @RequestMapping(value = "/{slug}.htm", method = RequestMethod.GET)
     public String viewBlog(
             ModelMap modelMap,
-            @RequestParam(name = "slug", required = true) String slug) {
+            @PathVariable(name = "slug", required = true) String slug) {
         Optional<Blog> blog = this.blogService.findBySlug(slug);
         if (!blog.isPresent()) {
             modelMap.addAttribute("message", "There is some error!");
-            return "blog/post";
+            return "blog/index";
         }
         modelMap.addAttribute("blog", blog.get());
-        return "blog/post";
+
+        List<Category> categories = new ArrayList<>();
+        for (CategoryDetail detail : blog.get().getCategoryDetails()) {
+            categories.add(detail.getCategory());
+        }
+        modelMap.addAttribute("blogCategoryList", categories);
+
+        List<Blog> firstOfCategories = this.blogService.findFirstOfCategories(
+                5, categories, blog.get().getId());
+        modelMap.addAttribute("nextBlogs", firstOfCategories);
+
+        return "blog/detail";
+    }
+
+    @ModelAttribute("blogs")
+    public List<Blog> getFirst5Blogs() {
+        return this.blogService.findFirst(5);
+    }
+
+    @ModelAttribute("categories")
+    public List<Category> getAllCategories() {
+        return this.categoryService.findAll();
     }
 }

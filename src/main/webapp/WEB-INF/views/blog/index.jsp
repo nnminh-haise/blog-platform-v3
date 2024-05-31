@@ -25,7 +25,7 @@ change this template use File | Settings | File Templates. --%>
           <tr>
             <td>
               <a
-                href="${pageContext.request.contextPath}/blogs/post.htm?slug=${blog.slug}"
+                href="${pageContext.request.contextPath}/blogs/post/${blog.slug}.htm"
                 >${blog.slug}</a
               >
             </td>
