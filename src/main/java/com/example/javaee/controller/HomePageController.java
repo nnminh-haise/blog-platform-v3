@@ -31,7 +31,7 @@ public class HomePageController {
         return "index";
     }
 
-    @ModelAttribute("blogs")
+    @ModelAttribute("featuredBlogs")
     public List<Blog> getFirst5Blogs() {
         return this.blogService.findFirst(5);
     }

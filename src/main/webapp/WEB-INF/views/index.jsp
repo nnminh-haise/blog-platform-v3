@@ -183,7 +183,7 @@ MAIN
       <div class="row justify-content-between">
         <div class="col-md-8">
           <h5 class="font-weight-bold spanborder"><span>All Stories</span></h5>
-          <c:forEach var="blog" items="${blogs}">
+          <c:forEach var="blog" items="${featuredBlogs}">
             <div class="mb-3 d-flex justify-content-between rounded-lg">
               <div class="pr-3">
                 <h2 class="mb-1 h4 font-weight-bold">

@@ -77,23 +77,6 @@ public class CategoryDetailRepository {
         return categoryDetailList;
     }
 
-    @Transactional
-    public List<CategoryDetail> findAllBlogHasCategoryWithOrder(
-            int page, int size, String orderBy, String categorySlug) {
-        Session session = sessionFactory.getCurrentSession();
-        final String Q_FIND_ALL_BLOG_BY_CATEGORY_SLUG = "SELECT CD FROM CategoryDetail AS CD " +
-                "WHERE CD.blog.deleteAt IS NULL" +
-                " AND CD.category.slug = :categorySlug ORDER BY " +
-                "CASE WHEN :orderBy = 'asc' THEN CD.blog.createAt END ASC, " +
-                "CASE WHEN :orderBy = 'desc' THEN CD.blog.createAt END DESC";
-        Query<CategoryDetail> query = session.createQuery(Q_FIND_ALL_BLOG_BY_CATEGORY_SLUG, CategoryDetail.class);
-        query.setParameter("orderBy", orderBy);
-        query.setParameter("categorySlug", categorySlug);
-        query.setFirstResult(page * size);
-        query.setMaxResults(size);
-        return query.list();
-    }
-
     public RepositoryResponse<CategoryDetail> create(CategoryDetail categoryDetail) {
         RepositoryResponse<CategoryDetail> response = new RepositoryResponse<>();
 

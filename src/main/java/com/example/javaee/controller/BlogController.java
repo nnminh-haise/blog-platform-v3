@@ -4,7 +4,6 @@ import com.example.javaee.model.Blog;
 import com.example.javaee.model.Category;
 import com.example.javaee.model.CategoryDetail;
 import com.example.javaee.service.BlogService;
-import com.example.javaee.service.CategoryDetailService;
 import com.example.javaee.service.CategoryService;
 
 import jakarta.validation.Valid;
@@ -26,14 +25,10 @@ public class BlogController {
 
     private final BlogService blogService;
 
-    private final CategoryDetailService categoryDetailService;
-
     public BlogController(
             BlogService blogService,
-            CategoryService categoryService,
-            CategoryDetailService categoryDetailService) {
+            CategoryService categoryService) {
         this.blogService = blogService;
-        this.categoryDetailService = categoryDetailService;
         this.categoryService = categoryService;
     }
 
@@ -44,14 +39,11 @@ public class BlogController {
             @RequestParam(name = "size", defaultValue = "5") Integer size,
             @RequestParam(name = "orderBy", defaultValue = "asc") String orderBy,
             @RequestParam(name = "category", required = false) String categorySlug) {
-        List<CategoryDetail> details = this.categoryDetailService.findAllByCategorySlug(page, size, orderBy,
-                categorySlug);
+        List<Blog> blogs = this.blogService.findAllBlogByCategorySlug(
+                page, size, orderBy, categorySlug);
 
-        List<Blog> blogs = new ArrayList<>();
-        for (CategoryDetail detail : details) {
-            blogs.add(detail.getBlog());
-        }
         modelMap.addAttribute("blogs", blogs);
+
         return "blog/index";
     }
 
@@ -79,13 +71,13 @@ public class BlogController {
         return "blog/detail";
     }
 
-    @ModelAttribute("blogs")
-    public List<Blog> getFirst5Blogs() {
-        return this.blogService.findFirst(5);
-    }
-
     @ModelAttribute("categories")
     public List<Category> getAllCategories() {
         return this.categoryService.findAll();
+    }
+
+    @ModelAttribute("popularBlogs")
+    public List<Blog> getFirst5PopularBlogs() {
+        return this.blogService.findPopular(5);
     }
 }

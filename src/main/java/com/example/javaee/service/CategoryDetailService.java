@@ -57,10 +57,6 @@ public class CategoryDetailService {
         return this.categoryDetailRepository.findAll();
     }
 
-    public List<CategoryDetail> findAllByCategorySlug(int page, int size, String sortBy, String categorySlug) {
-        return this.categoryDetailRepository.findAllBlogHasCategoryWithOrder(page, size, sortBy, categorySlug);
-    }
-
     public Optional<CategoryDetail> findById(UUID id) {
         if (id == null) {
             return Optional.empty();

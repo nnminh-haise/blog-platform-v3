@@ -23,6 +23,10 @@ public class BlogService {
         return this.blogRepository.findAll();
     }
 
+    public List<Blog> findAllBlogByCategorySlug(int page, int size, String orderBy, String categorySlug) {
+        return this.blogRepository.findAllByCategorySlug(page, size, orderBy, categorySlug);
+    }
+
     public List<Blog> findFirst(Integer amount) {
         return this.blogRepository.findFirst(amount);
     }
