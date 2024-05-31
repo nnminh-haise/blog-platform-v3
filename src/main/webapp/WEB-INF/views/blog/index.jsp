@@ -37,7 +37,7 @@
           <div class="post mb-3 d-flex justify-content-between rounded" style="display: none !important;">
             <div class="pr-3">
               <h2 class="mb-1 h4 font-weight-bold">
-                <a class="text-dark" href="${pageContext.request.contextPath}/blogs/${blog.slug}">${blog.title}</a>
+                <a class="text-dark" href="${pageContext.request.contextPath}/blogs/${blog.slug}.htm">${blog.title}</a>
               </h2>
               <p>${blog.description}</p>
             </div>

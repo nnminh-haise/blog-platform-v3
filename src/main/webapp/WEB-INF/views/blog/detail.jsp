@@ -61,7 +61,9 @@ HEADER
             <div class="col-md-6 pt-6 pb-6 pr-6 align-self-center">
               <c:forEach var="category" items="${blogCategoryList}">
                 <p class="text-uppercase font-weight-bold">
-                  <a class="text-danger" href="./category.html">${category.name}</a>
+                  <a class="text-danger" href="${pageContext.request.contextPath}/blogs/index.htm?category=${category.slug}">
+                    ${category.name}
+                  </a>
                 </p>
               </c:forEach>
               <h1 class="display-4 secondfont mb-3 font-weight-bold">${blog.title}</h1>
