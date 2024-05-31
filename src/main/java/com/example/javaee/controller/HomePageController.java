@@ -3,7 +3,6 @@ package com.example.javaee.controller;
 import com.example.javaee.model.Blog;
 import com.example.javaee.model.Category;
 import com.example.javaee.service.BlogService;
-import com.example.javaee.service.CategoryDetailService;
 import com.example.javaee.service.CategoryService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -16,18 +15,13 @@ import java.util.List;
 @Controller
 @RequestMapping("/")
 public class HomePageController {
-
-    private final CategoryDetailService categoryDetailService;
-
     private final CategoryService categoryService;
 
     private final BlogService blogService;
 
     public HomePageController(
             CategoryService categoryService,
-            BlogService blogService,
-            CategoryDetailService categoryDetailService) {
-        this.categoryDetailService = categoryDetailService;
+            BlogService blogService) {
         this.categoryService = categoryService;
         this.blogService = blogService;
     }
