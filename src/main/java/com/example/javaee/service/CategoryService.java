@@ -90,7 +90,9 @@ public class CategoryService {
         }
 
         Category newCategory = targetingCategory.get();
-
+        newCategory.setName(dto.getName());
+        newCategory.setSlug(getSlug(dto.getName()));
+        System.out.println("name of the category: " + newCategory.getName() + " slug: " + newCategory.getSlug() + " id: " + newCategory.getId() );
         ErrorResponse errorResponse = this.categoryRepository.update(newCategory);
         return errorResponse.ifHasErrorOrElse(
                 () -> new ResponseDto<>(
@@ -113,4 +115,36 @@ public class CategoryService {
                         HttpStatus.OK.value(),
                         "Success"));
     }
+    //find by name
+    public ResponseDto<Category> findByName(String name) {
+        if (name == null) {
+            return new ResponseDto<>(
+                    HttpStatus.BAD_REQUEST.value(),
+                    "Invalid Name");
+        }
+
+        Optional<Category> category = this.categoryRepository.findByName(name);
+        return category.map(value -> new ResponseDto<>(
+                HttpStatus.OK.value(),
+                "Success",
+                value)).orElseGet(() -> new ResponseDto<>(
+                HttpStatus.NOT_FOUND.value(),
+                "Cannot find any blog with the given Name"));
+    }
+    // use pagination to get pageCategory use function pagination
+    public ResponseDto<List<Category>> pagination(int page, int limit) {
+        try {
+            List<Category> categories = this.categoryRepository.pagination(page, limit);
+            return new ResponseDto<>(
+                    HttpStatus.OK.value(),
+                    "Success",
+                    categories);
+        }
+        catch (ResourceNotFoundException exception) {
+            return new ResponseDto<>(
+                    HttpStatus.NOT_FOUND.value(),
+                    exception.getMessage());
+        }
+    }
+
 }

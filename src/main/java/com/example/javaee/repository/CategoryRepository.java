@@ -137,4 +137,23 @@ public class CategoryRepository {
                     exception.getMessage());
         }
     }
+    //find by name
+    public Optional<Category> findByName(String name) {
+        Session session = sessionFactory.openSession();
+        String findCategoryByName = "SELECT c FROM Category AS c WHERE c.deleteAt IS NULL AND c.name = :name";
+        Query<Category> query = session.createQuery(findCategoryByName, Category.class);
+        query.setParameter("name", name);
+        Category category = (Category) query.uniqueResult();
+        return Optional.ofNullable(category);
+    }
+    //pagination with category
+    public List<Category> pagination(int page, int limit) {
+        Session session = sessionFactory.openSession();
+        String paginationQuery = "SELECT c FROM Category AS c WHERE c.deleteAt IS NULL";
+        Query<Category> query = session.createQuery(paginationQuery, Category.class);
+        query.setFirstResult((page - 1) * limit);
+        query.setMaxResults(limit);
+        List<Category> categories = query.list();
+        return categories;
+    }
 }

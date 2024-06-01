@@ -1,6 +1,8 @@
 package com.example.javaee.controller;
 
+import com.example.javaee.dto.CreateCategoryDto;
 import com.example.javaee.dto.ResponseDto;
+import com.example.javaee.dto.UpdateCategoryDto;
 import com.example.javaee.model.Category;
 import com.example.javaee.repository.CategoryRepository;
 import com.example.javaee.service.CategoryService;
@@ -16,110 +18,152 @@ import org.springframework.web.bind.annotation.*;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 @Controller
 @RequestMapping("/category")
 public class CategoryController {
-//    @Autowired
-//    CategoryService categoryService;
-//
-//    @RequestMapping(value = "/list", method = RequestMethod.GET)
-//    public String list(ModelMap model) {
-//
-//        ResponseDto<List<Category>> responseDto = categoryService.findAll();
-//        if (!responseDto.hasStatus(HttpStatus.OK)) {
-//            return "category/index";
-//        }
-//
-//        List<Category> categories = responseDto.getData();
-//        for (Category category: categories) {
-//            System.out.println("ID: " + category.getId() + ", Name: " + category.getName());
-//        }
-//        model.addAttribute("categories", categories);
-//        return "category/index";
-//    }
-//
-//    @RequestMapping(value ="/insert", method = RequestMethod.GET)
-//    public String add(ModelMap model) {
-//        model.addAttribute("category", new Category());
-//        return "category/insert";
-//    }
-//
-//    @RequestMapping(value = "/insert", method = RequestMethod.POST)
-//    public String add(ModelMap model, @ModelAttribute("category") Category category ){
-////        this.ca
-//        return "redirect:/category/list.htm";
-//    }
-//
-//    @RequestMapping(value = "/test")
-//    public String test(ModelMap model) {
-//        ResponseDto<List<Category>> responseDto = categoryService.findAll();
-//        if (!responseDto.hasStatus(HttpStatus.OK)) {
-//            return "category/test";
-//        }
-//
-//        model.addAttribute("data", responseDto.getData());
-//        return "category/test";
-//    }
-//
-//    @RequestMapping(value = "edit/{id}", method = RequestMethod.GET)
-//    public String edit(ModelMap model, @PathVariable("id") UUID id  ){
-//        List<Category> categories = categoryRepository.findAll();
-//        model.addAttribute("categories", categories);
-//        Category category = categoryRepository.findById(id);
-//        model.addAttribute("cate", category);
-//        System.out.println("ID: " + category.getId() + ", Name: " + category.getName());
-//        System.out.println("ID: " + category.getCreateAt() + ", Name: " + category.getUpdateAt());
-//        model.addAttribute("id", id);
-//        return "category/edit";
-//    }
-//
-//    @RequestMapping(value ="edit/{id}", method = RequestMethod.POST)
-//    public String edit(ModelMap model, @PathVariable("id") UUID id,@ModelAttribute("cate") Category category){
-//
-//        category.setUpdateAt(Timestamp.valueOf(LocalDateTime.now()));
-//        Category old = categoryRepository.findById(id);
-//        category.setCreateAt(old.getCreateAt());
-//
-//        Session session = factory.openSession();
-//        Transaction transaction = session.beginTransaction();
-//
-//        try {
-//
-//            session.update(category);
-//            transaction.commit();
-//            model.addAttribute("message", "Update success");
-//        } catch (Exception e) {
-//            transaction.rollback();
-//            System.out.println("Error: " + e);
-//            System.out.println("createat " + category.getCreateAt());
-//            e.printStackTrace();
-//            model.addAttribute("message", "Error: " + e);
-//        } finally {
-//            session.close();
-//        }
-//        return "redirect:/category/list.htm";
-//    }
-//    @RequestMapping(value = "delete/{id}", method = RequestMethod.GET)
-//    public String delete(ModelMap model, @PathVariable("id") UUID id) {
-//        Category category = categoryRepository.findById(id);
-//        Session session = factory.openSession();
-//        Transaction transaction = session.beginTransaction();
-//        try {
-//            session.delete(category);
-//            transaction.commit();
-//            model.addAttribute("message", "Delete success");
-//        } catch (Exception e) {
-//            transaction.rollback();
-//            System.out.println("Error: " + e);
-//            e.printStackTrace();
-//            model.addAttribute("message", "Error: " + e);
-//        } finally {
-//            session.close();
-//
-//        }
-//        return "redirect:/category/list.htm";
-//    }
+
+    int checkFist = 0;
+    public int pageSizes = 5;
+    @ModelAttribute("totalPages")
+    public Integer getLimitPageCategory() {
+        ResponseDto<List<Category>> response = categoryService.findAll();
+        if (!response.getStatus().equals(HttpStatus.OK.value())) {
+            return 1;
+        }
+        int total = response.getData().size();
+        int limit = total / pageSizes;
+        if (total % pageSizes != 0) {
+            limit++;
+        }
+        return limit;
+    }
+    private final CategoryService categoryService;
+    public CategoryController(CategoryService categoryService) {
+        this.categoryService = categoryService;
+    }
+
+    @GetMapping("/index.htm")
+    public String list(ModelMap model, @RequestParam(value = "pageCategory", required = false) Integer pageCategory){
+        System.out.println("pageCategory: " + pageCategory);
+        if (pageCategory == null) {
+            pageCategory = 1;
+
+        }
+        model.addAttribute("pageCategory", pageCategory);
+        ResponseDto<List<Category>> response = categoryService.pagination(pageCategory, pageSizes);
+        if (!response.getStatus().equals(HttpStatus.OK.value())) {
+            return "category/index";
+        }
+        model.addAttribute("categories", response.getData());
+        return "category/index";
+    }
+
+
+
+
+    @RequestMapping(value = "/insert.htm", method = RequestMethod.GET)
+    public String add(ModelMap model) {
+        model.addAttribute("category", new Category());
+        return "category/insert";
+    }
+
+
+    @RequestMapping(value = "/insert.htm", method = RequestMethod.POST)
+    public String add(ModelMap model, @ModelAttribute("category") Category category) {
+        ResponseDto<Category> check = categoryService.findByName(category.getName());
+        if (check.getStatus().equals(HttpStatus.OK.value())) {
+            model.addAttribute("message", "Name is exists");
+            return "category/insert";
+        }
+        ResponseDto<Category> response = categoryService.create(new CreateCategoryDto(category.getName()));
+
+        if (!response.getStatus().equals(HttpStatus.OK.value())) {
+            return "category/insert";
+        }
+        return "redirect:/category/index.htm";
+    }
+    @ModelAttribute("categories")
+    public List<Category> fetchAllCategories() {
+        ResponseDto<List<Category>> response = categoryService.findAll();
+        if (!response.getStatus().equals(HttpStatus.OK.value())) {
+            return new ArrayList<>();
+        }
+        return response.getData();
+    }
+    @RequestMapping(value = "/editor/{id}.htm",method = RequestMethod.GET)
+    public String routeToEditor(ModelMap model, @PathVariable("id") UUID id,@RequestParam("pageCategory") Integer pageCategory) {
+        model.addAttribute("id_editor", id);
+        if(pageCategory == null){
+            pageCategory = 1;
+        }
+        Category category = categoryService.findById(id).getData();
+        model.addAttribute("createCategoryDto",category);
+        model.addAttribute("pageCategory", pageCategory);
+        ResponseDto<List<Category>> response = categoryService.pagination(pageCategory, pageSizes);
+        System.out.println("id of the category: " + category.getName());
+        model.addAttribute("categories", response.getData());
+        return "category/edit";
+    }
+    @RequestMapping(value = "/editor/{id}.htm", method = RequestMethod.POST)
+    public String edit(ModelMap model, @ModelAttribute("createCategoryDto") Category category, @PathVariable("id") UUID id,@RequestParam("pageCategory") Integer pageCategory){
+        if (category.getName().isEmpty()) {
+            model.addAttribute("message", "Name is required");
+            return "category/edit";
+        }
+        ResponseDto<Category> check = categoryService.findByName(category.getName());
+        if (check.getStatus().equals(HttpStatus.OK.value())) {
+            model.addAttribute("message", "Name is exists");
+            return "category/edit";
+        }
+        UpdateCategoryDto updateCategoryDto = new UpdateCategoryDto(category.getName());
+        ResponseDto<Category> response = categoryService.update(category.getId(), updateCategoryDto);
+
+        if (!response.getStatus().equals(HttpStatus.OK.value())) {
+            return "category/edit";
+        }
+        model.addAttribute("pageCategory", pageCategory);
+        ResponseDto<List<Category>> res= categoryService.pagination(pageCategory, pageSizes);
+        System.out.println("id of the category: " + category.getName());
+        model.addAttribute("categories", res.getData());
+
+        return "redirect:/category/index.htm?pageCategory=" + pageCategory;
+    }
+    @PostMapping("/saver.htm")
+    public String saverCategory(
+            @ModelAttribute("createCategoryDto") CreateCategoryDto createCategoryDto,
+            ModelMap model) {
+
+        if (createCategoryDto.getName().isEmpty()) {
+            model.addAttribute("message", "Name is required");
+            return "category/edit";
+        }
+        ResponseDto<Category> check = categoryService.findByName(createCategoryDto.getName());
+        if (check.getStatus().equals(HttpStatus.OK.value())) {
+            model.addAttribute("message", "Name is exists");
+            return "category/edit";
+        }
+
+
+        ResponseDto<Category> response = categoryService.create(createCategoryDto);
+        if (!response.getStatus().equals(HttpStatus.OK.value())) {
+            return "category/edit";
+        }
+
+        System.out.println("name of the category: " + createCategoryDto.getName());
+        return "category/edit";
+    }
+    @RequestMapping(value = "/delete/{id}.htm", method = RequestMethod.GET)
+    public String delete(ModelMap model, @PathVariable("id") UUID id,@RequestParam("pageCategory") Integer pageCategory) {
+        ResponseDto<Category> response = categoryService.remove(id);
+        if (!response.getStatus().equals(HttpStatus.OK.value())) {
+            return "category/index";
+        }
+        model.addAttribute("pageCategory", pageCategory);
+        return "redirect:/category/index.htm?pageCategory=" + pageCategory;
+    }
+
 }
