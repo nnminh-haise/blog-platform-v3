@@ -31,9 +31,19 @@ public class HomePageController {
         return "index";
     }
 
+    @ModelAttribute("favouriteBlogs")
+    public List<Blog> getFavouriteBlogs() {
+        return this.blogService.findLast(4);
+    }
+
+    @ModelAttribute("bannerBlog")
+    public Blog getBannerBlog() {
+        return this.blogService.findOnePopular();
+    }
+
     @ModelAttribute("featuredBlogs")
     public List<Blog> getFirst5Blogs() {
-        return this.blogService.findFirst(5);
+        return this.blogService.findAll();
     }
 
     @ModelAttribute("categories")

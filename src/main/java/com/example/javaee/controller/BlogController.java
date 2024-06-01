@@ -4,6 +4,7 @@ import com.example.javaee.dto.CreateBlogDto;
 import com.example.javaee.model.Blog;
 import com.example.javaee.model.Category;
 import com.example.javaee.model.CategoryDetail;
+import com.example.javaee.model.Category;
 import com.example.javaee.service.BlogService;
 import com.example.javaee.service.CategoryService;
 
@@ -42,6 +43,12 @@ public class BlogController {
             @RequestParam(name = "category", required = false) String categorySlug) {
         List<Blog> blogs = this.blogService.findAllBlogByCategorySlug(
                 page, size, orderBy, categorySlug);
+        if (categorySlug != null) {
+            Optional<Category> category = categoryService.findBySlug(categorySlug);
+            modelMap.addAttribute("category", category.get());
+        } else {
+            modelMap.addAttribute("categoryName", "All Stories");
+        }
 
         modelMap.addAttribute("blogs", blogs);
 
@@ -99,5 +106,10 @@ public class BlogController {
     @ModelAttribute("popularBlogs")
     public List<Blog> getFirst5PopularBlogs() {
         return this.blogService.findPopular(5);
+    }
+
+    @ModelAttribute("favouriteBlogs")
+    public List<Blog> getFavouriteBlogs() {
+        return this.blogService.findLast(4);
     }
 }

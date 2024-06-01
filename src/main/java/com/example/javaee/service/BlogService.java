@@ -23,12 +23,20 @@ public class BlogService {
         return this.blogRepository.findAll();
     }
 
+    public Blog findOnePopular() {
+        return this.blogRepository.findOnePopular();
+    }
+
     public List<Blog> findAllBlogByCategorySlug(int page, int size, String orderBy, String categorySlug) {
         return this.blogRepository.findAllByCategorySlug(page, size, orderBy, categorySlug);
     }
 
     public List<Blog> findFirst(Integer amount) {
         return this.blogRepository.findFirst(amount);
+    }
+
+    public List<Blog> findLast(Integer amount) {
+        return this.blogRepository.findLast(amount);
     }
 
     public List<Blog> findFirstOfCategories(Integer amount, List<Category> categories, UUID blogId) {

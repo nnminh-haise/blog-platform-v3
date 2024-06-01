@@ -41,6 +41,15 @@ public class BlogRepository {
     }
 
     @Transactional
+    public Blog findOnePopular() {
+        Session session = sessionFactory.getCurrentSession();
+        final String Q_FIND_POPULAR_BLOG = "SELECT b FROM Blog AS b WHERE b.deleteAt IS NULL AND b.isPopular = true";
+        Query<Blog> query = session.createQuery(Q_FIND_POPULAR_BLOG, Blog.class);
+        query.setMaxResults(1); // Limiting the result set to 1
+        return query.uniqueResult();
+    }
+
+    @Transactional
     public List<Blog> findAllByCategorySlug(int page, int size, String orderBy, String categorySlug) {
         Session session = sessionFactory.getCurrentSession();
         final String Q_FIND_ALL_BY_CATEGORY_SLUG =
@@ -69,6 +78,16 @@ public class BlogRepository {
         query.setMaxResults(amount);
         return query.list();
     }
+
+    @Transactional
+    public List<Blog> findLast(Integer amount) {
+        Session session = sessionFactory.getCurrentSession();
+        final String Q_FIND_ALL_BLOG = "SELECT b FROM Blog AS b WHERE b.deleteAt IS NULL ORDER BY b.createAt DESC";
+        Query<Blog> query = session.createQuery(Q_FIND_ALL_BLOG, Blog.class);
+        query.setMaxResults(amount);
+        return query.list();
+    }
+
 
     @Transactional
     public List<Blog> findFirstOfCategories(Integer amount, List<Category> categories, UUID blogId) {

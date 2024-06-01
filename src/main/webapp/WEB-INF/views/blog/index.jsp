@@ -1,6 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"  %>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <html>
 <head>
   <title>Blogs</title>
@@ -31,7 +32,7 @@
 <div class="container">
   <div class="row justify-content-between">
     <div class="col-md-8">
-      <h5 class="font-weight-bold spanborder"><span>All Stories</span></h5>
+      <h5 class="font-weight-bold spanborder"><span>${category.name}</span></h5>
       <div class="post-container">
         <c:forEach var="blog" items="${blogs}">
           <div class="post mb-3 d-flex justify-content-between rounded" style="display: none !important;">
@@ -39,25 +40,28 @@
               <h2 class="mb-1 h4 font-weight-bold">
                 <a class="text-dark" href="${pageContext.request.contextPath}/blogs/${blog.slug}.htm">${blog.title}</a>
               </h2>
-              <p>${blog.description}</p>
+              <p>${blog.subTitle}</p>
             </div>
-            <img height="120" src="${pageContext.request.contextPath}/img/demo/blog8.jpg">
+            <img height="120" src="${blog.thumbnail}">
           </div>
         </c:forEach>
-        <div class="d-flex w-100 justify-content-center">
-          <button class="rounded my-2 btn-gray w-25" style="cursor: pointer" id="loadMore">Xem tiếp</button>
-        </div>
+        <c:if test="${fn:length(blogs) > 5}">
+          <div class="d-flex w-100 justify-content-center">
+            <button class="rounded my-2 btn-gray w-25" style="cursor: pointer" id="loadMore">Xem tiếp</button>
+          </div>
+        </c:if>
       </div>
     </div>
     <div class="col-md-4 pl-4">
       <h5 class="font-weight-bold spanborder"><span>Popular</span></h5>
-      <ol class="list-featured">
+      <ol class="list-featured gap-3">
         <c:forEach var="blog" items="${popularBlogs}">
-          <li>
+          <li style="margin-bottom: 1rem;">
             <span>
               <h6 class="font-weight-bold">
                 <a href="${pageContext.request.contextPath}/blogs/${blog.slug}.htm" class="text-dark">${blog.title}</a>
               </h6>
+              <p class="text-muted">${blog.subTitle}</p>
               <p class="text-muted">
                 ${blog.publishAt}
               </p>
