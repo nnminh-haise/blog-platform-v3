@@ -17,4 +17,6 @@ public class CreateBlogDto {
 
     @NotNull
     private String attachment;
+
+    private String slug;
 }

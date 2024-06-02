@@ -129,4 +129,9 @@ public class BlogService {
                 .trim()
                 .replace(" ", "-");
     }
+
+    public List<Blog> findAllBlogOrderBy(Integer page, int i, String orderBy) {
+        System.out.println("Tới Blogservice: " + page);
+        return this.blogRepository.findAllBlogOrderBy(page, i, orderBy);
+    }
 }

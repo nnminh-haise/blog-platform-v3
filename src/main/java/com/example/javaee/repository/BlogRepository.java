@@ -215,4 +215,17 @@ public class BlogRepository {
             session.close();
         }
     }
+    @Transactional
+    public List<Blog> findAllBlogOrderBy(Integer page, int i, String orderBy) {
+        Session session = sessionFactory.getCurrentSession();
+        System.out.println("Pagdđe: " + page);
+        final String Q_FIND_ALL_BLOG = "SELECT b FROM Blog AS b WHERE b.deleteAt IS NULL ORDER BY b.createAt " + (orderBy.equalsIgnoreCase("asc") ? "ASC" : "DESC");
+        System.out.println("Query: " + Q_FIND_ALL_BLOG);
+        Query<Blog> query = session.createQuery(Q_FIND_ALL_BLOG, Blog.class);
+        System.out.println("Query:1 " + query.getQueryString());
+        query.setFirstResult(page * i);
+        query.setMaxResults(i);
+        System.out.println("Query:2 " + query.getQueryString());
+        return query.list();
+    }
 }
