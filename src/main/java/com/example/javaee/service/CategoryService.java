@@ -5,6 +5,7 @@ import com.example.javaee.dto.ErrorResponse;
 import com.example.javaee.dto.ResponseDto;
 import com.example.javaee.dto.UpdateCategoryDto;
 import com.example.javaee.exceptions.ResourceNotFoundException;
+import com.example.javaee.helper.RepositoryResponse;
 import com.example.javaee.model.Category;
 import com.example.javaee.repository.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,10 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class CategoryService {
@@ -31,7 +29,7 @@ public class CategoryService {
     }
 
     public ResponseDto<Category> create(CreateCategoryDto dto) {
-        Date currentTimestamp = Timestamp.valueOf(LocalDateTime.now());
+        LocalDateTime currentTimestamp = LocalDateTime.now();
         Category newCategory = new Category();
         newCategory.setName(dto.getName());
         newCategory.setCreateAt(currentTimestamp);
@@ -49,6 +47,7 @@ public class CategoryService {
                         HttpStatus.OK.value(),
                         "Success", newCategory));
     }
+
 
     public ResponseDto<List<Category>> findAll() {
         try {
@@ -90,9 +89,7 @@ public class CategoryService {
         }
 
         Category newCategory = targetingCategory.get();
-        newCategory.setName(dto.getName());
-        newCategory.setSlug(getSlug(dto.getName()));
-        System.out.println("name of the category: " + newCategory.getName() + " slug: " + newCategory.getSlug() + " id: " + newCategory.getId() );
+
         ErrorResponse errorResponse = this.categoryRepository.update(newCategory);
         return errorResponse.ifHasErrorOrElse(
                 () -> new ResponseDto<>(
@@ -103,7 +100,13 @@ public class CategoryService {
                         HttpStatus.OK.value(),
                         "Success", newCategory));
     }
+    public Optional<Category> findBySlug(String slug) {
+        if (slug == null) {
+            return Optional.empty();
+        }
 
+        return this.categoryRepository.findBySlug(slug);
+    }
     public ResponseDto<Category> remove(UUID id) {
         ErrorResponse errorResponse = this.categoryRepository.remove(id);
         return errorResponse.ifHasErrorOrElse(

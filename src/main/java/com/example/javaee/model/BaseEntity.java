@@ -4,17 +4,17 @@ import jakarta.persistence.MappedSuperclass;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @MappedSuperclass
 @Data
 public abstract class BaseEntity {
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private Date createAt;
+    private LocalDateTime createAt;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private Date updateAt;
+    private LocalDateTime updateAt;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private Date deleteAt;
+    private LocalDateTime deleteAt;
 }

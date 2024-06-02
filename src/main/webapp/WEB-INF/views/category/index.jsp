@@ -136,7 +136,7 @@
                                     </tbody>
                                 </table>
 
-                                <div>
+                                <div style="margin:30px; text-align : right">
                                     <a href="category/index.htm?pageCategory=${pageCategory-1}">
 
                                         <button type="button"  ${pageCategory == 1 ? 'disabled' : ''}> < </button>

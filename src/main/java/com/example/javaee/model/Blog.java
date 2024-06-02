@@ -1,18 +1,15 @@
 package com.example.javaee.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
-
+import java.time.LocalDate;
 import java.util.Collection;
-import java.util.Date;
 import java.util.UUID;
 
-@Data
+@Getter
+@Setter
 @EqualsAndHashCode(callSuper = true)
 @AllArgsConstructor
 @NoArgsConstructor
@@ -33,7 +30,7 @@ public class Blog extends BaseEntity {
 
     @DateTimeFormat(pattern = "yyyy/MM/dd")
     @Column(name = "publish_at")
-    private Date publishAt;
+    private LocalDate publishAt;
 
     @Column(name = "description", nullable = false)
     private String description;
@@ -44,9 +41,31 @@ public class Blog extends BaseEntity {
     @Column(name = "slug", nullable = false, unique = true)
     private String slug;
 
+    @Column(name = "thumbnail", nullable = true)
+    private String thumbnail;
+
+    @Column(name = "sub_title", nullable = true)
+    private String subTitle;
+
     @Column(name = "hidden_status", nullable = false)
     private Boolean hiddenStatus = false;
 
+    @Column(name = "is_popular", nullable = false)
+    private Boolean isPopular = false;
+
     @OneToMany(mappedBy = "blog", fetch = FetchType.EAGER)
     private Collection<CategoryDetail> categoryDetails;
+
+    public String toString() {
+        return "id = " + id +
+                " title = " + title +
+                " publish at = " + publishAt +
+                " description = " + description +
+                " attachment = " + attachment +
+                " slug = " + slug +
+                " hidden status = " + hiddenStatus +
+                " is popular = " + isPopular +
+                " created at = " + super.getCreateAt().toString() +
+                " updated at = " + super.getUpdateAt().toString();
+    }
 }

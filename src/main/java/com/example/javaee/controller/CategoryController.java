@@ -1,5 +1,6 @@
 package com.example.javaee.controller;
 
+
 import com.example.javaee.dto.CreateCategoryDto;
 import com.example.javaee.dto.ResponseDto;
 import com.example.javaee.dto.UpdateCategoryDto;
@@ -12,10 +13,11 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
+import org.springframework.ui.ModelMap;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -29,7 +31,7 @@ public class CategoryController {
     int checkFist = 0;
     public int pageSizes = 5;
     @ModelAttribute("totalPages")
-    public Integer getLimitPageCategory() {
+    public Integer getLimitPageCategory( ) {
         ResponseDto<List<Category>> response = categoryService.findAll();
         if (!response.getStatus().equals(HttpStatus.OK.value())) {
             return 1;
@@ -88,11 +90,12 @@ public class CategoryController {
     }
     @ModelAttribute("categories")
     public List<Category> fetchAllCategories() {
-        ResponseDto<List<Category>> response = categoryService.findAll();
-        if (!response.getStatus().equals(HttpStatus.OK.value())) {
-            return new ArrayList<>();
-        }
-        return response.getData();
+          List<Category> categories = new ArrayList<>();
+            ResponseDto<List<Category>> response = categoryService.findAll();
+            if (!response.getStatus().equals(HttpStatus.OK.value())) {
+                return categories;
+            }
+            return response.getData();
     }
     @RequestMapping(value = "/editor/{id}.htm",method = RequestMethod.GET)
     public String routeToEditor(ModelMap model, @PathVariable("id") UUID id,@RequestParam("pageCategory") Integer pageCategory) {
@@ -165,5 +168,6 @@ public class CategoryController {
         model.addAttribute("pageCategory", pageCategory);
         return "redirect:/category/index.htm?pageCategory=" + pageCategory;
     }
+
 
 }
