@@ -1,6 +1,7 @@
 package com.example.javaee.controller;
 
 import com.example.javaee.beans.AppConfigGoogleAccount;
+import com.example.javaee.beans.SignInGoogleAccount;
 import com.example.javaee.dto.AccessTokenResponse;
 import com.example.javaee.dto.OpenIdClaims;
 import com.google.gson.Gson;
@@ -25,7 +26,12 @@ public class GoogleLoginController {
 
     private final AppConfigGoogleAccount appConfigGoogleAccount;
 
-    public GoogleLoginController(AppConfigGoogleAccount appConfigGoogleAccount) {
+    private final SignInGoogleAccount signInGoogleAccount;
+
+    public GoogleLoginController(
+            SignInGoogleAccount signInGoogleAccount,
+            AppConfigGoogleAccount appConfigGoogleAccount) {
+        this.signInGoogleAccount = signInGoogleAccount;
         this.appConfigGoogleAccount = appConfigGoogleAccount;
         this.state = new BigInteger(130, new SecureRandom()).toString(32);
     }
@@ -59,6 +65,12 @@ public class GoogleLoginController {
         AccessTokenResponse accessTokenResponse = getToken(code);
 //        System.out.println("accessToken:" + accessTokenResponse);
         OpenIdClaims user = getUserInfo(accessTokenResponse.getAccessToken());
+        if (!user.getEmail().equals(this.signInGoogleAccount.getEmail())) {
+            System.out.println("Forbidden Google account!");
+        }
+        else {
+            System.out.println("Authorized!");
+        }
 //        System.out.println(user);
         return "redirect:/index.htm";
     }
