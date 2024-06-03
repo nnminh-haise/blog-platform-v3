@@ -2,13 +2,11 @@ package com.example.javaee.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 
-@Controller
-@RequestMapping(path = "/login")
+//@Controller
 public class LoginController {
-    @GetMapping("/google.htm")
-    public String loginRoute() {
-        return "login/login";
-    }
+//    @GetMapping("/login.htm")
+//    public String loginRoute() {
+//        return "login/login";
+//    }
 }

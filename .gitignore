@@ -3,7 +3,7 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
-src/main/webapp/WEB-INF/configs/spring-config-mvc.xml
+src/main/webapp/WEB-INF/configs/
 
 ### IntelliJ IDEA ###
 .idea/modules.xml

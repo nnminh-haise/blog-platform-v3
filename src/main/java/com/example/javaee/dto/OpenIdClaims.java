@@ -7,12 +7,14 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class GoogleUserDto {
-    private String id;
+public class OpenIdClaims {
+    private String sub;
 
     private String email;
 
-    private String verified_email;
+    private String email_verified;
+
+    private String id;
 
     private String name;
 
