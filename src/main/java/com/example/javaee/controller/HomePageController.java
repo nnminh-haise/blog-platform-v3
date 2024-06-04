@@ -48,7 +48,7 @@ public class HomePageController {
 
     @ModelAttribute("categories")
     public List<Category> getAllCategories() {
-        return this.categoryService.findAll();
+        return this.categoryService.findAll().getData();
     }
 
     @ModelAttribute("popularBlogs")

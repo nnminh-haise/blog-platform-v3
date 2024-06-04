@@ -1,14 +1,15 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"  %>
+<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
-<!DOCTYPE html>
+
 <html lang="en">
 <head>
-    <base href="${pageContext.request.contextPath}/" />
+    <base href="/javaee/" />
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>Purple Admin</title>
+    <title>Blog Platform</title>
     <!-- plugins:css -->
     <link rel="stylesheet" href="vendors/mdi/css/materialdesignicons.min.css">
     <link rel="stylesheet" href="vendors/css/vendor.bundle.base.css">
@@ -25,7 +26,7 @@
 <body>
 <div class="container-scroller">
     <script type="text/javascript">
-        var message = ${message};
+        var message = ;
         alert(message);
     </script>
     <!-- partial:../../partials/_navbar.html -->
@@ -35,7 +36,20 @@
             <a class="navbar-brand brand-logo-mini" href="../../index.html"><img src="images/logo-mini.svg" alt="logo" /></a>
         </div>
         <div class="navbar-menu-wrapper d-flex align-items-stretch">
+            <div class="btn-group">
+                <div class="form-group">
+                    <label for="exampleSelectGender">Category</label>
+                        <select class="form-control" id="exampleSelectGender" name ="slug" >
 
+                            <c:forEach  var="category"  items="${categories}" varStatus="loop">
+                                <option value="${category.name}">${category.slug}</option>
+                            </c:forEach>
+                            <option value="0">All</option>
+                            <option value="${slug}">${category.name}</option>
+                        </select>
+                </div>
+
+            </div>
         </div>
     </nav>
     <!-- partial -->
@@ -78,78 +92,82 @@
         <div class="main-panel">
             <div class="content-wrapper">
                 <div class="page-header">
-                    <h3 class="page-title"> Categories </h3>
+                    <h3 class="page-title"> Blogs </h3>
+
+                    <div class="form-group row">
+                        <label class="col-sm-6 col-form-label">Order By: Published</label>
+                        <div class="col-sm-3">
+                          <div class="form-check">
+                            <label class="form-check-label">
+                              <input type="radio" class="form-check-input" name="orderBy" id="membershipRadios1" value="ASC" checked=""> ASC <i class="input-helper"></i></label>
+                          </div>
+                        </div>
+                        <div class="col-sm-3">
+                          <div class="form-check">
+                            <label class="form-check-label">
+                              <input type="radio" class="form-check-input" name="orderBy" id="membershipRadios2" value="DESC"> DESC <i class="input-helper"></i></label>
+                          </div>
+                        </div>
+                      </div>
                     <div class="template-demo">
-                        <a href="category/insert.htm" >
+                        <a href="blogs/admin/insert.htm" >
                             <button type="button" class="btn btn-gradient-success btn-fw">Add</button>
                         </a>
 
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-lg-12 stretch-card">
-                        <div class="card">
-                            <div class="card-body">
-                                <h4 class="card-title">Category List</h4>
-                                <table class="table table-bordered">
-                                    <thead>
-                                    <tr>
-                                        <th> Name </th>
-                                        <th> Slug </th>
-                                        <th> Manage </th>
-                                    </tr>
-                                    </thead>
+                    <div class="col-lg-12 grid-margin stretch-card">
+                    <div class="card">
+                      <div class="card-body">
+                        <h4 class="card-title">Blog</h4>
 
-                                    <tbody>
-                                    <c:forEach var="category" items="${categories}" varStatus="loop">
-                                        <c:set var="rowClass" value=""/>
-                                        <c:choose>
-                                            <c:when test="${loop.index % 5 == 0}">
-                                                <c:set var="rowClass" value="table-info"/>
-                                            </c:when>
-                                            <c:when test="${loop.index % 5 == 1}">
-                                                <c:set var="rowClass" value="table-warning"/>
-                                            </c:when>
-                                            <c:when test="${loop.index % 5 == 2}">
-                                                <c:set var="rowClass" value="table-danger"/>
-                                            </c:when>
-                                            <c:when test="${loop.index % 5 == 3}">
-                                                <c:set var="rowClass" value="table-success"/>
-                                            </c:when>
-                                            <c:when test="${loop.index % 5 == 4}">
-                                                <c:set var="rowClass" value="table-primary"/>
-                                            </c:when>
-                                        </c:choose>
-                                        <tr class="${rowClass}">
-                                            <td><c:out value="${category.name}" /></td>
-                                            <td><c:out value="${category.slug}" /></td>
-                                            <td style="width: 20%;">
-                                                <a href="category/editor/${category.id}.htm?pageCategory=${pageCategory}" >
-                                                    <button type="button" class="btn btn-gradient-warning btn-fw">Edit</button>
-                                                </a>
-                                                <a href="category/delete/${category.id}.htm?pageCategory=${pageCategory}" onclick="return confirm('are you sure')">
-                                                    <button type="button" class="btn btn-gradient-danger btn-fw">Delete</button>
-                                                </a>
-                                            </td>
-                                        </tr>
-                                    </c:forEach>
-                                    </tbody>
-                                </table>
+                        <table class="table table-dark">
+                          <thead  >
+                            <tr >
+                                <th> Title </th>
+                                <th> Slug </th>
+                                <th> Published </th>
+                                <th> Manage </th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <c:forEach var="blog" items="${categories}" varStatus="loop">
+                                <tr>
+                                    <td><c:out value="${blog.id}" /></td>
+                                    <td><c:out value="${blog.name}" /></td>
+                                    <td><c:out value="${blog.slug}" /></td>
+                                    <td style="width: 20%;">
+                                        <a href="blogs/editor/${blog.id}.htm?pageBlog=${pageBlog}" >
+                                            <button type="button" class="btn btn-dark btn-fw">Edit</button>
+                                        </a>
+                                        <a href="blogs/delete/${blog.id}.htm?pageBlog=${pageBlog}" onclick="return confirm('are you sure')">
+                                            <button type="button" class="btn btn-dark btn-fw">Delete</button>
+                                        </a>
+                                    </td>
+                                </tr>
+                            </c:forEach>
 
-                                <div style="margin:30px; text-align : right">
-                                    <a href="category/index.htm?pageCategory=${pageCategory-1}">
+                          </tbody>
+                        </table>
 
-                                        <button type="button"  ${pageCategory == 1 ? 'disabled' : ''}> < </button>
-                                    </a>
-                                    Page ${pageCategory} of ${totalPages}
-                                    <a href="category/index.htm?pageCategory=${pageCategory+1}">
+                        <div class="pagination-container" style="margin:30px ; text-align: right; top:0 ;right:100" >
 
-                                        <button type="button"  ${pageCategory == totalPages ? 'disabled' : ''}> > </button>
-                                    </a>
-                                </div>
-                            </div>
+
+                            <a href="category/index.htm?pageCategory=-1">
+
+                                <button type="button"  > &#10094;    </button>
+                            </a>
+                                     Page  of
+                             <a href="category/index.htm?pageCategory=1">
+
+                                 <button type="button"  disabled>   &#10095; </button>
+                             </a>
+
                         </div>
+                      </div>
                     </div>
+                  </div>
                 </div>
             </div>
             <!-- content-wrapper ends -->
@@ -178,3 +196,4 @@
 <!-- End custom js for this page -->
 </body>
 </html>
+

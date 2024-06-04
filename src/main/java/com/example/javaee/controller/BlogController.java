@@ -1,6 +1,7 @@
 package com.example.javaee.controller;
 
 import com.example.javaee.dto.CreateBlogDto;
+import com.example.javaee.helper.ServiceResponse;
 import com.example.javaee.model.Blog;
 import com.example.javaee.model.Category;
 import com.example.javaee.model.CategoryDetail;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Controller
@@ -54,8 +56,11 @@ public class BlogController {
 
         return "blog/index";
     }
+
     @GetMapping("detail.htm")
-    public String routeToBlogDetail() {return "blog/detail";}
+    public String routeToBlogDetail() {
+        return "blog/detail";
+    }
 
     @GetMapping("/editor.htm")
     public String routeToEditor(ModelMap model) {
@@ -101,8 +106,8 @@ public class BlogController {
     }
 
     @ModelAttribute("categories")
-    public List<Category> getAllCategories() {
-        return this.categoryService.findAll();
+    public List<Category> fetchAllCategories() {
+        return this.categoryService.findAll().getData();
     }
 
     @ModelAttribute("popularBlogs")
@@ -114,4 +119,79 @@ public class BlogController {
     public List<Blog> getFavouriteBlogs() {
         return this.blogService.findLast(4);
     }
+
+    public int pageSizes = 5;
+    @ModelAttribute("totalPages")
+    public Integer getLimitBlogPage() {
+        List<Blog> blogs = this.blogService.findAll();
+        int totalBlogs = blogs.size();
+        int totalPages = totalBlogs / pageSizes;
+        if (totalBlogs % pageSizes != 0) {
+            totalPages++;
+        }
+        return totalPages;
+    }
+    // Namkuner - Admin Blog
+    @GetMapping("/admin/index.htm")
+    public String searchBlogAdmin(
+            ModelMap modelMap,
+            @RequestParam(name = "page", defaultValue = "0") Integer page,
+            @RequestParam(name = "orderBy", defaultValue = "asc") String orderBy,
+            @RequestParam(name = "slug", required = false) String slug) {
+
+        modelMap.addAttribute("categories", this.categoryService.findAll().getData());
+        List<Category> categories = this.categoryService.findAll().getData();
+        for (Category category: categories) {
+            System.out.println("category: " + category.getName() + " - " + category.getSlug()   );
+        }
+        System.out.println("slug: " + slug);
+        System.out.println("orderBy: " + orderBy);
+        System.out.println("page: " + page);
+        if (slug != null) {
+            List<Blog> blogs = this.blogService.findAllBlogByCategorySlug(
+                    page, 5, orderBy, slug);
+            modelMap.addAttribute("blogs", blogs);
+
+
+        } else {
+            List<Blog> blogs = this.blogService.findAllBlogOrderBy(
+                    page, 5, orderBy);
+            modelMap.addAttribute("blogs", blogs);
+
+        }
+
+
+        return "blog/admin/index";
+    }
+    @ModelAttribute("slugs")
+    public Map<String, String> fetchAllSlugs() {
+        List<Category> categories = this.categoryService.findAll().getData();
+        Map<String, String> slugs = new java.util.HashMap<>();
+        for (Category category: categories) {
+            slugs.put(category.getSlug(), category.getName());
+        }
+        return slugs;
+    }
+    @RequestMapping(value = "/admin/insert.htm",method = RequestMethod.GET)
+    public String routeToBlogInsert(ModelMap model) {
+        model.addAttribute("createBlogDto", new CreateBlogDto());
+
+        return "blog/insert";
+    }
+    @RequestMapping(value = "/admin/insert.htm", method = RequestMethod.POST)
+    public String saveBlog(ModelMap model,
+            @ModelAttribute("createBlogDto") CreateBlogDto createBlogDto)
+             {
+
+
+        System.out.println("from saver"+ createBlogDto);
+        System.out.println("Title"+ createBlogDto.getTitle());
+        System.out.println("Description"+ createBlogDto.getDescription());
+        System.out.println("Attachment"+ createBlogDto.getAttachment());
+        System.out.println("Slug"+ createBlogDto.getSlug());
+        ServiceResponse<Blog> response = this.blogService.create(createBlogDto);
+
+        return "blog/admin/insert";
+    }
+
 }

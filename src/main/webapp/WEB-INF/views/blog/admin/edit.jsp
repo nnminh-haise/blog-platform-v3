@@ -1,8 +1,9 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"  %>
+<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" >
 <head>
     <base href="${pageContext.request.contextPath}/" />
     <!-- Required meta tags -->
@@ -24,10 +25,6 @@
 </head>
 <body>
 <div class="container-scroller">
-    <script type="text/javascript">
-        var message = ${message};
-        alert(message);
-    </script>
     <!-- partial:../../partials/_navbar.html -->
     <nav class="navbar default-layout-navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
         <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-center">
@@ -35,6 +32,7 @@
             <a class="navbar-brand brand-logo-mini" href="../../index.html"><img src="images/logo-mini.svg" alt="logo" /></a>
         </div>
         <div class="navbar-menu-wrapper d-flex align-items-stretch">
+
 
         </div>
     </nav>
@@ -51,7 +49,7 @@
                             <!--change to offline or busy as needed-->
                         </div>
                         <div class="nav-profile-text d-flex flex-column">
-                            <span class="font-weight-bold mb-2">Blog Platform</span>
+                            <span class="font-weight-bold mb-2"> Blog Platform</span>
                             <span class="text-secondary text-small">Admin</span>
                         </div>
                         <i class="mdi mdi-bookmark-check text-success nav-profile-badge"></i>
@@ -60,16 +58,17 @@
 
                 <li class="nav-item">
                     <a class="nav-link" href="blogs/index.htm">
-                        <span class="menu-title">Blogs</span>
+                        <span class="menu-title">Icons</span>
                         <i class="mdi mdi-contacts menu-icon"></i>
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="category/index.htm">
-                        <span class="menu-title">Category</span>
+                        <span class="menu-title">Categories</span>
                         <i class="mdi mdi-format-list-bulleted menu-icon"></i>
                     </a>
                 </li>
+
 
 
             </ul>
@@ -87,69 +86,42 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-lg-12 stretch-card">
+                    <div class="col-12 grid-margin stretch-card">
                         <div class="card">
-                            <div class="card-body">
-                                <h4 class="card-title">Category List</h4>
-                                <table class="table table-bordered">
-                                    <thead>
-                                    <tr>
-                                        <th> Name </th>
-                                        <th> Slug </th>
-                                        <th> Manage </th>
-                                    </tr>
-                                    </thead>
-
-                                    <tbody>
-                                    <c:forEach var="category" items="${categories}" varStatus="loop">
-                                        <c:set var="rowClass" value=""/>
-                                        <c:choose>
-                                            <c:when test="${loop.index % 5 == 0}">
-                                                <c:set var="rowClass" value="table-info"/>
-                                            </c:when>
-                                            <c:when test="${loop.index % 5 == 1}">
-                                                <c:set var="rowClass" value="table-warning"/>
-                                            </c:when>
-                                            <c:when test="${loop.index % 5 == 2}">
-                                                <c:set var="rowClass" value="table-danger"/>
-                                            </c:when>
-                                            <c:when test="${loop.index % 5 == 3}">
-                                                <c:set var="rowClass" value="table-success"/>
-                                            </c:when>
-                                            <c:when test="${loop.index % 5 == 4}">
-                                                <c:set var="rowClass" value="table-primary"/>
-                                            </c:when>
-                                        </c:choose>
-                                        <tr class="${rowClass}">
-                                            <td><c:out value="${category.name}" /></td>
-                                            <td><c:out value="${category.slug}" /></td>
-                                            <td style="width: 20%;">
-                                                <a href="category/editor/${category.id}.htm?pageCategory=${pageCategory}" >
-                                                    <button type="button" class="btn btn-gradient-warning btn-fw">Edit</button>
-                                                </a>
-                                                <a href="category/delete/${category.id}.htm?pageCategory=${pageCategory}" onclick="return confirm('are you sure')">
-                                                    <button type="button" class="btn btn-gradient-danger btn-fw">Delete</button>
-                                                </a>
-                                            </td>
-                                        </tr>
-                                    </c:forEach>
-                                    </tbody>
-                                </table>
-
-                                <div style="margin:30px; text-align : right">
-                                    <a href="category/index.htm?pageCategory=${pageCategory-1}">
-
-                                        <button type="button"  ${pageCategory == 1 ? 'disabled' : ''}> < </button>
-                                    </a>
-                                    Page ${pageCategory} of ${totalPages}
-                                    <a href="category/index.htm?pageCategory=${pageCategory+1}">
-
-                                        <button type="button"  ${pageCategory == totalPages ? 'disabled' : ''}> > </button>
-                                    </a>
+                          <div class="card-body">
+                            <h4 class="card-title">Blog</h4>
+                            <p class="card-description"> Create New Blog</p>
+                            <form:form class="forms-sample" modelAttribute="createBlogDto" enctype="multipart/form-data" method="post" action="admin/save.htm">
+                                <div class="form-group">
+                                    <label for="exampleInputName1">Title</label>
+                                    <form:input type="text" path="name" class="form-control" id="exampleInputName1" placeholder="Name" />
                                 </div>
-                            </div>
+                                <div class="form-group">
+                                    <label for="exampleSelectGender">Category</label>
+                                    <form:select path="gender" class="form-control" id="exampleSelectGender" items="categories">
+
+                                    </form:select>
+                                </div>
+                                <div class="form-group">
+                                    <label>File upload</label>
+                                    <form:input type="file" path="attachment" name="img" class="file-upload-default" />
+                                    <div class="input-group col-xs-12">
+                                        <form:input type="text"  path="attachment" class="form-control file-upload-info" disabled="true" placeholder="Upload Image" />
+                                        <span class="input-group-append">
+                                            <button class="file-upload-browse btn btn-gradient-primary" type="button">Upload</button>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="exampleTextarea1">Description</label>
+                                    <form:textarea path="description" class="form-control" id="exampleTextarea1" rows="8" />
+                                </div>
+                                <button type="submit" class="btn btn-gradient-primary me-2">Submit</button>
+                                <button type="reset" class="btn btn-light">Cancel</button>
+                            </form:form>
+                          </div>
                         </div>
-                    </div>
+                      </div>
                 </div>
             </div>
             <!-- content-wrapper ends -->

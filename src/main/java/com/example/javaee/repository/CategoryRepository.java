@@ -1,5 +1,6 @@
 package com.example.javaee.repository;
 
+import com.example.javaee.dto.ErrorResponse;
 import com.example.javaee.helper.RepositoryErrorType;
 import com.example.javaee.helper.RepositoryResponse;
 import com.example.javaee.helper.ResponseType;
@@ -11,6 +12,7 @@ import org.hibernate.Transaction;
 import org.postgresql.util.PSQLException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Repository;
 
 import jakarta.transaction.Transactional;
@@ -96,42 +98,98 @@ public class CategoryRepository {
         }
     }
 
-    public RepositoryResponse<Category> update(Category category) {
-        RepositoryResponse<Category> response = new RepositoryResponse<>();
-
+    public ErrorResponse update(Category category) {
         Session session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
         try {
-            logger.info("Updating category with id = " + category.getId());
             session.merge(category);
             transaction.commit();
             session.close();
-            logger.info("Updating process success");
-
-            response.setType(ResponseType.SUCCESS);
-            response.setData(Optional.of(category));
-            return response;
-        } catch (Exception exception) {
+            return ErrorResponse.noError();
+        }
+        catch (Exception exception) {
             transaction.rollback();
+            session.close();
 
             Throwable rootCause = getRootCause(exception);
-            final String EXCEPTION_MESSAGE = exception.getMessage();
-
-            response.setError(RepositoryErrorType.CONSTRAINT_VIOLATION);
-            response.setMessage(EXCEPTION_MESSAGE);
-            logger.error("Error message: " + EXCEPTION_MESSAGE);
-
             if (rootCause instanceof PSQLException) {
-                final String ROOT_CAUSE_MESSAGE = rootCause.getMessage();
-                response.setDescription(ROOT_CAUSE_MESSAGE);
-                logger.error("Root cause   : " + ROOT_CAUSE_MESSAGE);
-            } else {
-                response.setDescription("Unknown Server Exception");
-                logger.error("Root cause   : Unknown Server Exception");
+                return new ErrorResponse(
+                        HttpStatus.BAD_REQUEST.value(),
+                        exception.getMessage(),
+                        rootCause.getMessage());
             }
-            return response;
-        } finally {
+
+            return new ErrorResponse(
+                    HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                    "SQL Runtime error",
+                    exception.getMessage());
+        }
+    }
+    //find by name
+    public Optional<Category> findByName(String name) {
+        Session session = sessionFactory.openSession();
+        String findCategoryByName = "SELECT c FROM Category AS c WHERE c.deleteAt IS NULL AND c.name = :name";
+        Query<Category> query = session.createQuery(findCategoryByName, Category.class);
+        query.setParameter("name", name);
+        Category category = (Category) query.uniqueResult();
+        return Optional.ofNullable(category);
+    }
+    //pagination with category
+    public List<Category> pagination(int page, int limit) {
+        Session session = sessionFactory.openSession();
+        String paginationQuery = "SELECT c FROM Category AS c WHERE c.deleteAt IS NULL";
+        Query<Category> query = session.createQuery(paginationQuery, Category.class);
+        query.setFirstResult((page - 1) * limit);
+        query.setMaxResults(limit);
+        List<Category> categories = query.list();
+        return categories;
+    }
+
+    //remove
+    public ErrorResponse remove(UUID id) {
+        Session session = sessionFactory.openSession();
+        Transaction transaction = session.beginTransaction();
+        try {
+            Category category = session.get(Category.class, id);
+            if (category == null) {
+                transaction.rollback();
+                session.close();
+                return new ErrorResponse(
+                        HttpStatus.NOT_FOUND.value(),
+                        "Category not found",
+                        "Cannot find any category with the given ID");
+            }
+            session.delete(category);
+            transaction.commit();
             session.close();
+            return ErrorResponse.noError();
+        }
+        catch (Exception exception) {
+            transaction.rollback();
+            session.close();
+            return new ErrorResponse(
+                    HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                    "SQL Runtime error",
+                    exception.getMessage());
+        }
+    }
+    //save
+    public ErrorResponse save(Category category) {
+        Session session = sessionFactory.openSession();
+        Transaction transaction = session.beginTransaction();
+        try {
+            session.save(category);
+            transaction.commit();
+            session.close();
+            return ErrorResponse.noError();
+        }
+        catch (Exception exception) {
+            transaction.rollback();
+            session.close();
+            return new ErrorResponse(
+                    HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                    "SQL Runtime error",
+                    exception.getMessage());
         }
     }
 }
