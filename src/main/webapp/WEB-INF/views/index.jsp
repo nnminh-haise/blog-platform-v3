@@ -67,12 +67,14 @@ HEADER
           <div class="row justify-content-between">
             <div class="col-md-6 pt-6 pb-6 align-self-center">
               <h1 class="secondfont mb-3 font-weight-bold">
-                  ${bannerBlog.title}
+                ${bannerBlog.title}
               </h1>
-              <p class="mb-3">
-                ${bannerBlog.subTitle}
-              </p>
-              <a href="${pageContext.request.contextPath}/blogs/${bannerBlog.slug}.htm" class="btn btn-dark">Read More</a>
+              <p class="mb-3">${bannerBlog.subTitle}</p>
+              <a
+                href="${pageContext.request.contextPath}/blogs/${bannerBlog.slug}.htm"
+                class="btn btn-dark"
+                >Read More</a
+              >
             </div>
             <div
               class="col-md-6 d-none d-md-block pr-0"
@@ -107,13 +109,9 @@ MAIN
               class="card-body px-0 pb-0 d-flex flex-column align-items-start"
             >
               <h2 class="h4 font-weight-bold">
-                <a class="text-dark" href=""
-                  >${favouriteBlogs.get(0).title}</a
-                >
+                <a class="text-dark" href="">${favouriteBlogs.get(0).title}</a>
               </h2>
-              <p class="card-text">
-                ${favouriteBlogs.get(0).subTitle}
-              </p>
+              <p class="card-text">${favouriteBlogs.get(0).subTitle}</p>
               <div>
                 <small class="d-block"
                   ><a class="text-muted" href="./author.html"
@@ -133,8 +131,11 @@ MAIN
                   <img height="80" src="${blog.thumbnail}" />
                   <div class="pl-3">
                     <h2 class="mb-2 h6 font-weight-bold">
-                      <a class="text-dark" href="${pageContext.request.contextPath}/blogs/${blog.slug}.htm">
-                          ${blog.title}
+                      <a
+                        class="text-dark"
+                        href="${pageContext.request.contextPath}/blogs/${blog.slug}.htm"
+                      >
+                        ${blog.title}
                       </a>
                     </h2>
                     <small class="text-muted">${blog.publishAt}</small>
@@ -153,7 +154,10 @@ MAIN
         <div class="col-md-8">
           <h5 class="font-weight-bold spanborder"><span>All Stories</span></h5>
           <c:forEach var="blog" items="${featuredBlogs}">
-            <div class="mb-3 d-flex justify-content-between rounded-lg blog" style="display: none !important;">
+            <div
+              class="mb-3 d-flex justify-content-between rounded-lg blog"
+              style="display: none !important"
+            >
               <div class="pr-3">
                 <h2 class="mb-1 h4 font-weight-bold">
                   <a
@@ -170,7 +174,13 @@ MAIN
             </div>
           </c:forEach>
           <div class="d-flex w-100 justify-content-center">
-            <button class="rounded my-2 btn-gray w-25" style="cursor: pointer" id="loadMore">Xem tiếp</button>
+            <button
+              class="rounded my-2 btn-gray w-25"
+              style="cursor: pointer"
+              id="loadMore"
+            >
+              Xem tiếp
+            </button>
           </div>
         </div>
 
@@ -216,21 +226,20 @@ FOOTER
     </div>
   </body>
   <script>
-    $(document).ready(function(){
+    $(document).ready(function () {
       // Initially show only 5 posts
-      console.log('blog',$(".blog"))
+      console.log("blog", $(".blog"));
       $(".blog").slice(0, 5).show();
 
-      $("#loadMore").click(function(e){
+      $("#loadMore").click(function (e) {
         e.preventDefault();
         // Show next 5 posts on click
         $(".blog:hidden").slice(0, 5).slideDown();
         // Hide the "Show More" button if all posts are visible
-        if($(".blog:hidden").length === 0) {
-          $("#loadMore").fadeOut('slow');
+        if ($(".blog:hidden").length === 0) {
+          $("#loadMore").fadeOut("slow");
         }
       });
     });
   </script>
 </html>
-

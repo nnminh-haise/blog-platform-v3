@@ -23,27 +23,16 @@
     </button>
     <div class="navbar-collapse collapse" id="navbarColor02" style="">
       <ul class="navbar-nav mr-auto d-flex align-items-center">
-        <li class="nav-item">
-          <a class="nav-link" href="${pageContext.request.contextPath}/blogs/index.htm">Intro <span class="sr-only">(current)</span></a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="./article.html">Culture</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="./article.html">Tech</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="./article.html">Politics</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="./article.html">Health</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="./article.html">Collections</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="./about.html">About</a>
-        </li>
+        <c:forEach var="category" items="${categories}">
+          <li class="nav-item">
+            <a
+              class="nav-link"
+              href="${pageContext.request.contextPath}/blogs/index.htm?category=${category.slug}"
+            >
+              ${category.name}<span class="sr-only">(current)</span>
+            </a>
+          </li>
+        </c:forEach>
       </ul>
     </div>
   </div>
@@ -70,21 +59,21 @@
       </div>
     </div>
       <div class="col-md-4 pl-4">
-          <h5 class="font-weight-bold spanborder"><span>Popular</span></h5>
-          <ol class="list-featured">
-              <c:forEach var="article" items="${popularArticles}">
-                  <li>
-            <span>
-              <h6 class="font-weight-bold">
-                <a href="${article.url}" class="text-dark">${article.title}</a>
-              </h6>
-              <p class="text-muted">
-                ${article.author} in ${article.category}
-              </p>
-            </span>
-                  </li>
-              </c:forEach>
-          </ol>
+        <h5 class="font-weight-bold spanborder"><span>Popular</span></h5>
+        <ol class="list-featured">
+          <c:forEach var="blog" items="${popularBlogs}">
+            <li>
+              <span>
+                <h6 class="font-weight-bold">
+                  <a href="${pageContext.request.contextPath}/blogs/${blog.slug}.htm" class="text-dark">${blog.title}</a>
+                </h6>
+                <p class="text-muted">
+                  Author in ${blogCategoryList.toArray()}
+                </p>
+              </span>
+            </li>
+          </c:forEach>
+        </ol>
       </div>
   </div>
 </div>
