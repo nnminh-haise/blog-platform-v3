@@ -14,8 +14,6 @@ public class OpenIdClaims {
 
     private String email_verified;
 
-    private String id;
-
     private String name;
 
     private String given_name;

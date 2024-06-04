@@ -14,9 +14,11 @@ import org.apache.http.client.fluent.Request;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.net.URISyntaxException;
 import java.security.SecureRandom;
 
 @Controller
@@ -36,18 +38,22 @@ public class GoogleLoginController {
         this.state = new BigInteger(130, new SecureRandom()).toString(32);
     }
 
-    // TODO: clean this code
     @GetMapping("/login.htm")
-    public String loginRoute(ModelMap modelMap) {
-        String link = "https://accounts.google.com/o/oauth2/v2/auth?" +
-                "response_type=code&" +
-                "client_id=538789814527-5g9809t6hdge3qrh5jjhp3q3ab3vb9vd.apps.googleusercontent.com&" +
-                "nonce=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&" +
-                "scope=openid%20email&" +
-                "redirect_uri=http://localhost:8080/javaee_war_exploded/login/LoginGoogleHandler.htm&" +
-                "state=" + this.state;
+    public String loginRoute(ModelMap modelMap) throws URISyntaxException {
+        final String API_END_POINT = "https://accounts.google.com/o/oauth2/v2/auth";
+        final String REDIRECT_URI = "http://localhost:8080/javaee_war_exploded/login/LoginGoogleHandler.htm";
 
-        return "redirect:" + link;
+        String uri = UriComponentsBuilder.fromHttpUrl(API_END_POINT)
+                .queryParam("response_type", "code")
+                .queryParam("client_id", this.appConfigGoogleAccount.getClientId())
+                .queryParam("nonce", this.appConfigGoogleAccount.getClientSecret())
+                .queryParam("scope", "openid%20email%20profile")
+                .queryParam("redirect_uri", REDIRECT_URI)
+                .queryParam("state", this.state)
+                .build()
+                .toString();
+
+        return "redirect:" + uri;
     }
 
     @GetMapping("/login/LoginGoogleHandler.htm")
