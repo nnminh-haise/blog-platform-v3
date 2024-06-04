@@ -38,6 +38,11 @@ public class LoginInterceptor implements HandlerInterceptor {
         System.out.println("This message before execute the controller");
 
         String code = request.getParameter("code");
+        if (code == null) {
+            this.redirectTo(request, response, "/index.htm");
+            return false;
+        }
+
         System.out.println("code:" + code);
         AccessTokenResponse accessTokenResponse = getToken(code);
         System.out.println("accessToken:" + accessTokenResponse);
@@ -47,11 +52,7 @@ public class LoginInterceptor implements HandlerInterceptor {
         System.out.println("claims:" + claims);
         boolean comparision = claims.getEmail().equals(this.signInGoogleAccount.getEmail());
         if (!comparision) {
-            final String CONTEXT_PATH = request.getContextPath();
-            RedirectView redirectView = new RedirectView(CONTEXT_PATH + "/index.htm");
-            redirectView.setContextRelative(true);
-            response.setStatus(HttpServletResponse.SC_FOUND);
-            response.setHeader("Location", redirectView.getUrl());
+            this.redirectTo(request, response, "/index.htm");
             return false;
         }
 
@@ -125,5 +126,13 @@ public class LoginInterceptor implements HandlerInterceptor {
         String response = Request.Get(link).execute().returnContent().asString();
         System.out.println("response:" + response);
         return new Gson().fromJson(response, OpenIdClaims.class);
+    }
+
+    private void redirectTo(HttpServletRequest request, HttpServletResponse response, String view) {
+        final String CONTEXT_PATH = request.getContextPath();
+        RedirectView redirectView = new RedirectView(CONTEXT_PATH + view);
+        redirectView.setContextRelative(true);
+        response.setStatus(HttpServletResponse.SC_FOUND);
+        response.setHeader("Location", redirectView.getUrl());
     }
 }

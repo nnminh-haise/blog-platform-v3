@@ -41,9 +41,13 @@ public class AdminController {
     @GetMapping("/index.htm")
     public String searchBlogAdmin(
             ModelMap modelMap,
+            @RequestParam(name = "code", required = false) String code,
             @RequestParam(name = "page", defaultValue = "0") Integer page,
             @RequestParam(name = "orderBy", defaultValue = "asc") String orderBy,
             @RequestParam(name = "slug", required = false) String slug) {
+        if (code == null) {
+            return "redirect:/index.htm";
+        }
 
         modelMap.addAttribute("categories", this.categoryService.findAll().getData());
         List<Category> categories = this.categoryService.findAll().getData();
