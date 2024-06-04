@@ -25,6 +25,11 @@ public class AdminController {
         this.categoryService = categoryService;
     }
 
+    @ModelAttribute("categories")
+    public List<Category> fetchAllCategories() {
+        return this.categoryService.findAll().getData();
+    }
+
     @ModelAttribute("totalPages")
     public Integer getLimitBlogPage() {
         final int PAGE_SIZE = 5;
@@ -42,17 +47,21 @@ public class AdminController {
     public String searchBlogAdmin(
             ModelMap modelMap,
             @RequestParam(name = "code", required = false) String code,
+            @RequestParam(name = "dev", required = false) String dev,
             @RequestParam(name = "page", defaultValue = "0") Integer page,
             @RequestParam(name = "orderBy", defaultValue = "asc") String orderBy,
             @RequestParam(name = "slug", required = false) String slug) {
-        if (code == null) {
-            return "redirect:/index.htm";
+        // TODO: remove this filter in production
+        if (!dev.equals("1")) {
+            if (code == null) {
+                return "redirect:/index.htm";
+            }
         }
 
         modelMap.addAttribute("categories", this.categoryService.findAll().getData());
         List<Category> categories = this.categoryService.findAll().getData();
-        for (Category category: categories) {
-            System.out.println("category: " + category.getName() + " - " + category.getSlug()   );
+        for (Category category : categories) {
+            System.out.println("category: " + category.getName() + " - " + category.getSlug());
         }
         System.out.println("slug: " + slug);
         System.out.println("orderBy: " + orderBy);
@@ -62,7 +71,6 @@ public class AdminController {
                     page, 5, orderBy, slug);
             modelMap.addAttribute("blogs", blogs);
 
-
         } else {
             List<Blog> blogs = this.blogService.findAllBlogOrderBy(
                     page, 5, orderBy);
@@ -70,33 +78,34 @@ public class AdminController {
 
         }
 
-
         return "admin/index";
     }
+
     @ModelAttribute("slugs")
     public Map<String, String> fetchAllSlugs() {
         List<Category> categories = this.categoryService.findAll().getData();
         Map<String, String> slugs = new java.util.HashMap<>();
-        for (Category category: categories) {
+        for (Category category : categories) {
             slugs.put(category.getSlug(), category.getName());
         }
         return slugs;
     }
-    @RequestMapping(value = "/insert.htm",method = RequestMethod.GET)
+
+    @RequestMapping(value = "/insert.htm", method = RequestMethod.GET)
     public String routeToBlogInsert(ModelMap model) {
         model.addAttribute("createBlogDto", new CreateBlogDto());
 
         return "blog/insert";
     }
+
     @RequestMapping(value = "/insert.htm", method = RequestMethod.POST)
     public String saveBlog(ModelMap model,
-                           @ModelAttribute("createBlogDto") CreateBlogDto createBlogDto)
-    {
-        System.out.println("from saver"+ createBlogDto);
-        System.out.println("Title"+ createBlogDto.getTitle());
-        System.out.println("Description"+ createBlogDto.getDescription());
-        System.out.println("Attachment"+ createBlogDto.getAttachment());
-        System.out.println("Slug"+ createBlogDto.getSlug());
+            @ModelAttribute("createBlogDto") CreateBlogDto createBlogDto) {
+        System.out.println("from saver" + createBlogDto);
+        System.out.println("Title" + createBlogDto.getTitle());
+        System.out.println("Description" + createBlogDto.getDescription());
+        System.out.println("Attachment" + createBlogDto.getAttachment());
+        System.out.println("Slug" + createBlogDto.getSlug());
         ServiceResponse<Blog> response = this.blogService.create(createBlogDto);
 
         return "admin/insert";
