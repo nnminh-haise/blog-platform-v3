@@ -63,8 +63,10 @@ public class AdminController {
             @RequestParam(name = "page", defaultValue = "0") Integer page,
             @RequestParam(name = "orderBy", defaultValue = "asc") String orderBy,
             @RequestParam(name = "slug", required = false) String slug) throws IOException {
-        // TODO: remove this filter in production
-        if (dev != null && !dev.equals("1")) {
+        // TODO: remove this devMode filter in production
+        Boolean devMode = (dev != null && dev.equals("1"));
+        if (!devMode) {
+            // ! do not remove this code param filter
             if (code == null) {
                 return "redirect:/index.htm";
             }
@@ -72,12 +74,28 @@ public class AdminController {
 
         HttpSession session = request.getSession();
         String accessToken = (String) session.getAttribute("accessToken");
-        if (accessToken == null) {
-            System.out.println("Redirected to home page due to no access token found in the session storage");
+        // TODO: remove dev mode filter
+        if (!devMode && accessToken == null) {
             return "redirect:/index.htm";
         }
-        OpenIdClaims claims = this.googleApiService.getUserInfo(accessToken);
-        System.out.println("from admin controller, claims:" + claims.toString());
+
+        // TODO: Remove this dev mode if statement and return these two statement ouf of the if statement.
+        if (devMode) {
+            modelMap.addAttribute("userInformation", new OpenIdClaims(
+                    "sub",
+                    "email",
+                    "verified_email",
+                    "name",
+                    "given_name",
+                    "family_name",
+                    "picture"
+            ));
+        }
+        else {
+            // ! When removing the if statement this will be kept
+            OpenIdClaims claims = this.googleApiService.getUserInfo(accessToken);
+            modelMap.addAttribute("userInformation", claims);
+        }
 
         modelMap.addAttribute("categories", this.categoryService.findAll().getData());
         List<Category> categories = this.categoryService.findAll().getData();

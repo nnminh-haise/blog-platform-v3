@@ -73,16 +73,15 @@ contentType="text/html;charset=UTF-8" language="java" %>
         <!-- partial:../../partials/_sidebar.html -->
         <nav class="sidebar sidebar-offcanvas" id="sidebar">
           <ul class="nav">
-            <li class="nav-item nav-profile">
+            <li class="nav-item nav-profile" id="${userInformation.sub}">
               <a href="#" class="nav-link">
                 <div class="nav-profile-image">
-                  <img src="images/person-man.png" alt="profile" />
-                  <span class="login-status online"></span>
-                  <!--change to offline or busy as needed-->
+                  <img src="${userInformation.picture}" alt="profile"/>
+<%--                  <span class="login-status online"></span>--%>
                 </div>
                 <div class="nav-profile-text d-flex flex-column">
-                  <span class="font-weight-bold mb-2">Blog Platform</span>
-                  <span class="text-secondary text-small">Admin</span>
+                  <span class="font-weight-bold mb-2">${userInformation.name}</span>
+                  <span class="text-secondary text-small">${userInformation.email}</span>
                 </div>
                 <i
                   class="mdi mdi-bookmark-check text-success nav-profile-badge"
