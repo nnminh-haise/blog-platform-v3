@@ -1,15 +1,20 @@
 package com.example.javaee.controller;
 
 import com.example.javaee.dto.CreateBlogDto;
+import com.example.javaee.dto.OpenIdClaims;
 import com.example.javaee.helper.ServiceResponse;
 import com.example.javaee.model.Blog;
 import com.example.javaee.model.Category;
 import com.example.javaee.service.BlogService;
 import com.example.javaee.service.CategoryService;
+import com.example.javaee.service.GoogleApiService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -20,7 +25,13 @@ public class AdminController {
 
     private final CategoryService categoryService;
 
-    public AdminController(BlogService blogService, CategoryService categoryService) {
+    private final GoogleApiService googleApiService;
+
+    public AdminController(
+            GoogleApiService googleApiService,
+            BlogService blogService,
+            CategoryService categoryService) {
+        this.googleApiService = googleApiService;
         this.blogService = blogService;
         this.categoryService = categoryService;
     }
@@ -45,18 +56,28 @@ public class AdminController {
 
     @GetMapping("/index.htm")
     public String searchBlogAdmin(
+            HttpServletRequest request,
             ModelMap modelMap,
             @RequestParam(name = "code", required = false) String code,
             @RequestParam(name = "dev", required = false) String dev,
             @RequestParam(name = "page", defaultValue = "0") Integer page,
             @RequestParam(name = "orderBy", defaultValue = "asc") String orderBy,
-            @RequestParam(name = "slug", required = false) String slug) {
+            @RequestParam(name = "slug", required = false) String slug) throws IOException {
         // TODO: remove this filter in production
-        if (!dev.equals("1")) {
+        if (dev != null && !dev.equals("1")) {
             if (code == null) {
                 return "redirect:/index.htm";
             }
         }
+
+        HttpSession session = request.getSession();
+        String accessToken = (String) session.getAttribute("accessToken");
+        if (accessToken == null) {
+            System.out.println("Redirected to home page due to no access token found in the session storage");
+            return "redirect:/index.htm";
+        }
+        OpenIdClaims claims = this.googleApiService.getUserInfo(accessToken);
+        System.out.println("from admin controller, claims:" + claims.toString());
 
         modelMap.addAttribute("categories", this.categoryService.findAll().getData());
         List<Category> categories = this.categoryService.findAll().getData();
