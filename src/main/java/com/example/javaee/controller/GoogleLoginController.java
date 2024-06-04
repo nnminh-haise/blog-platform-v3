@@ -21,6 +21,7 @@ import java.math.BigInteger;
 import java.net.URISyntaxException;
 import java.security.SecureRandom;
 
+// TODO: upgrade these Sysout to logging system
 @Controller
 public class GoogleLoginController {
 

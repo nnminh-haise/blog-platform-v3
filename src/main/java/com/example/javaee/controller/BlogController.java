@@ -5,7 +5,6 @@ import com.example.javaee.helper.ServiceResponse;
 import com.example.javaee.model.Blog;
 import com.example.javaee.model.Category;
 import com.example.javaee.model.CategoryDetail;
-import com.example.javaee.model.Category;
 import com.example.javaee.service.BlogService;
 import com.example.javaee.service.CategoryService;
 
