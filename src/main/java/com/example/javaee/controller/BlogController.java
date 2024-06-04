@@ -54,6 +54,8 @@ public class BlogController {
 
         return "blog/index";
     }
+    @GetMapping("detail.htm")
+    public String routeToBlogDetail() {return "blog/detail";}
 
     @GetMapping("/editor.htm")
     public String routeToEditor(ModelMap model) {

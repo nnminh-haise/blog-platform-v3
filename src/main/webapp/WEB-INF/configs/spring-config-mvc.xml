@@ -22,7 +22,7 @@
     <bean id="dataSource"
           class="org.springframework.jdbc.datasource.DriverManagerDataSource"
           p:driverClassName="org.postgresql.Driver"
-          p:url="jdbc:postgresql://localhost:5433/blog-platform"
+          p:url="jdbc:postgresql://localhost:5432/blog-platform"
           p:username="postgres"
           p:password="postgres">
     </bean>
