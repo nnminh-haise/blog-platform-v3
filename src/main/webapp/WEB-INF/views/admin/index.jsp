@@ -142,7 +142,7 @@ contentType="text/html;charset=UTF-8" language="java" %>
                 </div>
               </div>
               <div class="template-demo">
-                <a href="blogs/admin/insert.htm">
+                <a href="${pageContext.request.contextPath}/admin/insert.htm">
                   <button type="button" class="btn btn-gradient-success btn-fw">
                     Add
                   </button>
@@ -176,7 +176,7 @@ contentType="text/html;charset=UTF-8" language="java" %>
                             <td><c:out value="${blog.slug}" /></td>
                             <td style="width: 20%">
                               <a
-                                href="blogs/editor/${blog.id}.htm?pageBlog=${pageBlog}"
+                                href="${pageContext.request.contextPath}/editor/${blog.id}.htm?pageBlog=${pageBlog}"
                               >
                                 <button
                                   type="button"

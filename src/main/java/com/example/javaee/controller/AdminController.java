@@ -64,38 +64,38 @@ public class AdminController {
             @RequestParam(name = "orderBy", defaultValue = "asc") String orderBy,
             @RequestParam(name = "slug", required = false) String slug) throws IOException {
         // TODO: remove this devMode filter in production
-        Boolean devMode = (dev != null && dev.equals("1"));
-        if (!devMode) {
-            // ! do not remove this code param filter
-            if (code == null) {
-                return "redirect:/index.htm";
-            }
-        }
-
-        HttpSession session = request.getSession();
-        String accessToken = (String) session.getAttribute("accessToken");
-        // TODO: remove dev mode filter
-        if (!devMode && accessToken == null) {
-            return "redirect:/index.htm";
-        }
-
-        // TODO: Remove this dev mode if statement and return these two statement ouf of the if statement.
-        if (devMode) {
-            modelMap.addAttribute("userInformation", new OpenIdClaims(
-                    "sub",
-                    "email",
-                    "verified_email",
-                    "name",
-                    "given_name",
-                    "family_name",
-                    "picture"
-            ));
-        }
-        else {
-            // ! When removing the if statement this will be kept
-            OpenIdClaims claims = this.googleApiService.getUserInfo(accessToken);
-            modelMap.addAttribute("userInformation", claims);
-        }
+//        Boolean devMode = (dev != null && dev.equals("1"));
+//        if (!devMode) {
+//            // ! do not remove this code param filter
+//            if (code == null) {
+//                return "redirect:/index.htm";
+//            }
+//        }
+//
+//        HttpSession session = request.getSession();
+//        String accessToken = (String) session.getAttribute("accessToken");
+//        // TODO: remove dev mode filter
+//        if (!devMode && accessToken == null) {
+//            return "redirect:/index.htm";
+//        }
+//
+//        // TODO: Remove this dev mode if statement and return these two statement ouf of the if statement.
+//        if (devMode) {
+//            modelMap.addAttribute("userInformation", new OpenIdClaims(
+//                    "sub",
+//                    "email",
+//                    "verified_email",
+//                    "name",
+//                    "given_name",
+//                    "family_name",
+//                    "picture"
+//            ));
+//        }
+//        else {
+//            // ! When removing the if statement this will be kept
+//            OpenIdClaims claims = this.googleApiService.getUserInfo(accessToken);
+//            modelMap.addAttribute("userInformation", claims);
+//        }
 
         modelMap.addAttribute("categories", this.categoryService.findAll().getData());
         List<Category> categories = this.categoryService.findAll().getData();
@@ -134,17 +134,18 @@ public class AdminController {
     public String routeToBlogInsert(ModelMap model) {
         model.addAttribute("createBlogDto", new CreateBlogDto());
 
-        return "blog/insert";
+        return "admin/insert";
     }
-
-    @RequestMapping(value = "/insert.htm", method = RequestMethod.POST)
-    public String saveBlog(ModelMap model,
-            @ModelAttribute("createBlogDto") CreateBlogDto createBlogDto) {
+    @ModelAttribute("createBlogDto")
+    public CreateBlogDto generatePlainDto() {
+        return new CreateBlogDto();
+    }
+    @PostMapping(value = "/insert.htm")
+    public String saveBlog(ModelMap model, @ModelAttribute("createBlogDto") CreateBlogDto createBlogDto) {
         System.out.println("from saver" + createBlogDto);
         System.out.println("Title" + createBlogDto.getTitle());
         System.out.println("Description" + createBlogDto.getDescription());
-        System.out.println("Attachment" + createBlogDto.getAttachment());
-        System.out.println("Slug" + createBlogDto.getSlug());
+
         ServiceResponse<Blog> response = this.blogService.create(createBlogDto);
 
         return "admin/insert";

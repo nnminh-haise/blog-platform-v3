@@ -28,35 +28,35 @@ public class LoginInterceptor implements HandlerInterceptor {
             HttpServletRequest request,
             HttpServletResponse response,
             Object handler) throws Exception {
-        System.out.println("This message before execute the controller");
-
-        // TODO: remove this in production
-        String dev = request.getParameter("dev");
-        if (dev != null && dev.equals("1")) {
-            return true;
-        }
-
-        String code = request.getParameter("code");
-        if (code == null) {
-            this.redirectTo(request, response, "/index.htm");
-            return false;
-        }
-
-        AccessTokenResponse accessTokenResponse = this.googleApiService.getToken(code);
-        OpenIdClaims claims = this.googleApiService.getUserInfo(accessTokenResponse.getAccessToken());
-
-        System.out.println("code:" + code);
-        System.out.println("accessToken:" + accessTokenResponse);
-        System.out.println("claims:" + claims);
-
-        boolean authorizeResult = claims.getEmail().equals(this.signInGoogleAccount.getEmail());
-        if (!authorizeResult) {
-            this.redirectTo(request, response, "/index.htm");
-            return false;
-        }
-
-        HttpSession session = request.getSession();
-        session.setAttribute("accessToken", accessTokenResponse.getAccessToken());
+//        System.out.println("This message before execute the controller");
+//
+//        // TODO: remove this in production
+//        String dev = request.getParameter("dev");
+//        if (dev != null && dev.equals("1")) {
+//            return true;
+//        }
+//
+//        String code = request.getParameter("code");
+//        if (code == null) {
+//            this.redirectTo(request, response, "/index.htm");
+//            return false;
+//        }
+//
+//        AccessTokenResponse accessTokenResponse = this.googleApiService.getToken(code);
+//        OpenIdClaims claims = this.googleApiService.getUserInfo(accessTokenResponse.getAccessToken());
+//
+//        System.out.println("code:" + code);
+//        System.out.println("accessToken:" + accessTokenResponse);
+//        System.out.println("claims:" + claims);
+//
+//        boolean authorizeResult = claims.getEmail().equals(this.signInGoogleAccount.getEmail());
+//        if (!authorizeResult) {
+//            this.redirectTo(request, response, "/index.htm");
+//            return false;
+//        }
+//
+//        HttpSession session = request.getSession();
+//        session.setAttribute("accessToken", accessTokenResponse.getAccessToken());
         return true;
     }
 
