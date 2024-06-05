@@ -46,7 +46,7 @@
         </c:forEach>
         </tbody>
       </table>
-      <input type="submit" value="Upload">
+      <input type="submit" value="Upload"/>
     </form>
   </div>
 </body>
