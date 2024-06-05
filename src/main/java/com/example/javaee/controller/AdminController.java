@@ -45,9 +45,9 @@ public class AdminController {
             @RequestParam(name = "page", defaultValue = "0") Integer page,
             @RequestParam(name = "orderBy", defaultValue = "asc") String orderBy,
             @RequestParam(name = "slug", required = false) String slug) {
-        if (code == null) {
-            return "redirect:/index.htm";
-        }
+//        if (code == null) {
+//            return "redirect:/index.htm";
+//        }
 
         modelMap.addAttribute("categories", this.categoryService.findAll().getData());
         List<Category> categories = this.categoryService.findAll().getData();

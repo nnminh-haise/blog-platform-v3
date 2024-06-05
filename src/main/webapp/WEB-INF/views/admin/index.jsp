@@ -19,7 +19,7 @@
     <!-- inject:css -->
     <!-- endinject -->
     <!-- Layout styles -->
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css">
     <!-- End layout styles -->
     <link rel="shortcut icon" href="images/favicon.ico" />
 </head>
@@ -110,7 +110,7 @@
                         </div>
                       </div>
                     <div class="template-demo">
-                        <a href="blogs/admin/insert.htm" >
+                        <a href="${pageContext.request.contextPath}/admin/insert.htm" >
                             <button type="button" class="btn btn-gradient-success btn-fw">Add</button>
                         </a>
 
@@ -138,7 +138,7 @@
                                     <td><c:out value="${blog.name}" /></td>
                                     <td><c:out value="${blog.slug}" /></td>
                                     <td style="width: 20%;">
-                                        <a href="blogs/editor/${blog.id}.htm?pageBlog=${pageBlog}" >
+                                        <a href="${pageContext.request.contextPath}/editor/${blog.id}.htm?pageBlog=${pageBlog}" >
                                             <button type="button" class="btn btn-dark btn-fw">Edit</button>
                                         </a>
                                         <a href="blogs/delete/${blog.id}.htm?pageBlog=${pageBlog}" onclick="return confirm('are you sure')">

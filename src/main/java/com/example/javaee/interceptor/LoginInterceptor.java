@@ -37,24 +37,24 @@ public class LoginInterceptor implements HandlerInterceptor {
             Object handler) throws Exception {
         System.out.println("This message before execute the controller");
 
-        String code = request.getParameter("code");
-        if (code == null) {
-            this.redirectTo(request, response, "/index.htm");
-            return false;
-        }
-
-        System.out.println("code:" + code);
-        AccessTokenResponse accessTokenResponse = getToken(code);
-        System.out.println("accessToken:" + accessTokenResponse);
-        HttpSession session = request.getSession();
-        session.setAttribute("accessToken", accessTokenResponse.getAccessToken());
-        OpenIdClaims claims = getUserInfo(accessTokenResponse.getAccessToken());
-        System.out.println("claims:" + claims);
-        boolean comparision = claims.getEmail().equals(this.signInGoogleAccount.getEmail());
-        if (!comparision) {
-            this.redirectTo(request, response, "/index.htm");
-            return false;
-        }
+//        String code = request.getParameter("code");
+//        if (code == null) {
+//            this.redirectTo(request, response, "/index.htm");
+//            return false;
+//        }
+//
+//        System.out.println("code:" + code);
+//        AccessTokenResponse accessTokenResponse = getToken(code);
+//        System.out.println("accessToken:" + accessTokenResponse);
+//        HttpSession session = request.getSession();
+//        session.setAttribute("accessToken", accessTokenResponse.getAccessToken());
+//        OpenIdClaims claims = getUserInfo(accessTokenResponse.getAccessToken());
+//        System.out.println("claims:" + claims);
+//        boolean comparision = claims.getEmail().equals(this.signInGoogleAccount.getEmail());
+//        if (!comparision) {
+//            this.redirectTo(request, response, "/index.htm");
+//            return false;
+//        }
 
         return true;
     }

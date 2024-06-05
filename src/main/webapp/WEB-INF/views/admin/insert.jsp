@@ -13,6 +13,32 @@
     <!-- plugins:css -->
     <link rel="stylesheet" href="vendors/mdi/css/materialdesignicons.min.css">
     <link rel="stylesheet" href="vendors/css/vendor.bundle.base.css">
+    <!-- Editor.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@editorjs/editorjs@latest"></script>
+
+    <!-- Editor.js Header Plugin CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@editorjs/header@latest"></script>
+
+    <!-- Editor.js List Plugin CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@editorjs/list@latest"></script>
+
+    <!-- Editor.js Paragraph Plugin CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@editorjs/paragraph@latest"></script>
+
+    <!-- Editor.js Image Plugin CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@editorjs/image@latest"></script>
+
+    <!-- Editor.js Embed Plugin CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@editorjs/embed@latest"></script>
+
+    <!-- Editor.js Link Plugin CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@editorjs/link@latest"></script>
+
+    <!-- Editor.js Delimiter Plugin CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@editorjs/delimiter@latest"></script>
+
+    <!-- Editor.js Code Plugin CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@editorjs/code@latest"></script>
     <!-- endinject -->
     <!-- Plugin css for this page -->
     <!-- End plugin css for this page -->
@@ -79,7 +105,7 @@
                 <div class="page-header">
                     <h3 class="page-title"> Categories </h3>
                     <div class="template-demo">
-                        <a href="category/insert.htm" >
+                        <a href="${pageContext.request.contextPath}/admin/insert.htm" >
                             <button type="button" class="btn btn-gradient-success btn-fw">Add</button>
                         </a>
 
@@ -91,7 +117,7 @@
                           <div class="card-body">
                             <h4 class="card-title">Blog</h4>
                             <p class="card-description"> Create New Blog</p>
-                            <form:form class="forms-sample" enctype="multipart/form-data"  method="post"  modelAttribute="createBlogDto" action="blogs/admin/insert.htm">
+                            <form:form class="forms-sample" enctype="multipart/form-data"  method="post"  modelAttribute="createBlogDto" action="${pageContext.request.contextPath}/admin/insert.htm">
                                 <div class="form-group">
                                     <label for="exampleInputName1">Title</label>
                                     <form:input type="text" path="title"  class="form-control" id="exampleInputName1" placeholder="Name" />
@@ -113,8 +139,9 @@
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label for="exampleTextarea1">Description</label>
-                                    <form:textarea path="description" class="form-control" id="exampleTextarea1" rows="8" />
+                                    <label for="description">Description</label>
+<%--                                    <form:textarea path="description" class="form-control" id="exampleTextarea1" rows="8" />--%>
+                                    <form:input path="description" id="editor"/>
                                 </div>
                                 <button type="submit" class="btn btn-gradient-primary me-2">Submit</button>
                                 <button type="reset" class="btn btn-light">Cancel</button>
@@ -146,7 +173,108 @@
 <script src="js/hoverable-collapse.js"></script>
 <script src="js/misc.js"></script>
 <script src="js/file-upload.js"></script>
+<script
+        src="./assets/js/vendor/jquery.min.js"
+        type="text/javascript"
+></script>
+<script
+        src="./assets/js/vendor/popper.min.js"
+        type="text/javascript"
+></script>
+<script
+        src="./assets/js/vendor/bootstrap.min.js"
+        type="text/javascript"
+></script>
+<script src="./assets/js/functions.js" type="text/javascript"></script>
+</body>
+<script>
+    const blogDescriptionData = document.getElementById("blogDescription").innerText;
 
+    // Convert the JSON string to an object
+    const editorData = JSON.parse(blogDescriptionData);
+
+    // Initialize EditorJS with the parsed data
+    const editor = new EditorJS({
+        holder: "editor",
+        readOnly: true,
+        onReady: () => {
+            console.log("Editor is ready");
+        },
+        tools: {
+            header: {
+                class: Header,
+                config: {
+                    placeholder: "Enter a header",
+                    levels: [2, 3, 4],
+                    defaultLevel: 3,
+                },
+            },
+            list: {
+                class: List,
+                inlineToolbar: true,
+            },
+            paragraph: {
+                class: Paragraph,
+                config: {
+                    placeholder: "Click here to start typing",
+                },
+                inlineToolbar: true,
+            },
+            image: {
+                class: ImageTool,
+                config: {
+                    endpoints: {
+                        byFile: "https://your-backend.com/uploadFile",
+                        byUrl: "https://your-backend.com/fetchUrl",
+                    },
+                },
+            },
+            embed: {
+                class: Embed,
+                inlineToolbar: true,
+            },
+            link: {
+                class: LinkTool,
+                config: {
+                    endpoint: "https://your-backend.com/fetchUrl",
+                },
+            },
+            delimiter: Delimiter,
+            code: {
+                class: CodeTool,
+                inlineToolbar: true,
+            },
+        },
+        data: editorData,  // Pass the parsed data here
+        inlineToolbar: true,
+        toolbar: {
+            buttons: [
+                "header",
+                "bold",
+                "italic",
+                "link",
+                "unorderedList",
+                "orderedList",
+                "image",
+                "embed",
+                "code",
+            ],
+        },
+    });
+
+
+    function saveData() {
+        console.log("saved!");
+        editor.save().then((data) => {
+            console.log(data);
+            const jsonData = JSON.stringify(data);
+            document.getElementById("description").value = jsonData;
+            document.getElementById("main-container").submit();
+        }).catch((error) => {
+            console.log("error: ", error);
+        });
+    }
+</script>
 <!-- endinject -->
 <!-- Custom js for this page -->
 <!-- End custom js for this page -->
