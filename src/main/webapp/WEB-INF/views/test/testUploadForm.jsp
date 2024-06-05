@@ -12,38 +12,42 @@
   <title>Title</title>
 </head>
 <body>
-  <form method="POST" action="${pageContext.request.contextPath}/uploadFile.htm" enctype="multipart/form-data">
-    <h2>File upload system</h2>
-    <table>
-      <tr>
-        <td>
-          <label path="base-directory">All file is stored at a base directory at: ${baseDirectory}</label>
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <label path="file">Select a file to upload</label>
-        </td>
-        <td>
-          <input type="file" name="file" />
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <label path="path-selector">Select storing path:</label>
-          <select id="path-selector" name="paths">
-            <c:forEach var="path" items="${directories}">
-              <option value="${path.key}">${path.value}</option>
-            </c:forEach>
-          </select>
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <input type="submit" value="Upload"/>
-        </td>
-      </tr>
-    </table>
-  </form>
+  <div class="form-container">
+    <form method="POST" action="${pageContext.request.contextPath}/file-handler/file-saving-resolver.htm" enctype="multipart/form-data">
+      <h2>File upload system</h2>
+      <table>
+        <thead>
+        <tr>
+          <td>UUID</td>
+          <td>Title</td>
+          <td>Subtitle</td>
+          <td>Create at</td>
+          <td>File directory</td>
+        </tr>
+        </thead>
+        <tbody>
+        <c:forEach var="blog" items="${blogs}">
+          <tr>
+            <td>${blog.id}</td>
+            <td>${blog.title}</td>
+            <td>${blog.subTitle}</td>
+            <td>${blog.createAt}</td>
+            <td>
+              <select id="file-directory" name="file-directory">
+                <c:forEach var="directory" items="${directories}">
+                  <option value="${directory.key}">${directory.value}</option>
+                </c:forEach>
+              </select>
+            </td>
+            <td>
+              <input name="file" id="${blog.id}" type="file">
+            </td>
+          </tr>
+        </c:forEach>
+        </tbody>
+      </table>
+      <input type="submit" value="Upload">
+    </form>
+  </div>
 </body>
 </html>
