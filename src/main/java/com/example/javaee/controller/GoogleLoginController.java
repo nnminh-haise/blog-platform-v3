@@ -22,12 +22,8 @@ public class GoogleLoginController {
 
     private final AppConfigGoogleAccount appConfigGoogleAccount;
 
-    private final SignInGoogleAccount signInGoogleAccount;
-
     public GoogleLoginController(
-            SignInGoogleAccount signInGoogleAccount,
             AppConfigGoogleAccount appConfigGoogleAccount) {
-        this.signInGoogleAccount = signInGoogleAccount;
         this.appConfigGoogleAccount = appConfigGoogleAccount;
         this.state = new BigInteger(130, new SecureRandom()).toString(32);
     }

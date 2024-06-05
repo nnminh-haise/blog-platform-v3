@@ -51,6 +51,10 @@
         <property name="suffix" value=".jsp" />
     </bean>
 
+    <bean id="multipartResolver"
+          class="org.springframework.web.multipart.support.StandardServletMultipartResolver">
+    </bean>
+
     <!-- Configure Email for login account-->
     <bean id="signInGoogleAccount" class="com.example.javaee.beans.SignInGoogleAccount">
         <property name="email" value="phuongnamtran1902@gmail.com"/>
@@ -70,6 +74,17 @@
             <bean class="com.example.javaee.interceptor.LoginInterceptor"/>
         </mvc:interceptor>
     </mvc:interceptors>
+
+    <bean id="fileUploadDirectory" class="com.example.javaee.beans.FileUploadDirectory">
+        <property name="baseDirectory" value="/Users/nnminh/Desktop"/>
+        <property name="directories">
+            <map>
+                <entry key="doc" value="/documents"/>
+                <entry key="img" value="/imgs"/>
+                <entry key="postBase" value="/blog/post"/>
+            </map>
+        </property>
+    </bean>
 
     <context:component-scan base-package="com.example.javaee.controller"/>
     <context:component-scan base-package="com.example.javaee.service"/>

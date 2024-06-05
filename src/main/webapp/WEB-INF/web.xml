@@ -8,6 +8,14 @@
     <servlet>
         <servlet-name>spring</servlet-name>
         <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+
+        <!-- Configuration for MultipartResolver for servlet 3.0-->
+        <multipart-config> <!-- (3) -->
+            <max-file-size>5242880</max-file-size> <!-- (4) -->
+            <max-request-size>27262976</max-request-size> <!-- (5) -->
+            <file-size-threshold>0</file-size-threshold> <!-- (6) -->
+        </multipart-config>
+
         <init-param>
             <param-name>contextConfigLocation</param-name>
             <param-value>/WEB-INF/configs/*.xml</param-value>
@@ -18,6 +26,17 @@
         <servlet-name>spring</servlet-name>
         <url-pattern>/</url-pattern>
     </servlet-mapping>
+
+    <!-- Multipart file filter -->
+    <filter>
+        <filter-name>MultipartFilter</filter-name>
+        <filter-class>org.springframework.web.multipart.support.MultipartFilter</filter-class>
+    </filter>
+    <!-- (2) -->
+    <filter-mapping>
+        <filter-name>MultipartFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
 
     <!-- CharacterEncodingFilter -->
     <filter>
