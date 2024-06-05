@@ -24,7 +24,7 @@ public class FileUploadService {
             return "";
         }
 
-        StringBuilder fullPath = new StringBuilder(this.fileUploadDirectory.getBaseDirectory() + "/");
+        StringBuilder fullPath = new StringBuilder(this.fileUploadDirectory.getBaseDirectory());
         if (directory != null && this.fileUploadDirectory.getDirectory(directory) != null) {
             fullPath.append(this.fileUploadDirectory.getDirectory(directory)).append("/");
         }
