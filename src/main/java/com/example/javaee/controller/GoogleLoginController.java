@@ -1,7 +1,6 @@
 package com.example.javaee.controller;
 
 import com.example.javaee.beans.AppConfigGoogleAccount;
-import com.example.javaee.beans.SignInGoogleAccount;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Controller;
@@ -50,9 +49,11 @@ public class GoogleLoginController {
     public String handleRedirectRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String code = request.getParameter("code");
         String receivedState = request.getParameter("state");
+
         System.out.println("code:" + code);
         System.out.println("receivedState:" + receivedState);
         System.out.println("currentState :" + this.state);
+
         if (!receivedState.equals(this.state)) {
             System.out.println("Invalid state! Authorization session failed!");
             return "redirect:/index";

@@ -1,10 +1,9 @@
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %> <%@ taglib
-uri="http://www.springframework.org/tags/form" prefix="form" %> <%@ page
-contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
 <html lang="en">
   <head>
-    <base href="/javaee/" />
     <!-- Required meta tags -->
     <meta charset="utf-8" />
     <meta
@@ -40,12 +39,8 @@ contentType="text/html;charset=UTF-8" language="java" %>
   <body>
     <div class="container-scroller">
       <!-- partial:../../partials/_navbar.html -->
-      <nav
-        class="navbar default-layout-navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row"
-      >
-        <div
-          class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-center"
-        >
+      <nav class="navbar default-layout-navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
+        <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-center">
           <a class="navbar-brand brand-logo" href="../../index.html"
             ><img src="images/blogg.png" alt="logo"
           /></a>
@@ -56,13 +51,13 @@ contentType="text/html;charset=UTF-8" language="java" %>
         <div class="navbar-menu-wrapper d-flex align-items-stretch">
           <div class="btn-group">
             <div class="form-group">
-              <label for="exampleSelectGender">Category</label>
-              <select class="form-control" id="exampleSelectGender" name="slug">
+              <%-- Category nav bar --%>
+              <label for="category-filter">Categories</label>
+              <select class="form-control" id="category-filter" name="slug">
+                <option value="null">All categories</option>
                 <c:forEach var="category" items="${categories}">
                   <option value="${category.slug}">${category.name}</option>
                 </c:forEach>
-                <option value="0">All</option>
-<%--                <option value="${slug}">${category.name}</option>--%>
               </select>
             </div>
           </div>
@@ -77,26 +72,22 @@ contentType="text/html;charset=UTF-8" language="java" %>
               <a href="#" class="nav-link">
                 <div class="nav-profile-image">
                   <img src="${userInformation.picture}" alt="profile"/>
-<%--                  <span class="login-status online"></span>--%>
                 </div>
                 <div class="nav-profile-text d-flex flex-column">
                   <span class="font-weight-bold mb-2">${userInformation.name}</span>
                   <span class="text-secondary text-small">${userInformation.email}</span>
                 </div>
-                <i
-                  class="mdi mdi-bookmark-check text-success nav-profile-badge"
-                ></i>
+                <i class="mdi mdi-bookmark-check text-success nav-profile-badge"></i>
               </a>
             </li>
-
             <li class="nav-item">
-              <a class="nav-link" href="blogs/index.htm">
+              <a class="nav-link" href="">
                 <span class="menu-title">Blogs</span>
                 <i class="mdi mdi-contacts menu-icon"></i>
               </a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="category/index.htm">
+              <a class="nav-link" href="">
                 <span class="menu-title">Category</span>
                 <i class="mdi mdi-format-list-bulleted menu-icon"></i>
               </a>
@@ -142,7 +133,8 @@ contentType="text/html;charset=UTF-8" language="java" %>
                 </div>
               </div>
               <div class="template-demo">
-                <a href="${pageContext.request.contextPath}/admin/insert.htm">
+                <a href="${pageContext.request.contextPath}/admin/insert.htm?code=${validationCode}">
+                  <p>${pageContext.request.contextPath}/admin/insert.htm?code=${validationCode}</p>
                   <button type="button" class="btn btn-gradient-success btn-fw">
                     Add
                   </button>
@@ -208,7 +200,7 @@ contentType="text/html;charset=UTF-8" language="java" %>
                         margin: 30px;
                         text-align: right;
                         top: 0;
-                        right: 100;
+                        right: 100%;
                       "
                     >
                       <a href="category/index.htm?pageCategory=-1">
@@ -244,6 +236,7 @@ contentType="text/html;charset=UTF-8" language="java" %>
     <script src="js/hoverable-collapse.js"></script>
     <script src="js/misc.js"></script>
     <!-- endinject -->
+
     <!-- Custom js for this page -->
     <!-- End custom js for this page -->
   </body>
