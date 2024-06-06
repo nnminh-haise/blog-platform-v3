@@ -5,7 +5,6 @@
 <!DOCTYPE html>
 <html lang="en" >
 <head>
-    <base href="${pageContext.request.contextPath}/" />
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -88,40 +87,40 @@
                 <div class="row">
                     <div class="col-12 grid-margin stretch-card">
                         <div class="card">
-                          <div class="card-body">
-                            <h4 class="card-title">Blog</h4>
-                            <p class="card-description"> Create New Blog</p>
-                            <form:form class="forms-sample" modelAttribute="createBlogDto" enctype="multipart/form-data" method="post" action="admin/save.htm">
-                                <div class="form-group">
-                                    <label for="exampleInputName1">Title</label>
-                                    <form:input type="text" path="name" class="form-control" id="exampleInputName1" placeholder="Name" />
-                                </div>
-                                <div class="form-group">
-                                    <label for="exampleSelectGender">Category</label>
-                                    <form:select path="gender" class="form-control" id="exampleSelectGender" items="categories">
+                            <div class="card-body">
+                                <h4 class="card-title">Blog</h4>
+                                <p class="card-description"> Create New Blog</p>
+                                <form:form class="forms-sample" modelAttribute="createBlogDto" enctype="multipart/form-data" method="post" action="admin/save.htm">
+                                    <div class="form-group">
+                                        <label for="exampleInputName1">Title</label>
+                                        <form:input type="text" path="name" class="form-control" id="exampleInputName1" placeholder="Name" />
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="exampleSelectGender">Category</label>
+                                        <form:select path="gender" class="form-control" id="exampleSelectGender" items="categories">
 
-                                    </form:select>
-                                </div>
-                                <div class="form-group">
-                                    <label>File upload</label>
-                                    <form:input type="file" path="attachment" name="img" class="file-upload-default" />
-                                    <div class="input-group col-xs-12">
-                                        <form:input type="text"  path="attachment" class="form-control file-upload-info" disabled="true" placeholder="Upload Image" />
-                                        <span class="input-group-append">
+                                        </form:select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>File upload</label>
+                                        <form:input type="file" path="attachment" name="img" class="file-upload-default" />
+                                        <div class="input-group col-xs-12">
+                                            <form:input type="text"  path="attachment" class="form-control file-upload-info" disabled="true" placeholder="Upload Image" />
+                                            <span class="input-group-append">
                                             <button class="file-upload-browse btn btn-gradient-primary" type="button">Upload</button>
                                         </span>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="form-group">
-                                    <label for="exampleTextarea1">Description</label>
-                                    <form:textarea path="description" class="form-control" id="exampleTextarea1" rows="8" />
-                                </div>
-                                <button type="submit" class="btn btn-gradient-primary me-2">Submit</button>
-                                <button type="reset" class="btn btn-light">Cancel</button>
-                            </form:form>
-                          </div>
+                                    <div class="form-group">
+                                        <label for="exampleTextarea1">Description</label>
+                                        <form:textarea path="description" class="form-control" id="exampleTextarea1" rows="8" />
+                                    </div>
+                                    <button type="submit" class="btn btn-gradient-primary me-2">Submit</button>
+                                    <button type="reset" class="btn btn-light">Cancel</button>
+                                </form:form>
+                            </div>
                         </div>
-                      </div>
+                    </div>
                 </div>
             </div>
             <!-- content-wrapper ends -->

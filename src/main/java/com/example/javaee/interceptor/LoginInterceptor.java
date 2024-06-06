@@ -46,7 +46,6 @@ public class LoginInterceptor implements HandlerInterceptor {
             return false;
         }
 
-        System.out.println("Passed interceptor checking");
         return true;
     }
 

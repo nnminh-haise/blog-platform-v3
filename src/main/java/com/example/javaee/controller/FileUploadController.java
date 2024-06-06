@@ -49,12 +49,10 @@ public class FileUploadController {
     public String testRoute(ModelMap modelMap) {
         modelMap.addAttribute("baseDirectory", fileUploadDirectory.getBaseDirectory());
         return "blog/editor";
-//        return "test/testUploadForm";
     }
 
     @PostMapping("/file-saving-resolver.htm")
     public String submit(
-//            @RequestParam("blog-title") String blogTitle,
             @ModelAttribute("createBlogDto") CreateBlogDto dto,
             @RequestParam(value = "file", required = false) MultipartFile[] files,
             @RequestParam(value = "file-directory", required = false) String[] directories,
@@ -62,7 +60,7 @@ public class FileUploadController {
         Map<Integer, String> results = this.fileUploadService.saveFiles(files, directories);
         System.out.println("dto:" + dto.toString());
         modelMap.addAttribute("fileCreatingResults", results);
-        return "test/testFormLoading";
+        return "index";
     }
 
 }

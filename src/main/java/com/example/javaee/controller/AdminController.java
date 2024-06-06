@@ -62,6 +62,8 @@ public class AdminController {
             return "redirect:/index.htm";
         }
 
+        modelMap.addAttribute("adminInformation", claims.get());
+
         modelMap.addAttribute("categories", this.categoryService.findAll().getData());
         List<Category> categories = this.categoryService.findAll().getData();
         for (Category category: categories) {
@@ -87,7 +89,7 @@ public class AdminController {
         return "admin/index";
     }
 
-    @RequestMapping(value = "/blog/insert.htm",method = RequestMethod.GET)
+    @RequestMapping(value = "/insert.htm",method = RequestMethod.GET)
     public String routeToBlogInsert(
             HttpServletRequest request,
             ModelMap model) {
@@ -103,17 +105,17 @@ public class AdminController {
     }
 
     @RequestMapping(value = "/insert.htm", method = RequestMethod.POST)
-    public String saveBlog(ModelMap model,
-                           @ModelAttribute("createBlogDto") CreateBlogDto createBlogDto)
-    {
-        System.out.println("from saver"+ createBlogDto);
-        System.out.println("Title"+ createBlogDto.getTitle());
-        System.out.println("Description"+ createBlogDto.getDescription());
-        System.out.println("Attachment"+ createBlogDto.getAttachment());
-        System.out.println("Slug"+ createBlogDto.getSlug());
+    public String saveBlog(
+            @ModelAttribute("createBlogDto") CreateBlogDto createBlogDto,
+            ModelMap model) {
         ServiceResponse<Blog> response = this.blogService.create(createBlogDto);
 
         return "admin/insert";
+    }
+
+    @ModelAttribute("createBlogDto")
+    public CreateBlogDto modelAttributeForBlogEdit() {
+        return new CreateBlogDto();
     }
 
     @ModelAttribute("slugs")

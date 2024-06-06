@@ -13,25 +13,25 @@
   <title>Edit | Blog</title>
 </head>
 <body>
-  <div id="error-message">
-    <c:if test="${not empty errorMessage}">
-      <div style="color: red;">
-        <p>Status: <c:out value="${errorMessage.status}" /></p>
-        <p>Error: <c:out value="${errorMessage.error}" /></p>
-        <p>Message: <c:out value="${errorMessage.message}" /></p>
-      </div>
-    </c:if>
-  </div>
+<div id="error-message">
+  <c:if test="${not empty errorMessage}">
+    <div style="color: red;">
+      <p>Status: <c:out value="${errorMessage.status}" /></p>
+      <p>Error: <c:out value="${errorMessage.error}" /></p>
+      <p>Message: <c:out value="${errorMessage.message}" /></p>
+    </div>
+  </c:if>
+</div>
 
-  <%--@elvariable id="createBlogDto" type="com.proj.projblogplatform.dto.createBlogDto"--%>
-  <form:form action="save.htm" method="post" modelAttribute="createBlogDto">
-    <label for="blog-title">Title</label>
-    <form:input id="blog-title" path="title" type="text" value="${createBlogDto.title}" />
+<%--@elvariable id="createBlogDto" type="com.proj.projblogplatform.dto.createBlogDto"--%>
+<form:form action="save.htm" method="post" modelAttribute="createBlogDto">
+  <label for="blog-title">Title</label>
+  <form:input id="blog-title" path="title" type="text" value="${createBlogDto.title}" />
 
-    <label for="blog-description">Description</label>
-    <form:input id="blog-description" path="description" type="text" value="${createBlogDto.description}" />
+  <label for="blog-description">Description</label>
+  <form:input id="blog-description" path="description" type="text" value="${createBlogDto.description}" />
 
-    <button type="submit">Submit</button>
-  </form:form>
+  <button type="submit">Submit</button>
+</form:form>
 </body>
 </html>
