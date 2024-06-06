@@ -10,10 +10,10 @@
         <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
 
         <!-- Configuration for MultipartResolver for servlet 3.0-->
-        <multipart-config> <!-- (3) -->
-            <max-file-size>5242880</max-file-size> <!-- (4) -->
-            <max-request-size>27262976</max-request-size> <!-- (5) -->
-            <file-size-threshold>0</file-size-threshold> <!-- (6) -->
+        <multipart-config>
+            <max-file-size>5242880</max-file-size>
+            <max-request-size>27262976</max-request-size>
+            <file-size-threshold>0</file-size-threshold>
         </multipart-config>
 
         <init-param>

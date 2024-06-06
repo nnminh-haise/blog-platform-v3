@@ -22,7 +22,7 @@
     <bean id="dataSource"
           class="org.springframework.jdbc.datasource.DriverManagerDataSource"
           p:driverClassName="org.postgresql.Driver"
-          p:url="jdbc:postgresql://localhost:5433/blog-platform"
+          p:url="jdbc:postgresql://localhost:5432/blog-platform"
           p:username="postgres"
           p:password="postgres">
     </bean>
@@ -57,15 +57,15 @@
 
     <!-- Configure Email for login account-->
     <bean id="signInGoogleAccount" class="com.example.javaee.beans.SignInGoogleAccount">
-        <property name="email" value="nnminh.sam.1803@gmail.com"/>
+        <property name="email" value="phuongnamtran1902@gmail.com"/>
     </bean>
 
     <!-- Configure Application verification with Google Service API-->
-    <bean id="appConfigGoogleAccount" class="com.example.javaee.beans.AppConfigGoogleAccount">
-        <property name="clientId" value="538789814527-5g9809t6hdge3qrh5jjhp3q3ab3vb9vd.apps.googleusercontent.com"/>
-        <property name="clientSecret" value="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"/>
-        <property name="redirectUri" value="http://localhost:8080/javaee_war_exploded/login/LoginGoogleHandler.htm"/>
-    </bean>
+        <bean id="appConfigGoogleAccount" class="com.example.javaee.beans.AppConfigGoogleAccount">
+            <property name="clientId" value="538789814527-5g9809t6hdge3qrh5jjhp3q3ab3vb9vd.apps.googleusercontent.com"/>
+            <property name="clientSecret" value="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"/>
+            <property name="redirectUri" value="http://localhost:8080/javaee_war_exploded/login/LoginGoogleHandler.htm"/>
+        </bean>
 
     <!-- Configure Admin controller interceptor-->
     <mvc:interceptors>
