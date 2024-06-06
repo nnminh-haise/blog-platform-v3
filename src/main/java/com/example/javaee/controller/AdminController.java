@@ -5,11 +5,8 @@ import com.example.javaee.dto.CreateBlogDto;
 import com.example.javaee.dto.OpenIdClaims;
 import com.example.javaee.dto.UpdateBlogDto;
 import com.example.javaee.helper.ServiceResponse;
-import com.example.javaee.dto.OpenIdClaims;
-import com.example.javaee.dto.UpdateBlogDto;
 import com.example.javaee.model.Blog;
 import com.example.javaee.model.Category;
-import com.example.javaee.model.CategoryDetail;
 import com.example.javaee.model.CategoryDetail;
 import com.example.javaee.service.BlogService;
 import com.example.javaee.service.CategoryService;
@@ -18,9 +15,6 @@ import com.example.javaee.service.GoogleApiService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.apache.http.client.ClientProtocolException;
-import com.example.javaee.service.GoogleApiService;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
@@ -28,11 +22,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Optional;
 
 @Controller
@@ -72,45 +63,8 @@ public class AdminController {
         return totalPages;
     }
 
-    @RequestMapping(value = "/edit/{slug}.htm", method = RequestMethod.GET)
-    public String viewBlog(
-            ModelMap modelMap,
-            @PathVariable(name = "slug", required = true) String slug) {
-        System.out.println(slug);
-        Optional<Blog> blog = this.blogService.findBySlug(slug);
-        System.out.println("blog");
-        System.out.println(blog);
-        if (!blog.isPresent()) {
-            modelMap.addAttribute("message", "There is some error!");
-            return "admin/index";
-        }
-        modelMap.addAttribute("updateBlogDto", blog.get());
-        modelMap.addAttribute("slug", slug); // Add slug to the model
-
-        List<Category> categories = new ArrayList<>();
-        for (CategoryDetail detail : blog.get().getCategoryDetails()) {
-            categories.add(detail.getCategory());
-        }
-        modelMap.addAttribute("blogCategoryList", categories);
-
-        List<Blog> firstOfCategories = this.blogService.findFirstOfCategories(
-                5, categories, blog.get().getId());
-        modelMap.addAttribute("nextBlogs", firstOfCategories);
-
-        return "admin/edit";
-    }
-
-    @PostMapping(value = "/edit/{slug}.htm")
-    public String updateBlog(ModelMap modelMap, @ModelAttribute("updateBlogDto") UpdateBlogDto updateBlogDto,
-            @PathVariable(name = "slug", required = true) String slug) {
-        System.out.println("update");
-        System.out.println(slug);
-        return "admin/edit";
-    }
-
     @GetMapping("/index.htm")
     public String searchBlogAdmin(
-            HttpServletRequest request,
             HttpServletRequest request,
             ModelMap modelMap,
             @RequestParam(name = "page", defaultValue = "0") Integer page,
@@ -149,7 +103,7 @@ public class AdminController {
     }
 
     @GetMapping("/insert.htm")
-    public String routeToBlogInsert(
+    public String blogInsertRouter(
             HttpServletRequest request,
             ModelMap model) {
         Optional<OpenIdClaims> claims = this.validateRequest(request);
@@ -166,7 +120,7 @@ public class AdminController {
     }
 
     @PostMapping("/insert.htm")
-    public String saveBlog(
+    public String saveBlogHandler(
             @RequestParam(name = "title", required = true) String title,
             @RequestParam(name = "description", required = true) String description,
             @RequestParam(name = "attachment", required = false) MultipartFile file,
@@ -221,7 +175,7 @@ public class AdminController {
     }
 
     @PostMapping(value = "/edit/{slug}.htm")
-    public String updateBlog(ModelMap modelMap,
+    public String updateBlogHandler(ModelMap modelMap,
             // @RequestParam(name = "title", required = true) String title,
             // @RequestParam(name = "description", required = true) String description,
             // @RequestParam(name = "attachment", required = false) MultipartFile
@@ -262,27 +216,10 @@ public class AdminController {
         return slugs;
     }
 
-    @RequestMapping(value = "/insert.htm", method = RequestMethod.GET)
-    public String routeToBlogInsert(ModelMap model) {
-        model.addAttribute("createBlogDto", new CreateBlogDto());
-
-        return "admin/insert";
-    }
-
     @ModelAttribute("createBlogDto")
     public CreateBlogDto generatePlainDto() {
         return new CreateBlogDto();
     }
-
-    @PostMapping(value = "/insert.htm")
-    public String saveBlog(ModelMap model, @ModelAttribute("createBlogDto") CreateBlogDto createBlogDto) {
-        System.out.println("from saver" + createBlogDto);
-        System.out.println("Title" + createBlogDto.getTitle());
-        System.out.println("Description" + createBlogDto.getDescription());
-
-        ServiceResponse<Blog> response = this.blogService.create(createBlogDto);
-
-        return "admin/insert";
 
     private Optional<OpenIdClaims> validateRequest(HttpServletRequest request) {
         if (request == null) {

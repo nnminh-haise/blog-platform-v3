@@ -20,9 +20,7 @@ public class LoginInterceptor implements HandlerInterceptor {
 
     public LoginInterceptor(
             GoogleApiService googleApiService,
-            GoogleApiService googleApiService,
             SignInGoogleAccount signInGoogleAccount) {
-        this.googleApiService = googleApiService;
         this.googleApiService = googleApiService;
         this.signInGoogleAccount = signInGoogleAccount;
     }
