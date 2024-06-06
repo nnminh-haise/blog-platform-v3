@@ -95,10 +95,10 @@ public class BlogService {
         buffer.setDescription(payload.getDescription());
         buffer.setAttachment(payload.getAttachment());
         buffer.setSlug(getSlug(buffer.getTitle()));
-        buffer.setPublishAt(payload.getPublishAt());
-        buffer.setHiddenStatus(payload.getHiddenStatus());
+
 
         RepositoryResponse<Blog> response = this.blogRepository.update(buffer);
+        System.out.println(response.getData());
         if (response.getError().equals(RepositoryErrorType.CONSTRAINT_VIOLATION)) {
             return ServiceResponse.ofBadRequest(
                     response.getMessage(), response.getDescription());

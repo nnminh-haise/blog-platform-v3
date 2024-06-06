@@ -176,7 +176,7 @@ contentType="text/html;charset=UTF-8" language="java" %>
                             <td><c:out value="${blog.slug}" /></td>
                             <td style="width: 20%">
                               <a
-                                href="${pageContext.request.contextPath}/editor/${blog.id}.htm?pageBlog=${pageBlog}"
+                                href="${pageContext.request.contextPath}/admin/edit/${blog.slug}.htm"
                               >
                                 <button
                                   type="button"

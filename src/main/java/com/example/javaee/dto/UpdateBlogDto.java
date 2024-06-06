@@ -15,7 +15,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UpdateBlogDto extends CreateBlogDto {
-    @NotNull
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate publishAt;
 

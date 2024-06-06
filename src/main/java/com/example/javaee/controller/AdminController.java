@@ -2,9 +2,11 @@ package com.example.javaee.controller;
 
 import com.example.javaee.dto.CreateBlogDto;
 import com.example.javaee.dto.OpenIdClaims;
+import com.example.javaee.dto.UpdateBlogDto;
 import com.example.javaee.helper.ServiceResponse;
 import com.example.javaee.model.Blog;
 import com.example.javaee.model.Category;
+import com.example.javaee.model.CategoryDetail;
 import com.example.javaee.service.BlogService;
 import com.example.javaee.service.CategoryService;
 import com.example.javaee.service.GoogleApiService;
@@ -15,8 +17,10 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/admin")
@@ -52,6 +56,42 @@ public class AdminController {
             totalPages++;
         }
         return totalPages;
+    }
+
+    @RequestMapping(value = "/edit/{slug}.htm", method = RequestMethod.GET)
+    public String viewBlog(
+            ModelMap modelMap,
+            @PathVariable(name = "slug", required = true) String slug) {
+        System.out.println(slug);
+        Optional<Blog> blog = this.blogService.findBySlug(slug);
+        System.out.println("blog");
+        System.out.println(blog);
+        if (!blog.isPresent()) {
+            modelMap.addAttribute("message", "There is some error!");
+            return "admin/index";
+        }
+        modelMap.addAttribute("updateBlogDto", blog.get());
+        modelMap.addAttribute("slug", slug); // Add slug to the model
+
+        List<Category> categories = new ArrayList<>();
+        for (CategoryDetail detail : blog.get().getCategoryDetails()) {
+            categories.add(detail.getCategory());
+        }
+        modelMap.addAttribute("blogCategoryList", categories);
+
+        List<Blog> firstOfCategories = this.blogService.findFirstOfCategories(
+                5, categories, blog.get().getId());
+        modelMap.addAttribute("nextBlogs", firstOfCategories);
+
+        return "admin/edit";
+    }
+
+    @PostMapping(value = "/edit/{slug}.htm")
+    public String updateBlog( ModelMap modelMap, @ModelAttribute("updateBlogDto") UpdateBlogDto updateBlogDto,
+                            @PathVariable(name = "slug", required = true) String slug) {
+            System.out.println("update");
+        System.out.println(slug);
+        return "admin/edit";
     }
 
     @GetMapping("/index.htm")
@@ -136,10 +176,12 @@ public class AdminController {
 
         return "admin/insert";
     }
+
     @ModelAttribute("createBlogDto")
     public CreateBlogDto generatePlainDto() {
         return new CreateBlogDto();
     }
+
     @PostMapping(value = "/insert.htm")
     public String saveBlog(ModelMap model, @ModelAttribute("createBlogDto") CreateBlogDto createBlogDto) {
         System.out.println("from saver" + createBlogDto);
