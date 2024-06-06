@@ -1,8 +1,10 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
 <!DOCTYPE html>
+<html lang="en">
 <html lang="en">
 <head>
     <!-- Required meta tags -->
@@ -21,6 +23,17 @@
     <link rel="stylesheet" href="css/style.css">
     <!-- End layout styles -->
     <link rel="shortcut icon" href="images/favicon.ico" />
+    <!-- Editor.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@editorjs/editorjs@latest"></script>
+    <!-- Editor.js Plugins CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@editorjs/header@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@editorjs/list@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@editorjs/paragraph@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@editorjs/image@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@editorjs/embed@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@editorjs/link@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@editorjs/delimiter@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@editorjs/code@latest"></script>
     <!-- Editor.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@editorjs/editorjs@latest"></script>
     <!-- Editor.js Plugins CDN -->
@@ -100,6 +113,7 @@
                             </div>
                         </div>
                     </div>
+                    </div>
                 </div>
             </div>
             <!-- content-wrapper ends -->
@@ -122,6 +136,132 @@
 <script src="js/off-canvas.js"></script>
 <script src="js/hoverable-collapse.js"></script>
 <script src="js/misc.js"></script>
+<script src="js/file-upload.js"></script>
+<script>
+    let editor;
+    const value = document.getElementById("description").value
+    if (value) {
+        const editorData = JSON.parse(document.getElementById("description")?.value)
+
+        editor = new EditorJS({
+            holder: "editor",
+            onReady: () => {
+                console.log("Editor is ready");
+            },
+            tools: {
+                header: {
+                    class: Header,
+                    config: {
+                        placeholder: "Enter a header",
+                        levels: [2, 3, 4],
+                        defaultLevel: 3,
+                    },
+                },
+                list: {
+                    class: List,
+                    inlineToolbar: true,
+                },
+                paragraph: {
+                    class: Paragraph,
+                    config: {
+                        placeholder: "Click here to start typing",
+                    },
+                    inlineToolbar: true,
+                },
+                image: {
+                    class: ImageTool,
+                    config: {
+                        endpoints: {
+                            byFile: "https://your-backend.com/uploadFile",
+                            byUrl: "https://your-backend.com/fetchUrl",
+                        },
+                    },
+                },
+                embed: {
+                    class: Embed,
+                    inlineToolbar: true,
+                },
+                link: {
+                    class: LinkTool,
+                    config: {
+                        endpoint: "https://your-backend.com/fetchUrl",
+                    },
+                },
+                delimiter: Delimiter,
+                code: {
+                    class: CodeTool,
+                    inlineToolbar: true,
+                },
+            },
+            data: editorData,
+            inlineToolbar: true,
+            placeholder: "Write your blog...",
+        });
+    } else {
+        editor = new EditorJS({
+            holder: "editor",
+            onReady: () => {
+                console.log("Editor is ready");
+            },
+            tools: {
+                header: {
+                    class: Header,
+                    config: {
+                        placeholder: "Enter a header",
+                        levels: [2, 3, 4],
+                        defaultLevel: 3,
+                    },
+                },
+                list: {
+                    class: List,
+                    inlineToolbar: true,
+                },
+                paragraph: {
+                    class: Paragraph,
+                    config: {
+                        placeholder: "Click here to start typing",
+                    },
+                    inlineToolbar: true,
+                },
+                image: {
+                    class: ImageTool,
+                    config: {
+                        endpoints: {
+                            byFile: "https://your-backend.com/uploadFile",
+                            byUrl: "https://your-backend.com/fetchUrl",
+                        },
+                    },
+                },
+                embed: {
+                    class: Embed,
+                    inlineToolbar: true,
+                },
+                link: {
+                    class: LinkTool,
+                    config: {
+                        endpoint: "https://your-backend.com/fetchUrl",
+                    },
+                },
+                delimiter: Delimiter,
+                code: {
+                    class: CodeTool,
+                    inlineToolbar: true,
+                },
+            },
+            data: {},
+            inlineToolbar: true,
+            placeholder: "Write your blog...",
+        });
+    }
+    function saveData() {
+        editor.save().then((outputData) => {
+            const data = JSON.stringify(outputData);
+            document.getElementById("description").value = data;
+        }).catch((error) => {
+            console.log("Saving failed: ", error);
+        });
+    }
+</script>
 <script src="js/file-upload.js"></script>
 <script>
     let editor;

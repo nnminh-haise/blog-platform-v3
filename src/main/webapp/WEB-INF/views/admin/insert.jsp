@@ -48,6 +48,33 @@
     <!-- Editor.js Code Plugin CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@editorjs/code@latest"></script>
 
+    <!-- Editor.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@editorjs/editorjs@latest"></script>
+
+    <!-- Editor.js Header Plugin CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@editorjs/header@latest"></script>
+
+    <!-- Editor.js List Plugin CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@editorjs/list@latest"></script>
+
+    <!-- Editor.js Paragraph Plugin CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@editorjs/paragraph@latest"></script>
+
+    <!-- Editor.js Image Plugin CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@editorjs/image@latest"></script>
+
+    <!-- Editor.js Embed Plugin CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@editorjs/embed@latest"></script>
+
+    <!-- Editor.js Link Plugin CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@editorjs/link@latest"></script>
+
+    <!-- Editor.js Delimiter Plugin CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@editorjs/delimiter@latest"></script>
+
+    <!-- Editor.js Code Plugin CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@editorjs/code@latest"></script>
+
 </head>
 <body>
 <div class="container-scroller">
@@ -126,6 +153,7 @@
                                 </form:form>
                             </div>
                         </div>
+                    </div>
                     </div>
                 </div>
             </div>

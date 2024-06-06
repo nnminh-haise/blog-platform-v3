@@ -4,8 +4,12 @@ import com.example.javaee.dto.BlogDto;
 import com.example.javaee.dto.CreateBlogDto;
 import com.example.javaee.dto.OpenIdClaims;
 import com.example.javaee.dto.UpdateBlogDto;
+import com.example.javaee.helper.ServiceResponse;
+import com.example.javaee.dto.OpenIdClaims;
+import com.example.javaee.dto.UpdateBlogDto;
 import com.example.javaee.model.Blog;
 import com.example.javaee.model.Category;
+import com.example.javaee.model.CategoryDetail;
 import com.example.javaee.model.CategoryDetail;
 import com.example.javaee.service.BlogService;
 import com.example.javaee.service.CategoryService;
@@ -14,6 +18,9 @@ import com.example.javaee.service.GoogleApiService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.apache.http.client.ClientProtocolException;
+import com.example.javaee.service.GoogleApiService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
@@ -21,8 +28,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Optional;
 
 @Controller
@@ -44,6 +54,11 @@ public class AdminController {
         this.categoryService = categoryService;
     }
 
+    @ModelAttribute("categories")
+    public List<Category> fetchAllCategories() {
+        return this.categoryService.findAll().getData();
+    }
+
     @ModelAttribute("totalPages")
     public Integer getLimitBlogPage() {
         final int PAGE_SIZE = 5;
@@ -57,8 +72,45 @@ public class AdminController {
         return totalPages;
     }
 
+    @RequestMapping(value = "/edit/{slug}.htm", method = RequestMethod.GET)
+    public String viewBlog(
+            ModelMap modelMap,
+            @PathVariable(name = "slug", required = true) String slug) {
+        System.out.println(slug);
+        Optional<Blog> blog = this.blogService.findBySlug(slug);
+        System.out.println("blog");
+        System.out.println(blog);
+        if (!blog.isPresent()) {
+            modelMap.addAttribute("message", "There is some error!");
+            return "admin/index";
+        }
+        modelMap.addAttribute("updateBlogDto", blog.get());
+        modelMap.addAttribute("slug", slug); // Add slug to the model
+
+        List<Category> categories = new ArrayList<>();
+        for (CategoryDetail detail : blog.get().getCategoryDetails()) {
+            categories.add(detail.getCategory());
+        }
+        modelMap.addAttribute("blogCategoryList", categories);
+
+        List<Blog> firstOfCategories = this.blogService.findFirstOfCategories(
+                5, categories, blog.get().getId());
+        modelMap.addAttribute("nextBlogs", firstOfCategories);
+
+        return "admin/edit";
+    }
+
+    @PostMapping(value = "/edit/{slug}.htm")
+    public String updateBlog(ModelMap modelMap, @ModelAttribute("updateBlogDto") UpdateBlogDto updateBlogDto,
+            @PathVariable(name = "slug", required = true) String slug) {
+        System.out.println("update");
+        System.out.println(slug);
+        return "admin/edit";
+    }
+
     @GetMapping("/index.htm")
     public String searchBlogAdmin(
+            HttpServletRequest request,
             HttpServletRequest request,
             ModelMap modelMap,
             @RequestParam(name = "page", defaultValue = "0") Integer page,
@@ -66,7 +118,8 @@ public class AdminController {
             @RequestParam(name = "slug", required = false) String slug) {
         Optional<OpenIdClaims> claims = this.validateRequest(request);
         if (!claims.isPresent()) {
-            System.out.println("[Admin Controller] (Admin Index Route) ? Bad request - Cannot fetch access token claims -> Redirect back to landing page");
+            System.out.println(
+                    "[Admin Controller] (Admin Index Route) ? Bad request - Cannot fetch access token claims -> Redirect back to landing page");
             return "redirect:/index.htm";
         }
 
@@ -75,16 +128,22 @@ public class AdminController {
         // TODO: refactor this code
         modelMap.addAttribute("categories", this.categoryService.findAll().getData());
         List<Category> categories = this.categoryService.findAll().getData();
+        for (Category category : categories) {
+            System.out.println("category: " + category.getName() + " - " + category.getSlug());
+        }
+        System.out.println("slug: " + slug);
+        System.out.println("orderBy: " + orderBy);
+        System.out.println("page: " + page);
         if (slug != null) {
             List<Blog> blogs = this.blogService.findAllBlogByCategorySlug(
                     page, 5, orderBy, slug);
             modelMap.addAttribute("blogs", blogs);
+
         } else {
             List<Blog> blogs = this.blogService.findAllBlogOrderBy(
                     page, 5, orderBy);
             modelMap.addAttribute("blogs", blogs);
         }
-
 
         return "admin/index";
     }
@@ -95,7 +154,8 @@ public class AdminController {
             ModelMap model) {
         Optional<OpenIdClaims> claims = this.validateRequest(request);
         if (!claims.isPresent()) {
-            System.out.println("[Admin Controller] (Blog Insert Route) ? Bad request - Cannot fetch access token claims -> Redirect back to landing page");
+            System.out.println(
+                    "[Admin Controller] (Blog Insert Route) ? Bad request - Cannot fetch access token claims -> Redirect back to landing page");
             return "redirect:/index.htm";
         }
 
@@ -114,7 +174,8 @@ public class AdminController {
             ModelMap model) {
         Optional<OpenIdClaims> claims = this.validateRequest(request);
         if (!claims.isPresent()) {
-            System.out.println("[Admin Controller] (Blog Insert Route) ? Bad request - Cannot fetch access token claims -> Redirect back to landing page");
+            System.out.println(
+                    "[Admin Controller] (Blog Insert Route) ? Bad request - Cannot fetch access token claims -> Redirect back to landing page");
             return "redirect:/index.htm";
         }
 
@@ -123,8 +184,8 @@ public class AdminController {
         System.out.println("description:" + description);
         System.out.println("file:" + file.getOriginalFilename());
 
-//        * This is for saving data to db
-//        ServiceResponse<Blog> response = this.blogService.create(createBlogDto);
+        // * This is for saving data to db
+        // ServiceResponse<Blog> response = this.blogService.create(createBlogDto);
 
         return "admin/insert";
     }
@@ -161,29 +222,30 @@ public class AdminController {
 
     @PostMapping(value = "/edit/{slug}.htm")
     public String updateBlog(ModelMap modelMap,
-//                             @RequestParam(name = "title", required = true) String title,
-//                             @RequestParam(name = "description", required = true) String description,
-//                             @RequestParam(name = "attachment", required = false) MultipartFile attachment,
-                             @ModelAttribute("BlogDto") BlogDto blogDto,
-                             @PathVariable(name = "slug", required = true) String slug) {
+            // @RequestParam(name = "title", required = true) String title,
+            // @RequestParam(name = "description", required = true) String description,
+            // @RequestParam(name = "attachment", required = false) MultipartFile
+            // attachment,
+            @ModelAttribute("BlogDto") BlogDto blogDto,
+            @PathVariable(name = "slug", required = true) String slug) {
         System.out.println("update");
         System.out.println("slug:" + slug);
-//        System.out.println("title:" + title);
-//        System.out.println("attachment:" + attachment.getOriginalFilename());
-//        System.out.println("description:" + description);
-//        modelMap.addAttribute("title", title);
-//        modelMap.addAttribute("attachment", attachment);
-//        modelMap.addAttribute("description", description);
+        // System.out.println("title:" + title);
+        // System.out.println("attachment:" + attachment.getOriginalFilename());
+        // System.out.println("description:" + description);
+        // modelMap.addAttribute("title", title);
+        // modelMap.addAttribute("attachment", attachment);
+        // modelMap.addAttribute("description", description);
         System.out.println("dto:" + blogDto.toString());
 
         modelMap.addAttribute("blogDto", blogDto);
         return "admin/edit";
     }
 
-//    @ModelAttribute("blogDto")
-//    public BlogDto modelForBlogDto() {
-//        return new BlogDto();
-//    }
+    // @ModelAttribute("blogDto")
+    // public BlogDto modelForBlogDto() {
+    // return new BlogDto();
+    // }
 
     @ModelAttribute("createBlogDto")
     public CreateBlogDto modelAttributeForBlogEdit() {
@@ -194,11 +256,33 @@ public class AdminController {
     public Map<String, String> fetchAllSlugs() {
         List<Category> categories = this.categoryService.findAll().getData();
         Map<String, String> slugs = new java.util.HashMap<>();
-        for (Category category: categories) {
+        for (Category category : categories) {
             slugs.put(category.getSlug(), category.getName());
         }
         return slugs;
     }
+
+    @RequestMapping(value = "/insert.htm", method = RequestMethod.GET)
+    public String routeToBlogInsert(ModelMap model) {
+        model.addAttribute("createBlogDto", new CreateBlogDto());
+
+        return "admin/insert";
+    }
+
+    @ModelAttribute("createBlogDto")
+    public CreateBlogDto generatePlainDto() {
+        return new CreateBlogDto();
+    }
+
+    @PostMapping(value = "/insert.htm")
+    public String saveBlog(ModelMap model, @ModelAttribute("createBlogDto") CreateBlogDto createBlogDto) {
+        System.out.println("from saver" + createBlogDto);
+        System.out.println("Title" + createBlogDto.getTitle());
+        System.out.println("Description" + createBlogDto.getDescription());
+
+        ServiceResponse<Blog> response = this.blogService.create(createBlogDto);
+
+        return "admin/insert";
 
     private Optional<OpenIdClaims> validateRequest(HttpServletRequest request) {
         if (request == null) {

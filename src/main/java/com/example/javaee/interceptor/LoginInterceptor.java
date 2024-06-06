@@ -3,6 +3,7 @@ package com.example.javaee.interceptor;
 import com.example.javaee.beans.SignInGoogleAccount;
 import com.example.javaee.dto.OpenIdClaims;
 import com.example.javaee.service.GoogleApiService;
+import com.example.javaee.service.GoogleApiService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -19,7 +20,9 @@ public class LoginInterceptor implements HandlerInterceptor {
 
     public LoginInterceptor(
             GoogleApiService googleApiService,
+            GoogleApiService googleApiService,
             SignInGoogleAccount signInGoogleAccount) {
+        this.googleApiService = googleApiService;
         this.googleApiService = googleApiService;
         this.signInGoogleAccount = signInGoogleAccount;
     }
@@ -30,10 +33,11 @@ public class LoginInterceptor implements HandlerInterceptor {
             HttpServletResponse response,
             Object handler) throws Exception {
         HttpSession session = request.getSession();
-        String accessToken = (String)session.getAttribute("accessToken");
+        String accessToken = (String) session.getAttribute("accessToken");
         Integer expireIn = Integer.valueOf((String) session.getAttribute("expireIn"));
         if (accessToken == null) {
-            System.out.println("[Interceptor] (preHandle) Bad request ? No access token -> Direct back to landing page");
+            System.out
+                    .println("[Interceptor] (preHandle) Bad request ? No access token -> Direct back to landing page");
             this.redirectToLandingPage(request, response);
             return false;
         }
@@ -41,7 +45,8 @@ public class LoginInterceptor implements HandlerInterceptor {
         OpenIdClaims claims = this.googleApiService.getUserInfo(accessToken);
         boolean compareResult = claims.getEmail().equals(this.signInGoogleAccount.getEmail());
         if (!compareResult) {
-            System.out.println("[Interceptor] (preHandle) Forbidden Account ? Email is not authorized -> Direct back to landing page");
+            System.out.println(
+                    "[Interceptor] (preHandle) Forbidden Account ? Email is not authorized -> Direct back to landing page");
             this.redirectToLandingPage(request, response);
             return false;
         }
