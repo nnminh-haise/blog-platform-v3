@@ -2,8 +2,11 @@ package com.example.javaee.controller;
 
 import com.example.javaee.beans.AppConfigGoogleAccount;
 import com.example.javaee.beans.SignInGoogleAccount;
+import com.example.javaee.dto.AccessTokenResponse;
+import com.example.javaee.service.GoogleApiService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,21 +16,19 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.net.URISyntaxException;
 import java.security.SecureRandom;
+import java.util.Optional;
 
 // TODO: upgrade these Sysout to logging system
 @Controller
 public class GoogleLoginController {
-
     private final String state;
-
+    private final GoogleApiService googleApiService;
     private final AppConfigGoogleAccount appConfigGoogleAccount;
 
-    private final SignInGoogleAccount signInGoogleAccount;
-
     public GoogleLoginController(
-            SignInGoogleAccount signInGoogleAccount,
+            GoogleApiService googleApiService,
             AppConfigGoogleAccount appConfigGoogleAccount) {
-        this.signInGoogleAccount = signInGoogleAccount;
+        this.googleApiService = googleApiService;
         this.appConfigGoogleAccount = appConfigGoogleAccount;
         this.state = new BigInteger(130, new SecureRandom()).toString(32);
     }
@@ -54,14 +55,20 @@ public class GoogleLoginController {
     public String handleRedirectRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String code = request.getParameter("code");
         String receivedState = request.getParameter("state");
-        System.out.println("code:" + code);
-        System.out.println("receivedState:" + receivedState);
-        System.out.println("currentState :" + this.state);
         if (!receivedState.equals(this.state)) {
-            System.out.println("Invalid state! Authorization session failed!");
+            System.out.println("[Google Login Controller] Bad request ? Invalid state - Authorization session failed! -> Direct back to landing page.");
             return "redirect:/index";
         }
-        return "redirect:/admin/index.htm?code=" + code;
+
+        HttpSession session = request.getSession();
+        Optional<AccessTokenResponse> accessTokenResponse = this.googleApiService.getToken(code);
+        if (!accessTokenResponse.isPresent()) {
+            System.out.println("[Google Login Controller] Bad request ? Invalid code - Cannot fetch access token using given code! -> Direct back to landing page.");
+            return "redirect:/index";
+        }
+        session.setAttribute("accessToken", accessTokenResponse.get().getAccessToken());
+        session.setAttribute("expireIn", accessTokenResponse.get().getExpireIn());
+        return "redirect:/admin/index.htm";
     }
 
 }
