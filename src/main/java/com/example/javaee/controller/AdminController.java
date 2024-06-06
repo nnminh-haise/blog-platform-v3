@@ -1,9 +1,12 @@
 package com.example.javaee.controller;
 
+import com.example.javaee.dto.BlogDto;
 import com.example.javaee.dto.CreateBlogDto;
 import com.example.javaee.dto.OpenIdClaims;
+import com.example.javaee.dto.UpdateBlogDto;
 import com.example.javaee.model.Blog;
 import com.example.javaee.model.Category;
+import com.example.javaee.model.CategoryDetail;
 import com.example.javaee.service.BlogService;
 import com.example.javaee.service.CategoryService;
 import com.example.javaee.service.FileUploadService;
@@ -17,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -124,6 +128,62 @@ public class AdminController {
 
         return "admin/insert";
     }
+
+    @GetMapping("/edit/{slug}.htm")
+    public String viewBlog(
+            ModelMap modelMap,
+            @PathVariable(name = "slug", required = true) String slug) {
+        System.out.println(slug);
+        Optional<Blog> blog = this.blogService.findBySlug(slug);
+        System.out.println("blog");
+        System.out.println(blog);
+        if (!blog.isPresent()) {
+            modelMap.addAttribute("message", "There is some error!");
+            return "admin/index";
+        }
+        modelMap.addAttribute("updateBlogDto", blog.get());
+        modelMap.addAttribute("slug", slug); // Add slug to the model
+
+        List<Category> categories = new ArrayList<>();
+        for (CategoryDetail detail : blog.get().getCategoryDetails()) {
+            categories.add(detail.getCategory());
+        }
+        modelMap.addAttribute("blogCategoryList", categories);
+
+        List<Blog> firstOfCategories = this.blogService.findFirstOfCategories(
+                5, categories, blog.get().getId());
+        modelMap.addAttribute("nextBlogs", firstOfCategories);
+
+        modelMap.addAttribute("blogDto", new BlogDto(blog.get().getTitle(), blog.get().getDescription(), null));
+
+        return "admin/edit";
+    }
+
+    @PostMapping(value = "/edit/{slug}.htm")
+    public String updateBlog(ModelMap modelMap,
+//                             @RequestParam(name = "title", required = true) String title,
+//                             @RequestParam(name = "description", required = true) String description,
+//                             @RequestParam(name = "attachment", required = false) MultipartFile attachment,
+                             @ModelAttribute("BlogDto") BlogDto blogDto,
+                             @PathVariable(name = "slug", required = true) String slug) {
+        System.out.println("update");
+        System.out.println("slug:" + slug);
+//        System.out.println("title:" + title);
+//        System.out.println("attachment:" + attachment.getOriginalFilename());
+//        System.out.println("description:" + description);
+//        modelMap.addAttribute("title", title);
+//        modelMap.addAttribute("attachment", attachment);
+//        modelMap.addAttribute("description", description);
+        System.out.println("dto:" + blogDto.toString());
+
+        modelMap.addAttribute("blogDto", blogDto);
+        return "admin/edit";
+    }
+
+//    @ModelAttribute("blogDto")
+//    public BlogDto modelForBlogDto() {
+//        return new BlogDto();
+//    }
 
     @ModelAttribute("createBlogDto")
     public CreateBlogDto modelAttributeForBlogEdit() {
