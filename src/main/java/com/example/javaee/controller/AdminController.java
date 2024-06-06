@@ -2,11 +2,11 @@ package com.example.javaee.controller;
 
 import com.example.javaee.dto.CreateBlogDto;
 import com.example.javaee.dto.OpenIdClaims;
-import com.example.javaee.helper.ServiceResponse;
 import com.example.javaee.model.Blog;
 import com.example.javaee.model.Category;
 import com.example.javaee.service.BlogService;
 import com.example.javaee.service.CategoryService;
+import com.example.javaee.service.FileUploadService;
 import com.example.javaee.service.GoogleApiService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -14,6 +14,7 @@ import org.apache.http.client.ClientProtocolException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
@@ -23,14 +24,17 @@ import java.util.Optional;
 @Controller
 @RequestMapping("/admin")
 public class AdminController {
+    private final FileUploadService fileUploadService;
     private final GoogleApiService googleApiService;
     private final BlogService blogService;
     private final CategoryService categoryService;
 
     public AdminController(
+            FileUploadService fileUploadService,
             GoogleApiService googleApiService,
             BlogService blogService,
             CategoryService categoryService) {
+        this.fileUploadService = fileUploadService;
         this.googleApiService = googleApiService;
         this.blogService = blogService;
         this.categoryService = categoryService;
@@ -64,32 +68,24 @@ public class AdminController {
 
         modelMap.addAttribute("adminInformation", claims.get());
 
+        // TODO: refactor this code
         modelMap.addAttribute("categories", this.categoryService.findAll().getData());
         List<Category> categories = this.categoryService.findAll().getData();
-        for (Category category: categories) {
-            System.out.println("category: " + category.getName() + " - " + category.getSlug()   );
-        }
-        System.out.println("slug: " + slug);
-        System.out.println("orderBy: " + orderBy);
-        System.out.println("page: " + page);
         if (slug != null) {
             List<Blog> blogs = this.blogService.findAllBlogByCategorySlug(
                     page, 5, orderBy, slug);
             modelMap.addAttribute("blogs", blogs);
-
-
         } else {
             List<Blog> blogs = this.blogService.findAllBlogOrderBy(
                     page, 5, orderBy);
             modelMap.addAttribute("blogs", blogs);
-
         }
 
 
         return "admin/index";
     }
 
-    @RequestMapping(value = "/insert.htm",method = RequestMethod.GET)
+    @GetMapping("/insert.htm")
     public String routeToBlogInsert(
             HttpServletRequest request,
             ModelMap model) {
@@ -99,16 +95,32 @@ public class AdminController {
             return "redirect:/index.htm";
         }
 
+        // ! Remove this might cause error!
         model.addAttribute("createBlogDto", new CreateBlogDto());
 
         return "admin/insert";
     }
 
-    @RequestMapping(value = "/insert.htm", method = RequestMethod.POST)
+    @PostMapping("/insert.htm")
     public String saveBlog(
-            @ModelAttribute("createBlogDto") CreateBlogDto createBlogDto,
+            @RequestParam(name = "title", required = true) String title,
+            @RequestParam(name = "description", required = true) String description,
+            @RequestParam(name = "attachment", required = false) MultipartFile file,
+            HttpServletRequest request,
             ModelMap model) {
-        ServiceResponse<Blog> response = this.blogService.create(createBlogDto);
+        Optional<OpenIdClaims> claims = this.validateRequest(request);
+        if (!claims.isPresent()) {
+            System.out.println("[Admin Controller] (Blog Insert Route) ? Bad request - Cannot fetch access token claims -> Redirect back to landing page");
+            return "redirect:/index.htm";
+        }
+
+        // * These log should be removed
+        System.out.println("title:" + title);
+        System.out.println("description:" + description);
+        System.out.println("file:" + file.getOriginalFilename());
+
+//        * This is for saving data to db
+//        ServiceResponse<Blog> response = this.blogService.create(createBlogDto);
 
         return "admin/insert";
     }
