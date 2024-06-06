@@ -71,6 +71,18 @@
         </mvc:interceptor>
     </mvc:interceptors>
 
+    <!-- Configure directories for file saving -->
+    <bean id="fileUploadDirectory" class="com.example.javaee.beans.FileUploadDirectory">
+        <property name="baseDirectory" value="/Users/nnminh/Desktop"/>
+        <property name="directories">
+            <map>
+                <entry key="doc" value="/documents"/>
+                <entry key="img" value="/imgs"/>
+                <entry key="postBase" value="/blog/post"/>
+            </map>
+        </property>
+    </bean>
+
     <context:component-scan base-package="com.example.javaee.controller"/>
     <context:component-scan base-package="com.example.javaee.service"/>
     <context:component-scan base-package="com.example.javaee.repository"/>

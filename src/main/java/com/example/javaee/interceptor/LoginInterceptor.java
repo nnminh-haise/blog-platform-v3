@@ -1,7 +1,6 @@
 package com.example.javaee.interceptor;
 
 import com.example.javaee.beans.SignInGoogleAccount;
-import com.example.javaee.dto.AccessTokenResponse;
 import com.example.javaee.dto.OpenIdClaims;
 import com.example.javaee.service.GoogleApiService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -12,8 +11,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
-
-import java.util.Optional;
 
 public class LoginInterceptor implements HandlerInterceptor {
     private static final Logger logger = LoggerFactory.getLogger(LoginInterceptor.class);

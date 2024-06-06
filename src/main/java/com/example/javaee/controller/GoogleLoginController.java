@@ -1,7 +1,6 @@
 package com.example.javaee.controller;
 
 import com.example.javaee.beans.AppConfigGoogleAccount;
-import com.example.javaee.beans.SignInGoogleAccount;
 import com.example.javaee.dto.AccessTokenResponse;
 import com.example.javaee.service.GoogleApiService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,7 +17,6 @@ import java.net.URISyntaxException;
 import java.security.SecureRandom;
 import java.util.Optional;
 
-// TODO: upgrade these Sysout to logging system
 @Controller
 public class GoogleLoginController {
     private final String state;

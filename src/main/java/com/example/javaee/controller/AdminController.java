@@ -87,7 +87,7 @@ public class AdminController {
         return "admin/index";
     }
 
-    @RequestMapping(value = "/insert.htm",method = RequestMethod.GET)
+    @RequestMapping(value = "/blog/insert.htm",method = RequestMethod.GET)
     public String routeToBlogInsert(
             HttpServletRequest request,
             ModelMap model) {
@@ -99,7 +99,7 @@ public class AdminController {
 
         model.addAttribute("createBlogDto", new CreateBlogDto());
 
-        return "blog/insert";
+        return "admin/insert";
     }
 
     @RequestMapping(value = "/insert.htm", method = RequestMethod.POST)

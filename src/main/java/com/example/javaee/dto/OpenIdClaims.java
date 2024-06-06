@@ -21,4 +21,6 @@ public class OpenIdClaims {
     private String family_name;
 
     private String picture;
+
+    private String exp;
 }

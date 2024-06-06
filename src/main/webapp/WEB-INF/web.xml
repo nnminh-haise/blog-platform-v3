@@ -13,6 +13,13 @@
             <param-value>/WEB-INF/configs/*.xml</param-value>
         </init-param>
         <load-on-startup>1</load-on-startup>
+
+        <!-- Configuration for MultipartResolver for servlet 3.0-->
+        <multipart-config>
+            <max-file-size>5242880</max-file-size>
+            <max-request-size>27262976</max-request-size>
+            <file-size-threshold>0</file-size-threshold>
+        </multipart-config>
     </servlet>
     <servlet-mapping>
         <servlet-name>spring</servlet-name>
@@ -36,6 +43,18 @@
         <filter-name>utf8</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
+
+    <!-- Multipart file filter -->
+    <filter>
+        <filter-name>MultipartFilter</filter-name>
+        <filter-class>org.springframework.web.multipart.support.MultipartFilter</filter-class>
+    </filter>
+    <!-- (2) -->
+    <filter-mapping>
+        <filter-name>MultipartFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
 
     <welcome-file-list>
         <welcome-file>/index.jsp</welcome-file>

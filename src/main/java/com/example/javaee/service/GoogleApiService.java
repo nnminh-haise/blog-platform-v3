@@ -50,9 +50,10 @@ public class GoogleApiService {
     }
 
     public OpenIdClaims getUserInfo(final String accessToken) throws ClientProtocolException, IOException {
-        final String API_END_POINT = "https://openidconnect.googleapis.com/v1/userinfo?scope=openid%20profile&access_token=";
+        final String API_END_POINT = "https://openidconnect.googleapis.com/v1/userinfo?scope=openid%20profile%20email&access_token=";
         String link = API_END_POINT + accessToken;
         String response = Request.Get(link).execute().returnContent().asString();
+        System.out.println("res:" + response);
         return new Gson().fromJson(response, OpenIdClaims.class);
     }
 }
