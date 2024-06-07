@@ -95,7 +95,7 @@ public class BlogController {
         }
         modelMap.addAttribute("blogCategoryList", categories);
 
-        List<Blog> firstOfCategories = this.blogService.findFirstOfCategories(
+        List<Blog> firstOfCategories = this.blogService.findFirstAmountInCategories(
                 5, categories, blog.get().getId());
         modelMap.addAttribute("nextBlogs", firstOfCategories);
 
@@ -109,11 +109,11 @@ public class BlogController {
 
     @ModelAttribute("popularBlogs")
     public List<Blog> getFirst5PopularBlogs() {
-        return this.blogService.findPopular(5);
+        return this.blogService.findNumberOfPopularBlogsOrderBy(5, "asc");
     }
 
     @ModelAttribute("favouriteBlogs")
     public List<Blog> getFavouriteBlogs() {
-        return this.blogService.findLast(4);
+        return this.blogService.findLastAmount(4);
     }
 }

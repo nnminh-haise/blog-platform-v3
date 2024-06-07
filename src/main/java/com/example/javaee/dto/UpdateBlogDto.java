@@ -1,6 +1,6 @@
 package com.example.javaee.dto;
 
-import java.time.LocalDate;
+import java.util.Date;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -17,10 +17,10 @@ public class UpdateBlogDto {
 
     private String description;
 
-    private String attachment;
+    private MultipartFile attachment;
 
-//    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private LocalDate publishAt;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private Date publishAt;
 
     private Boolean hiddenStatus;
 }

@@ -1,6 +1,7 @@
 package com.example.javaee.service;
 
 import com.example.javaee.beans.FileUploadDirectory;
+import org.apache.tika.Tika;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -14,9 +15,11 @@ import java.util.Map;
 @Service
 public class FileUploadService {
     private final FileUploadDirectory fileUploadDirectory;
+    private final Tika tika;
 
     public FileUploadService(FileUploadDirectory fileUploadDirectory) {
         this.fileUploadDirectory = fileUploadDirectory;
+        this.tika = new Tika();
     }
 
     public String saveFile(MultipartFile file, String directory) {
@@ -32,12 +35,11 @@ public class FileUploadService {
         try {
             File savedFile = new File(fullPath.toString());
             if (!savedFile.getParentFile().exists()) {
-                Files.createDirectory(Paths.get(savedFile.getParentFile().toURI()));
+                Files.createDirectories(Paths.get(savedFile.getParentFile().toURI()));
             }
             file.transferTo(savedFile);
             return fullPath.toString();
-        }
-        catch (IOException ioException) {
+        } catch (IOException ioException) {
             return "";
         }
     }
@@ -61,6 +63,4 @@ public class FileUploadService {
         }
         return result;
     }
-
-
 }

@@ -10,7 +10,7 @@ import java.util.Optional;
 @AllArgsConstructor
 @NoArgsConstructor
 public class BasicResponse <T> {
-    private ResponseType type;
+    private ResponseType responseType;
 
     private String message;
 
@@ -19,15 +19,15 @@ public class BasicResponse <T> {
     private Optional<T> data;
 
     public boolean isError() {
-        return this.type == ResponseType.ERROR;
+        return this.responseType == ResponseType.ERROR;
     }
 
     public boolean isSuccess() {
-        return this.type == ResponseType.SUCCESS;
+        return this.responseType == ResponseType.SUCCESS;
     }
 
     public boolean isEmpty() {
-        return this.type == ResponseType.EMPTY;
+        return this.responseType == ResponseType.EMPTY;
     }
 
     public boolean hasData() {

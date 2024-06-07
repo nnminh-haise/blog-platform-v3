@@ -10,17 +10,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>Purple Admin</title>
     <!-- plugins:css -->
-    <link rel="stylesheet" href="vendors/mdi/css/materialdesignicons.min.css">
-    <link rel="stylesheet" href="vendors/css/vendor.bundle.base.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/vendors/mdi/css/materialdesignicons.min.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/vendors/css/vendor.bundle.base.css">
     <!-- endinject -->
     <!-- Plugin css for this page -->
     <!-- End plugin css for this page -->
     <!-- inject:css -->
     <!-- endinject -->
     <!-- Layout styles -->
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css">
     <!-- End layout styles -->
-    <link rel="shortcut icon" href="images/favicon.ico" />
+    <link rel="shortcut icon" href="${pageContext.request.contextPath}/images/favicon.ico" />
     <!-- Editor.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@editorjs/editorjs@latest"></script>
 
@@ -81,11 +81,14 @@
     <!-- partial:../../partials/_navbar.html -->
     <nav class="navbar default-layout-navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
         <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-center">
-            <a class="navbar-brand brand-logo" href="../../index.html"><img src="images/blogg.png" alt="logo" /></a>
-            <a class="navbar-brand brand-logo-mini" href="../../index.html"><img src="images/logo-mini.svg" alt="logo" /></a>
+            <a class="navbar-brand brand-logo" href="${pageContext.request.contextPath}/index.htm">
+                <img src="${pageContext.request.contextPath}/images/blogg.png" alt="logo" />
+            </a>
+            <a class="navbar-brand brand-logo-mini" href="${pageContext.request.contextPath}/index.htm">
+                <img src="${pageContext.request.contextPath}/images/logo-mini.svg" alt="logo" />
+            </a>
         </div>
         <div class="navbar-menu-wrapper d-flex align-items-stretch">
-
 
         </div>
     </nav>
@@ -97,18 +100,16 @@
                 <li class="nav-item nav-profile">
                     <a href="#" class="nav-link">
                         <div class="nav-profile-image">
-                            <img src="images/person-man.png" alt="profile">
-                            <span class="login-status online"></span>
-                            <!--change to offline or busy as needed-->
+                            <img src="${adminInformation.picture}" alt="profile"/>
                         </div>
                         <div class="nav-profile-text d-flex flex-column">
-                            <span class="font-weight-bold mb-2"> Blog Platform</span>
-                            <span class="text-secondary text-small">Admin</span>
+                            <span class="font-weight-bold mb-2">${adminInformation.name}</span>
+                            <span class="text-secondary text-small">${adminInformation.email}</span>
                         </div>
-                        <i class="mdi mdi-bookmark-check text-success nav-profile-badge"></i>
                     </a>
                 </li>
 
+                <%-- Change to category nav bar --%>
                 <li class="nav-item">
                     <a class="nav-link" href="blogs/index.htm">
                         <span class="menu-title">Icons</span>
@@ -126,11 +127,11 @@
                         <div class="card">
                             <div class="card-body">
                                 <h4 class="card-title">Blog</h4>
-                                <p class="card-description"> Create New Blog</p>
-                                <form:form class="forms-sample" id="main-container" enctype="multipart/form-data"  method="post"  modelAttribute="createBlogDto" action="${pageContext.request.contextPath}/admin/insert.htm">
+                                <p class="card-description">Create New Blog</p>
+                                <form:form class="forms-sample" id="main-container" enctype="multipart/form-data"  method="post" modelAttribute="createBlogDto" action="${pageContext.request.contextPath}/admin/insert.htm">
                                     <div class="form-group">
                                         <label for="exampleInputName1">Title</label>
-                                        <form:input type="text" path="title"  class="form-control" id="exampleInputName1" placeholder="Name" />
+                                        <form:input type="text" path="title"  class="form-control" id="exampleInputName1" placeholder="Blog's title"/>
                                     </div>
                                     <%--                                <div class="form-group">--%>
                                     <%--                                    <label for="exampleSelectGender">Category</label>--%>
@@ -140,7 +141,7 @@
                                     <%--                                </div>--%>
                                     <div class="form-group">
                                         <label>File upload</label>
-                                        <form:input type="file" path="attachment" name="img"  />
+                                        <form:input type="file" path="attachment" name="img"/>
 
                                     </div>
                                     <div class="form-group">

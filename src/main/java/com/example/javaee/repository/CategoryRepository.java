@@ -61,8 +61,6 @@ public class CategoryRepository {
     }
 
     public RepositoryResponse<Category> create(Category category) {
-        RepositoryResponse<Category> response = new RepositoryResponse<>();
-
         Session session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
         try {
@@ -71,60 +69,59 @@ public class CategoryRepository {
             transaction.commit();
             logger.info("Creating process success");
 
-            response.setType(ResponseType.SUCCESS);
-            response.setData(Optional.of(category));
-            return response;
+            return RepositoryResponse.goodResponse("New category created", category);
         } catch (Exception exception) {
             transaction.rollback();
 
             Throwable rootCause = getRootCause(exception);
             final String EXCEPTION_MESSAGE = exception.getMessage();
 
-            response.setError(RepositoryErrorType.CONSTRAINT_VIOLATION);
-            response.setMessage(EXCEPTION_MESSAGE);
-            logger.error("Error message: " + EXCEPTION_MESSAGE);
+            System.out.println("Error message: " + EXCEPTION_MESSAGE);
 
             if (rootCause instanceof PSQLException) {
                 final String ROOT_CAUSE_MESSAGE = rootCause.getMessage();
-                response.setDescription(ROOT_CAUSE_MESSAGE);
-                logger.error("Root cause   : " + ROOT_CAUSE_MESSAGE);
+                System.out.println("Root cause   : " + ROOT_CAUSE_MESSAGE);
+                return RepositoryResponse.badResponse(RepositoryErrorType.CONSTRAINT_VIOLATION, EXCEPTION_MESSAGE, ROOT_CAUSE_MESSAGE);
             } else {
-                response.setDescription("Unknown Server Exception");
-                logger.error("Root cause   : Unknown Server Exception");
+                System.out.println("Root cause   : Unknown Server Exception");
+                return RepositoryResponse.badResponse(RepositoryErrorType.CONSTRAINT_VIOLATION, EXCEPTION_MESSAGE, "Unknown Server Exception");
             }
-            return response;
         } finally {
             session.close();
         }
     }
 
-    public ErrorResponse update(Category category) {
+    public RepositoryResponse<Category> update(Category category) {
         Session session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
         try {
+            logger.info("Updating new category");
             session.merge(category);
             transaction.commit();
-            session.close();
-            return ErrorResponse.noError();
-        }
-        catch (Exception exception) {
+            logger.info("Updating process success");
+
+            return RepositoryResponse.goodResponse("New category updated", category);
+        } catch (Exception exception) {
             transaction.rollback();
-            session.close();
 
             Throwable rootCause = getRootCause(exception);
-            if (rootCause instanceof PSQLException) {
-                return new ErrorResponse(
-                        HttpStatus.BAD_REQUEST.value(),
-                        exception.getMessage(),
-                        rootCause.getMessage());
-            }
+            final String EXCEPTION_MESSAGE = exception.getMessage();
 
-            return new ErrorResponse(
-                    HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                    "SQL Runtime error",
-                    exception.getMessage());
+            System.out.println("Error message: " + EXCEPTION_MESSAGE);
+
+            if (rootCause instanceof PSQLException) {
+                final String ROOT_CAUSE_MESSAGE = rootCause.getMessage();
+                System.out.println("Root cause   : " + ROOT_CAUSE_MESSAGE);
+                return RepositoryResponse.badResponse(RepositoryErrorType.CONSTRAINT_VIOLATION, EXCEPTION_MESSAGE, ROOT_CAUSE_MESSAGE);
+            } else {
+                System.out.println("Root cause   : Unknown Server Exception");
+                return RepositoryResponse.badResponse(RepositoryErrorType.CONSTRAINT_VIOLATION, EXCEPTION_MESSAGE, "Unknown Server Exception");
+            }
+        } finally {
+            session.close();
         }
     }
+
     //find by name
     public Optional<Category> findByName(String name) {
         Session session = sessionFactory.openSession();

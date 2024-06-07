@@ -5,7 +5,10 @@ import com.example.javaee.dto.ErrorResponse;
 import com.example.javaee.dto.ResponseDto;
 import com.example.javaee.dto.UpdateCategoryDto;
 import com.example.javaee.exceptions.ResourceNotFoundException;
+import com.example.javaee.helper.RepositoryErrorType;
 import com.example.javaee.helper.RepositoryResponse;
+import com.example.javaee.helper.ServiceResponse;
+import com.example.javaee.model.Blog;
 import com.example.javaee.model.Category;
 import com.example.javaee.repository.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -80,7 +83,7 @@ public class CategoryService {
                 "Cannot find any blog with the given ID"));
     }
 
-    public ResponseDto<Category> update(UUID id, UpdateCategoryDto dto) {
+    public ServiceResponse<Category> update(UUID id, UpdateCategoryDto dto) {
         Optional<Category> targetingCategory = this.categoryRepository.findById(id);
         if (!targetingCategory.isPresent()) {
             return new ResponseDto<>(
@@ -89,6 +92,14 @@ public class CategoryService {
         }
 
         Category newCategory = targetingCategory.get();
+
+        RepositoryResponse<Blog> response = this.blogRepository.update(updatedBlog);
+        if (response.hasErrorOf(RepositoryErrorType.CONSTRAINT_VIOLATION)) {
+            return ServiceResponse.ofBadRequest(
+                    response.getMessage(), response.getDescription());
+        }
+        return ServiceResponse.ofSuccess(
+                "Blog updated successfully", null, updatedBlog);
 
         ErrorResponse errorResponse = this.categoryRepository.update(newCategory);
         return errorResponse.ifHasErrorOrElse(

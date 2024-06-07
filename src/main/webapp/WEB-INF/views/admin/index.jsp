@@ -78,7 +78,7 @@
               <span class="font-weight-bold mb-2">${adminInformation.name}</span>
               <span class="text-secondary text-small">${adminInformation.email}</span>
             </div>
-            <i class="mdi mdi-bookmark-check text-success nav-profile-badge"></i>
+<%--            <i class="mdi mdi-bookmark-check text-success nav-profile-badge"></i>--%>
           </a>
         </li>
         <li class="nav-item">

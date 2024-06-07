@@ -33,7 +33,7 @@ public class HomePageController {
 
     @ModelAttribute("favouriteBlogs")
     public List<Blog> getFavouriteBlogs() {
-        return this.blogService.findLast(4);
+        return this.blogService.findLastAmount(4);
     }
 
     @ModelAttribute("bannerBlog")
@@ -53,6 +53,6 @@ public class HomePageController {
 
     @ModelAttribute("popularBlogs")
     public List<Blog> getFirst5PopularBlogs() {
-        return this.blogService.findPopular(5);
+        return this.blogService.findNumberOfPopularBlogsOrderBy(5, "asc");
     }
 }
