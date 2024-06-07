@@ -78,18 +78,17 @@
               <span class="font-weight-bold mb-2">${adminInformation.name}</span>
               <span class="text-secondary text-small">${adminInformation.email}</span>
             </div>
-<%--            <i class="mdi mdi-bookmark-check text-success nav-profile-badge"></i>--%>
           </a>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="">
-            <span class="menu-title">Blogs</span>
+            <span class="menu-title">Blog list</span>
             <i class="mdi mdi-contacts menu-icon"></i>
           </a>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="">
-            <span class="menu-title">Category</span>
+            <span class="menu-title">Category list</span>
             <i class="mdi mdi-format-list-bulleted menu-icon"></i>
           </a>
         </li>
@@ -209,6 +208,7 @@
                   </tbody>
                 </table>
 
+                <%-- TODO: implement pagination               --%>
                 <div
                         class="pagination-container"
                         style="

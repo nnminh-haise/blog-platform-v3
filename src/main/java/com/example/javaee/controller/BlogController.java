@@ -104,7 +104,7 @@ public class BlogController {
 
     @ModelAttribute("categories")
     public List<Category> fetchAllCategories() {
-        return this.categoryService.findAll().getData();
+        return this.categoryService.findAll();
     }
 
     @ModelAttribute("popularBlogs")

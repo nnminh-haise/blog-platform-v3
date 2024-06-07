@@ -176,7 +176,7 @@ public class BlogRepository {
             session.close();
             System.out.println("Updating process success");
 
-            return RepositoryResponse.goodResponse("New blog updated", blog);
+            return RepositoryResponse.goodResponse("Blog updated", blog);
         } catch (Exception exception) {
             transaction.rollback();
 

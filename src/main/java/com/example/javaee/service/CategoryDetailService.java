@@ -44,7 +44,7 @@ public class CategoryDetailService {
 
         CategoryDetail newCategoryDetail = new CategoryDetail(targetingCategory.get(), targetingBlog.get());
         RepositoryResponse<CategoryDetail> response = this.categoryDetailRepository.create(newCategoryDetail);
-        if (response.getError().equals(RepositoryErrorType.CONSTRAINT_VIOLATION)) {
+        if (response.hasErrorOf(RepositoryErrorType.CONSTRAINT_VIOLATION)) {
             return ServiceResponse.ofBadRequest(
                     response.getMessage(), response.getDescription());
         }
@@ -75,7 +75,7 @@ public class CategoryDetailService {
         CategoryDetail buffer = deletingCategoryDetail.get();
         buffer.setDeleteAt(LocalDateTime.now());
         RepositoryResponse<CategoryDetail> response = this.categoryDetailRepository.update(buffer);
-        if (response.getError().equals(RepositoryErrorType.CONSTRAINT_VIOLATION)) {
+        if (response.hasErrorOf(RepositoryErrorType.CONSTRAINT_VIOLATION)) {
             return ServiceResponse.ofUnknownServerError(response.getMessage(), response.getDescription());
         }
         return ServiceResponse.ofSuccess(

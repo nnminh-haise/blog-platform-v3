@@ -22,7 +22,6 @@ import static org.springframework.core.NestedExceptionUtils.getRootCause;
 
 @Repository
 public class CategoryDetailRepository {
-    private static final Logger logger = LoggerFactory.getLogger(CategoryDetailRepository.class);
     private final SessionFactory sessionFactory;
 
     public CategoryDetailRepository(SessionFactory sessionFactory) {
@@ -33,10 +32,10 @@ public class CategoryDetailRepository {
     public List<CategoryDetail> findAll() {
         Session session = sessionFactory.getCurrentSession();
         final String Q_FIND_ALL_CATEGORY_DETAIL = "SELECT cd FROM CategoryDetail AS cd WHERE cd.deleteAt IS NULL";
-        logger.info("Fetching all category detail");
+        System.out.println("Fetching all category detail");
         Query<CategoryDetail> query = session.createQuery(Q_FIND_ALL_CATEGORY_DETAIL, CategoryDetail.class);
         List<CategoryDetail> categoryDetailList = query.list();
-        logger.info("Fetching process completed");
+        System.out.println("Fetching process completed");
         return categoryDetailList;
     }
 
@@ -44,11 +43,11 @@ public class CategoryDetailRepository {
     public Optional<CategoryDetail> findById(UUID id) {
         Session session = sessionFactory.getCurrentSession();
         final String Q_FIND_BY_ID = "SELECT cd FROM CategoryDetail AS cd WHERE cd.deleteAt IS NULL AND cd.id = :id";
-        logger.info("Fetching category detail by id = " + id);
+        System.out.println("Fetching category detail by id = " + id);
         Query<CategoryDetail> query = session.createQuery(Q_FIND_BY_ID, CategoryDetail.class);
         query.setParameter("id", id);
         CategoryDetail categoryDetail = (CategoryDetail) query.uniqueResult();
-        logger.info("Fetching process completed");
+        System.out.println("Fetching process completed");
         return Optional.ofNullable(categoryDetail);
     }
 
@@ -56,12 +55,12 @@ public class CategoryDetailRepository {
     public List<CategoryDetail> findAllByCategoryId(UUID id) {
         Session session = sessionFactory.getCurrentSession();
         final String Q_FIND_ALL_CATEGORY_DETAIL_BY_CATEGORY_ID = "SELECT cd FROM CategoryDetail AS cd WHERE cd.deleteAt IS NULL and cd.category.id = :id";
-        logger.info("Fetching category detail by category id = " + id);
+        System.out.println("Fetching category detail by category id = " + id);
         Query<CategoryDetail> query = session.createQuery(
                 Q_FIND_ALL_CATEGORY_DETAIL_BY_CATEGORY_ID, CategoryDetail.class);
         query.setParameter("id", id);
         List<CategoryDetail> categoryDetailList = query.list();
-        logger.info("Fetching process completed");
+        System.out.println("Fetching process completed");
         return categoryDetailList;
     }
 
@@ -69,11 +68,11 @@ public class CategoryDetailRepository {
     public List<CategoryDetail> findAllByBlogId(UUID id) {
         Session session = sessionFactory.getCurrentSession();
         final String Q_FIND_ALL_CATEGORY_DETAIL_BY_BLOG_ID = "SELECT cd FROM CategoryDetail AS cd WHERE cd.deleteAt IS NULL and cd.blog.id = :id";
-        logger.info("Fetching category detail by blog id = " + id);
+        System.out.println("Fetching category detail by blog id = " + id);
         Query<CategoryDetail> query = session.createQuery(Q_FIND_ALL_CATEGORY_DETAIL_BY_BLOG_ID, CategoryDetail.class);
         query.setParameter("id", id);
         List<CategoryDetail> categoryDetailList = query.list();
-        logger.info("Fetching process completed");
+        System.out.println("Fetching process completed");
         return categoryDetailList;
     }
 
@@ -83,33 +82,28 @@ public class CategoryDetailRepository {
         Session session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
         try {
-            logger.info("Creating new category detail");
+            System.out.println("Creating new category detail");
             session.persist(categoryDetail);
             transaction.commit();
-            logger.info("Creating process success");
+            System.out.println("Creating process success");
 
-            response.setType(ResponseType.SUCCESS);
-            response.setData(Optional.of(categoryDetail));
-            return response;
+            return RepositoryResponse.goodResponse("New category detail created", categoryDetail);
         } catch (Exception exception) {
             transaction.rollback();
 
             Throwable rootCause = getRootCause(exception);
             final String EXCEPTION_MESSAGE = exception.getMessage();
 
-            response.setError(RepositoryErrorType.CONSTRAINT_VIOLATION);
-            response.setMessage(EXCEPTION_MESSAGE);
-            logger.error("Error message: " + EXCEPTION_MESSAGE);
+            System.out.println("Error message: " + EXCEPTION_MESSAGE);
 
             if (rootCause instanceof PSQLException) {
                 final String ROOT_CAUSE_MESSAGE = rootCause.getMessage();
-                response.setDescription(ROOT_CAUSE_MESSAGE);
-                logger.error("Root cause   : " + ROOT_CAUSE_MESSAGE);
+                System.out.println("Root cause   : " + ROOT_CAUSE_MESSAGE);
+                return RepositoryResponse.badResponse(RepositoryErrorType.CONSTRAINT_VIOLATION, EXCEPTION_MESSAGE, ROOT_CAUSE_MESSAGE);
             } else {
-                response.setDescription("Unknown Server Exception");
-                logger.error("Root cause   : Unknown Server Exception");
+                System.out.println("Root cause   : Unknown Server Exception");
+                return RepositoryResponse.badResponse(RepositoryErrorType.CONSTRAINT_VIOLATION, EXCEPTION_MESSAGE, "Unknown Server Exception");
             }
-            return response;
         } finally {
             session.close();
         }
@@ -121,34 +115,29 @@ public class CategoryDetailRepository {
         Session session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
         try {
-            logger.info("Updating category detail with id = " + categoryDetail.getId());
+            System.out.println("Updating category detail with id = " + categoryDetail.getId());
             session.merge(categoryDetail);
             transaction.commit();
             session.close();
-            logger.info("Updating process success");
+            System.out.println("Updating process success");
 
-            response.setType(ResponseType.SUCCESS);
-            response.setData(Optional.of(categoryDetail));
-            return response;
+            return RepositoryResponse.goodResponse("Category detail updated", categoryDetail);
         } catch (Exception exception) {
             transaction.rollback();
 
             Throwable rootCause = getRootCause(exception);
             final String EXCEPTION_MESSAGE = exception.getMessage();
 
-            response.setError(RepositoryErrorType.CONSTRAINT_VIOLATION);
-            response.setMessage(EXCEPTION_MESSAGE);
-            logger.error("Error message: " + EXCEPTION_MESSAGE);
+            System.out.println("Error message: " + EXCEPTION_MESSAGE);
 
             if (rootCause instanceof PSQLException) {
                 final String ROOT_CAUSE_MESSAGE = rootCause.getMessage();
-                response.setDescription(ROOT_CAUSE_MESSAGE);
-                logger.error("Root cause   : " + ROOT_CAUSE_MESSAGE);
+                System.out.println("Root cause   : " + ROOT_CAUSE_MESSAGE);
+                return RepositoryResponse.badResponse(RepositoryErrorType.CONSTRAINT_VIOLATION, EXCEPTION_MESSAGE, ROOT_CAUSE_MESSAGE);
             } else {
-                response.setDescription("Unknown Server Exception");
-                logger.error("Root cause   : Unknown Server Exception");
+                System.out.println("Root cause   : Unknown Server Exception");
+                return RepositoryResponse.badResponse(RepositoryErrorType.CONSTRAINT_VIOLATION, EXCEPTION_MESSAGE, "Unknown Server Exception");
             }
-            return response;
         } finally {
             session.close();
         }

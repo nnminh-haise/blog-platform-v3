@@ -22,9 +22,8 @@ import static org.springframework.core.NestedExceptionUtils.getRootCause;
 
 @Repository
 public class SubscriberRepository {
-    private static final Logger logger = LoggerFactory.getLogger(CategoryDetailRepository.class);
 
-    private SessionFactory sessionFactory;
+    private final SessionFactory sessionFactory;
 
     public SubscriberRepository(SessionFactory sessionFactory) {
         this.sessionFactory = sessionFactory;
@@ -49,78 +48,64 @@ public class SubscriberRepository {
     }
 
     public RepositoryResponse<Subscriber> create(Subscriber subscriber) {
-        RepositoryResponse<Subscriber> response = new RepositoryResponse<>();
-
         Session session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
         try {
-            logger.info("Creating new subcriber");
+            System.out.println("Creating new subcriber");
             session.persist(subscriber);
             transaction.commit();
             session.close();
-            logger.info("Creating process success");
+            System.out.println("Creating process success");
 
-            response.setType(ResponseType.SUCCESS);
-            response.setData(Optional.of(subscriber));
-            return response;
+            return RepositoryResponse.goodResponse("New subscriber created", subscriber);
         } catch (Exception exception) {
             transaction.rollback();
 
             Throwable rootCause = getRootCause(exception);
             final String EXCEPTION_MESSAGE = exception.getMessage();
 
-            response.setError(RepositoryErrorType.CONSTRAINT_VIOLATION);
-            response.setMessage(EXCEPTION_MESSAGE);
-            logger.error("Error message: " + EXCEPTION_MESSAGE);
+            System.out.println("Error message: " + EXCEPTION_MESSAGE);
 
             if (rootCause instanceof PSQLException) {
                 final String ROOT_CAUSE_MESSAGE = rootCause.getMessage();
-                response.setDescription(ROOT_CAUSE_MESSAGE);
-                logger.error("Root cause   : " + ROOT_CAUSE_MESSAGE);
+                System.out.println("Root cause   : " + ROOT_CAUSE_MESSAGE);
+                return RepositoryResponse.badResponse(RepositoryErrorType.CONSTRAINT_VIOLATION, EXCEPTION_MESSAGE, ROOT_CAUSE_MESSAGE);
             } else {
-                response.setDescription("Unknown Server Exception");
-                logger.error("Root cause   : Unknown Server Exception");
+                System.out.println("Root cause   : Unknown Server Exception");
+                return RepositoryResponse.badResponse(RepositoryErrorType.CONSTRAINT_VIOLATION, EXCEPTION_MESSAGE, "Unknown Server Exception");
             }
-            return response;
         } finally {
             session.close();
         }
     }
 
     public RepositoryResponse<Subscriber> update(Subscriber subscriber) {
-        RepositoryResponse<Subscriber> response = new RepositoryResponse<>();
-
         Session session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
         try {
-            logger.info("Updating subscriber with id = " + subscriber.getId());
+            System.out.println("Updating subscriber with id = " + subscriber.getId());
             session.merge(subscriber);
             transaction.commit();
             session.close();
-            logger.info("Updating process success");
+            System.out.println("Updating process success");
 
-            response.setType(ResponseType.SUCCESS);
-            response.setData(Optional.of(subscriber));
-            return response;
+            return RepositoryResponse.goodResponse("Subscriber updated", subscriber);
         } catch (Exception exception) {
             transaction.rollback();
 
             Throwable rootCause = getRootCause(exception);
             final String EXCEPTION_MESSAGE = exception.getMessage();
 
-            response.setError(RepositoryErrorType.CONSTRAINT_VIOLATION);
-            response.setMessage(EXCEPTION_MESSAGE);
-            logger.error("Error message: " + EXCEPTION_MESSAGE);
+            System.out.println("Error message: " + EXCEPTION_MESSAGE);
 
             if (rootCause instanceof PSQLException) {
                 final String ROOT_CAUSE_MESSAGE = rootCause.getMessage();
-                response.setDescription(ROOT_CAUSE_MESSAGE);
-                logger.error("Root cause   : " + ROOT_CAUSE_MESSAGE);
+                System.out.println("Root cause   : " + ROOT_CAUSE_MESSAGE);
+                return RepositoryResponse.badResponse(RepositoryErrorType.CONSTRAINT_VIOLATION, EXCEPTION_MESSAGE, ROOT_CAUSE_MESSAGE);
             } else {
-                response.setDescription("Unknown Server Exception");
-                logger.error("Root cause   : Unknown Server Exception");
+                System.out.println("Root cause   : Unknown Server Exception");
+                return RepositoryResponse.badResponse(RepositoryErrorType.CONSTRAINT_VIOLATION, EXCEPTION_MESSAGE, "Unknown Server Exception");
             }
-            return response;
         } finally {
             session.close();
         }

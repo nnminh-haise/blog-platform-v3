@@ -27,7 +27,7 @@ public class ServiceResponse<T> extends BasicResponse <T> {
 
     public static <T> ServiceResponse<T> ofNotFound(String message, String description) {
         ServiceResponse<T> serviceResponse = new ServiceResponse<>();
-        serviceResponse.setType(ResponseType.ERROR);
+        serviceResponse.setResponseType(ResponseType.ERROR);
         serviceResponse.setMessage(message);
         serviceResponse.setDescription(description);
         serviceResponse.setError(ServiceErrorType.NOT_FOUND);
@@ -37,7 +37,7 @@ public class ServiceResponse<T> extends BasicResponse <T> {
 
     public static <T> ServiceResponse<T> ofUnauthorized(String message, String description) {
         ServiceResponse<T> serviceResponse = new ServiceResponse<>();
-        serviceResponse.setType(ResponseType.ERROR);
+        serviceResponse.setResponseType(ResponseType.ERROR);
         serviceResponse.setMessage(message);
         serviceResponse.setDescription(description);
         serviceResponse.setError(ServiceErrorType.UNAUTHORIZED);
@@ -47,7 +47,7 @@ public class ServiceResponse<T> extends BasicResponse <T> {
 
     public static <T> ServiceResponse<T> ofBadRequest(String message, String description) {
         ServiceResponse<T> serviceResponse = new ServiceResponse<>();
-        serviceResponse.setType(ResponseType.ERROR);
+        serviceResponse.setResponseType(ResponseType.ERROR);
         serviceResponse.setMessage(message);
         serviceResponse.setDescription(description);
         serviceResponse.setError(ServiceErrorType.BAD_REQUEST);
@@ -57,7 +57,7 @@ public class ServiceResponse<T> extends BasicResponse <T> {
 
     public static <T> ServiceResponse<T> ofUnknownServerError(String message, String description) {
         ServiceResponse<T> serviceResponse = new ServiceResponse<>();
-        serviceResponse.setType(ResponseType.ERROR);
+        serviceResponse.setResponseType(ResponseType.ERROR);
         serviceResponse.setMessage(message);
         serviceResponse.setDescription(description);
         serviceResponse.setError(ServiceErrorType.UNKNOWN_SERVICE_ERROR);
@@ -67,7 +67,7 @@ public class ServiceResponse<T> extends BasicResponse <T> {
 
     public static <T> ServiceResponse<T> ofNoError(String message, String description, T data) {
         ServiceResponse<T> serviceResponse = new ServiceResponse<>();
-        serviceResponse.setType(ResponseType.SUCCESS);
+        serviceResponse.setResponseType(ResponseType.SUCCESS);
         serviceResponse.setMessage(message);
         serviceResponse.setDescription(description);
         serviceResponse.setError(ServiceErrorType.NO_ERROR);
@@ -77,7 +77,7 @@ public class ServiceResponse<T> extends BasicResponse <T> {
 
     public static <T> ServiceResponse<T> ofSuccess(String message, String description, T data) {
         ServiceResponse<T> serviceResponse = new ServiceResponse<>();
-        serviceResponse.setType(ResponseType.SUCCESS);
+        serviceResponse.setResponseType(ResponseType.SUCCESS);
         serviceResponse.setMessage(message);
         serviceResponse.setDescription(description);
         serviceResponse.setError(ServiceErrorType.CREATED);

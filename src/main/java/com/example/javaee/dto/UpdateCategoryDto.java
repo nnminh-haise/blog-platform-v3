@@ -1,14 +1,12 @@
 package com.example.javaee.dto;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-
-import java.util.UUID;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 
 @Data
-@EqualsAndHashCode(callSuper = true)
 @AllArgsConstructor
-public class UpdateCategoryDto extends CreateCategoryDto {
+@NoArgsConstructor
+public class UpdateCategoryDto {
     private String name;
 }
