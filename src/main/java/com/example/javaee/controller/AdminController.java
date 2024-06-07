@@ -6,19 +6,16 @@ import com.example.javaee.dto.OpenIdClaims;
 import com.example.javaee.helper.ServiceResponse;
 import com.example.javaee.model.Blog;
 import com.example.javaee.model.Category;
-import com.example.javaee.model.CategoryDetail;
 import com.example.javaee.service.BlogService;
 import com.example.javaee.service.CategoryService;
 import com.example.javaee.service.GoogleApiService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
-import org.apache.http.client.ClientProtocolException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -143,21 +140,16 @@ public class AdminController {
 
     @PostMapping(value = "/edit/{slug}.htm")
     public String updateBlogHandler(ModelMap modelMap,
-            // @RequestParam(name = "title", required = true) String title,
-            // @RequestParam(name = "description", required = true) String description,
-            // @RequestParam(name = "attachment", required = false) MultipartFile
-            // attachment,
             @ModelAttribute("BlogDto") BlogDto blogDto,
             @PathVariable(name = "slug", required = true) String slug) {
-        System.out.println("update");
-        System.out.println("slug:" + slug);
-        // System.out.println("title:" + title);
-        // System.out.println("attachment:" + attachment.getOriginalFilename());
-        // System.out.println("description:" + description);
-        // modelMap.addAttribute("title", title);
-        // modelMap.addAttribute("attachment", attachment);
-        // modelMap.addAttribute("description", description);
-        System.out.println("dto:" + blogDto.toString());
+
+        Optional<Blog> updatingBlog = this.blogService.findBySlug(slug);
+        if (!updatingBlog.isPresent()) {
+            // TODO: handle error here
+            return "redirect:/admin/index.htm";
+        }
+
+        // TODO: add update blog service
 
         modelMap.addAttribute("blogDto", blogDto);
         return "admin/edit";
@@ -178,8 +170,6 @@ public class AdminController {
         try {
             OpenIdClaims claims = this.googleApiService.getUserInfo(accessToken);
             return Optional.of(claims);
-        } catch (ClientProtocolException e) {
-            throw new RuntimeException(e);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

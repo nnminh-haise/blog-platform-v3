@@ -109,7 +109,9 @@
                                         <div id="editor"></div>
                                     </div>
                                     <button onclick="saveData()" type="submit" class="btn btn-gradient-primary me-2">Save</button>
-                                    <button type="reset" class="btn btn-light">Cancel</button>
+                                    <button type="reset" class="btn btn-light">
+                                        Cancel
+                                    </button>
                                 </form:form>
                             </div>
                         </div>
