@@ -150,24 +150,24 @@
                   <thead>
                   <tr>
                     <th>Title</th>
-                    <th>Slug</th>
                     <th>Published</th>
+                    <th>Create at</th>
                     <th>Manage</th>
                   </tr>
                   </thead>
                   <tbody>
                   <c:forEach
                           var="blog"
-                          items="${categories}"
+                          items="${blogList}"
                           varStatus="loop"
                   >
                     <tr>
-                      <td><c:out value="${blog.id}" /></td>
-                      <td><c:out value="${blog.name}" /></td>
-                      <td><c:out value="${blog.slug}" /></td>
+                      <td><c:out value="${blog.title}" /></td>
+                      <td><c:out value="${blog.publishAt}" /></td>
+                      <td><c:out value="${blog.createAt}" /></td>
                       <td style="width: 20%">
                         <a
-                                href="${pageContext.request.contextPath}/editor/${blog.id}.htm?pageBlog=${pageBlog}"
+                                href="${pageContext.request.contextPath}/admin/edit/${blog.slug}.htm"
                         >
                           <button
                                   type="button"
@@ -177,7 +177,7 @@
                           </button>
                         </a>
                         <a
-                                href="blogs/delete/${blog.id}.htm?pageBlog=${pageBlog}"
+                                href="${pageContext.request.contextPath}/admin/edit/${blog.slug}.htm"
                                 onclick="return confirm('are you sure')"
                         >
                           <button

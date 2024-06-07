@@ -3,8 +3,6 @@ package com.example.javaee.controller;
 import com.example.javaee.dto.BlogDto;
 import com.example.javaee.dto.CreateBlogDto;
 import com.example.javaee.dto.OpenIdClaims;
-import com.example.javaee.dto.UpdateBlogDto;
-import com.example.javaee.helper.ServiceResponse;
 import com.example.javaee.model.Blog;
 import com.example.javaee.model.Category;
 import com.example.javaee.model.CategoryDetail;
@@ -64,12 +62,13 @@ public class AdminController {
     }
 
     @GetMapping("/index.htm")
-    public String searchBlogAdmin(
-            HttpServletRequest request,
-            ModelMap modelMap,
-            @RequestParam(name = "page", defaultValue = "0") Integer page,
+    public String adminIndexRouter(
+            @RequestParam(name = "page", defaultValue = "0", required = false) Integer page,
+            @RequestParam(name = "size", defaultValue = "5", required = false) Integer size,
             @RequestParam(name = "orderBy", defaultValue = "asc") String orderBy,
-            @RequestParam(name = "slug", required = false) String slug) {
+            @RequestParam(name = "slug", required = false) String slug,
+            HttpServletRequest request,
+            ModelMap modelMap) {
         Optional<OpenIdClaims> claims = this.validateRequest(request);
         if (!claims.isPresent()) {
             System.out.println(
@@ -79,25 +78,8 @@ public class AdminController {
 
         modelMap.addAttribute("adminInformation", claims.get());
 
-        // TODO: refactor this code
-        modelMap.addAttribute("categories", this.categoryService.findAll().getData());
-        List<Category> categories = this.categoryService.findAll().getData();
-        for (Category category : categories) {
-            System.out.println("category: " + category.getName() + " - " + category.getSlug());
-        }
-        System.out.println("slug: " + slug);
-        System.out.println("orderBy: " + orderBy);
-        System.out.println("page: " + page);
-        if (slug != null) {
-            List<Blog> blogs = this.blogService.findAllBlogByCategorySlug(
-                    page, 5, orderBy, slug);
-            modelMap.addAttribute("blogs", blogs);
-
-        } else {
-            List<Blog> blogs = this.blogService.findAllBlogOrderBy(
-                    page, 5, orderBy);
-            modelMap.addAttribute("blogs", blogs);
-        }
+        List<Blog> blogs = this.blogService.findAllBlogByCategorySlug(page, size, orderBy, null);
+        modelMap.addAttribute("blogList", blogs);
 
         return "admin/index";
     }
