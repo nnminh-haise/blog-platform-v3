@@ -1,5 +1,6 @@
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
 <html lang="en">
@@ -163,8 +164,23 @@
                   >
                     <tr>
                       <td><c:out value="${blog.title}" /></td>
-                      <td><c:out value="${blog.publishAt}" /></td>
-                      <td><c:out value="${blog.createAt}" /></td>
+                      <c:choose>
+                        <c:when test="${blog.publishAt == null}">
+                          <td>
+                            <p>Pick a publish date</p>
+                          </td>
+                        </c:when>
+                        <c:when test="${blog.publishAt != null}">
+                          <td>
+                            <fmt:formatDate value="${blog.publishDateAsDate()}" pattern="MMMM d, yyyy" var="formattedPublishDate" />
+                            <c:out value="${formattedPublishDate}" />
+                          </td>
+                        </c:when>
+                      </c:choose>
+                      <td>
+                        <fmt:formatDate value="${blog.createAtAsDate()}" pattern="MMMM d, yyyy HH:mm:ss" var="formattedCreateDate" />
+                        <c:out value="${formattedCreateDate}" />
+                      </td>
                       <td style="width: 20%">
                         <a
                                 href="${pageContext.request.contextPath}/admin/edit/${blog.slug}.htm"

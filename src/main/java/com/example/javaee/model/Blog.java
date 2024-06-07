@@ -5,7 +5,10 @@ import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Collection;
+import java.util.Date;
 import java.util.UUID;
 
 @Getter
@@ -55,6 +58,30 @@ public class Blog extends BaseEntity {
 
     @OneToMany(mappedBy = "blog", fetch = FetchType.EAGER)
     private Collection<CategoryDetail> categoryDetails;
+
+    public Date createAtAsDate() {
+        return this.castLocalDateTimeToDate(this.getCreateAt());
+    }
+
+    public Date updateAtAsDate() {
+        return this.castLocalDateTimeToDate(this.getUpdateAt());
+    }
+
+    public Date deleteAtAsDate() {
+        return this.castLocalDateTimeToDate(this.getDeleteAt());
+    }
+
+    public Date publishDateAsDate() {
+        return this.castLocalDateToDate(this.getPublishAt());
+    }
+
+    private Date castLocalDateToDate(LocalDate localDate) {
+        return Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+    }
+
+    private Date castLocalDateTimeToDate(LocalDateTime localDateTime) {
+        return Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
+    }
 
     public String toString() {
         return "id = " + id +
