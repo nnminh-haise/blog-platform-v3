@@ -100,38 +100,37 @@
         <div class="page-header">
           <h3 class="page-title">Blogs</h3>
 
+          <%-- Order by section --%>
           <div class="form-group row">
-            <label class="col-sm-6 col-form-label"
-            >Order By: Published</label
-            >
+            <label class="col-sm-6 col-form-label">Order By: Create Timestamp</label>
             <div class="col-sm-3">
               <div class="form-check">
                 <label class="form-check-label">
-                  <input
-                          type="radio"
-                          class="form-check-input"
-                          name="orderBy"
-                          id="membershipRadios1"
-                          value="ASC"
-                          checked="" />
-                  ASC <i class="input-helper"></i
-                ></label>
+                  <input type="radio"
+                         class="form-check-input"
+                         name="sortingOptions"
+                         id="membershipRadios1"
+                         value="asc"
+                         onclick="handleSortingOptionChange(this.value)" />
+                  ASC <i class="input-helper"></i>
+                </label>
               </div>
             </div>
             <div class="col-sm-3">
               <div class="form-check">
                 <label class="form-check-label">
-                  <input
-                          type="radio"
-                          class="form-check-input"
-                          name="orderBy"
-                          id="membershipRadios2"
-                          value="DESC" />
-                  DESC <i class="input-helper"></i
-                ></label>
+                  <input type="radio"
+                         class="form-check-input"
+                         name="sortingOptions"
+                         id="membershipRadios2"
+                         value="desc"
+                         onclick="handleSortingOptionChange(this.value)"/>
+                  DESC <i class="input-helper"></i>
+                </label>
               </div>
             </div>
           </div>
+
           <div class="template-demo">
             <a href="${pageContext.request.contextPath}/admin/insert.htm">
               <button type="button" class="btn btn-gradient-success btn-fw">
@@ -151,6 +150,7 @@
                   <tr>
                     <th>Title</th>
                     <th>Published</th>
+                    <th>Created at</th>
                     <th>Updated at</th>
                     <th>Manage</th>
                   </tr>
@@ -176,6 +176,10 @@
                           </td>
                         </c:when>
                       </c:choose>
+                      <td>
+                        <fmt:formatDate value="${blog.createAtAsDate()}" pattern="MMMM d, yyyy HH:mm:ss" var="formattedCreateDate" />
+                        <c:out value="${formattedCreateDate}" />
+                      </td>
                       <td>
                         <fmt:formatDate value="${blog.updateAtAsDate()}" pattern="MMMM d, yyyy HH:mm:ss" var="formattedUpdateDate" />
                         <c:out value="${formattedUpdateDate}" />
@@ -260,6 +264,23 @@
     const newPage = (+page === totalNumberOfPage - 1 ? 0 : +page + 1);
     window.location.href = baseUrl + "?page=" + newPage + "&size=" + size;
   }
+
+  function handleSortingOptionChange(orderBy) {
+    const url = baseUrl + "?page=" + (+page) + "&size=" + (size) + "&orderBy=" + orderBy;
+    window.location.href = url;
+  }
+
+  document.addEventListener("DOMContentLoaded", function() {
+      const radioButtons = document.querySelectorAll('input[name="sortingOptions"]');
+
+      radioButtons.forEach(radio => {
+          radio.addEventListener('change', function() {
+              if (this.value() === orderBy) {
+                  handleSortingOptionChange(this.value);
+              }
+          });
+      });
+  });
 </script>
 <!-- endinject -->
 
