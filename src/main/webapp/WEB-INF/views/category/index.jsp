@@ -106,21 +106,11 @@
                                             <td><c:out value="${category.slug}" /></td>
                                             <td style="width: 20%;">
                                                 <a href="category/editor/${category.id}.htm?pageCategory=${pageCategory}" >
-                                                    <button
-                                                            type="button"
-                                                            class="btn btn-dark btn-fw"
-                                                            style="min-width: 110px; background: #00cdf6;"
-                                                    >
-                                                        Edit
-                                                    </button>                                                </a>
+                                                    <button type="button" class="btn btn-gradient-warning btn-fw"  style="min-width: 110px; background: #00cdf6;">Edit</button>
+                                                </a>
                                                 <a href="category/delete/${category.id}.htm?pageCategory=${pageCategory}" onclick="return confirm('are you sure')">
-                                                    <button
-                                                            type="button"
-                                                            class="btn btn-dark btn-fw"
-                                                            style="min-width: 110px; background: #ff3333"
-                                                    >
-                                                        Delete
-                                                    </button>                                                </a>
+                                                    <button type="button" class="btn btn-gradient-danger btn-fw"   style="min-width: 110px; background: #ff3333">Delete</button>
+                                                </a>
                                             </td>
                                         </tr>
                                     </c:forEach>
