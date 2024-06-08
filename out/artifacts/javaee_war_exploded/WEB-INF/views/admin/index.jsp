@@ -36,6 +36,8 @@
           rel="shortcut icon"
           href="${pageContext.request.contextPath}/images/favicon.ico"
   />
+  <!-- Include jQuery -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
 <div class="container-scroller">
@@ -43,25 +45,11 @@
   <nav class="navbar default-layout-navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
     <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-center">
       <a class="navbar-brand brand-logo" href="${pageContext.request.contextPath}/index.html"
-      ><img src="images/blogg.png" alt="logo"
+      ><img src="${pageContext.request.contextPath}/images/blogg.png" alt="logo"
       /></a>
       <a class="navbar-brand brand-logo-mini" href="${pageContext.request.contextPath}/index.html"
-      ><img src="images/logo-mini.svg" alt="logo"
+      ><img src="${pageContext.request.contextPath}/images/logo-mini.svg" alt="logo"
       /></a>
-    </div>
-    <div class="navbar-menu-wrapper d-flex align-items-stretch">
-      <div class="btn-group">
-        <div class="form-group">
-          <%-- Category nav bar --%>
-          <label for="category-filter">Categories</label>
-          <select class="form-control" id="category-filter" name="slug">
-            <option value="null">All categories</option>
-            <c:forEach var="category" items="${categories}">
-              <option value="${category.slug}">${category.name}</option>
-            </c:forEach>
-          </select>
-        </div>
-      </div>
     </div>
   </nav>
   <!-- partial -->
@@ -78,18 +66,17 @@
               <span class="font-weight-bold mb-2">${adminInformation.name}</span>
               <span class="text-secondary text-small">${adminInformation.email}</span>
             </div>
-<%--            <i class="mdi mdi-bookmark-check text-success nav-profile-badge"></i>--%>
           </a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link" href="">
+        <li class="nav-item link-item">
+          <a class="nav-link" href="${pageContext.request.contextPath}/admin/index.htm">
             <span class="menu-title">Blogs</span>
             <i class="mdi mdi-contacts menu-icon"></i>
           </a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link" href="">
-            <span class="menu-title">Category</span>
+        <li class="nav-item link-item">
+          <a class="nav-link" href="${pageContext.request.contextPath}/admin/categories/index.htm">
+            <span class="menu-title">Categories</span>
             <i class="mdi mdi-format-list-bulleted menu-icon"></i>
           </a>
         </li>
@@ -98,41 +85,60 @@
     <!-- partial -->
     <div class="main-panel">
       <div class="content-wrapper">
-        <div class="page-header">
-          <h3 class="page-title">Blogs</h3>
-
-          <div class="form-group row">
-            <label class="col-sm-6 col-form-label"
+        <h1 class="page-title mb-4" style="font-size: 1.5rem !important; font-weight: 600 !important;">Blogs</h1>
+        <div class="page-header" >
+          <div class="navbar-menu-wrapper d-flex align-items-stretch">
+            <div class="btn-group">
+              <div class="form-group"
+                   style="display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 0.5rem;
+                     margin-bottom: 0 !important;"
+              >
+                <%-- Category nav bar --%>
+                <label for="category-filter" style="margin-bottom: 0 !important;">Categories</label>
+                <select class="form-control" id="category-filter" name="slug">
+                  <option value="null">All categories</option>
+                  <c:forEach var="category" items="${categories}">
+                    <option value="${category.slug}">${category.name}</option>
+                  </c:forEach>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="form-group row" style="margin-bottom: 0 !important;">
+            <label class="col-sm-6 col-form-label" style="margin-bottom: 0 !important;"
             >Order By: Published</label
             >
             <div class="col-sm-3">
               <div class="form-check">
                 <label class="form-check-label">
-                  <input
-                          type="radio"
-                          class="form-check-input"
-                          name="orderBy"
-                          id="membershipRadios1"
-                          value="ASC"
-                          checked="" />
-                  ASC <i class="input-helper"></i
-                ></label>
+                  <input type="radio"
+                         class="form-check-input"
+                         name="sortingOptions"
+                         id="membershipRadios1"
+                         value="asc"
+                         onclick="handleSortingOptionChange(this.value)" />
+                  ASC <i class="input-helper"></i>
+                </label>
               </div>
             </div>
             <div class="col-sm-3">
               <div class="form-check">
                 <label class="form-check-label">
-                  <input
-                          type="radio"
-                          class="form-check-input"
-                          name="orderBy"
-                          id="membershipRadios2"
-                          value="DESC" />
-                  DESC <i class="input-helper"></i
-                ></label>
+                  <input type="radio"
+                         class="form-check-input"
+                         name="sortingOptions"
+                         id="membershipRadios2"
+                         value="desc"
+                         onclick="handleSortingOptionChange(this.value)"/>
+                  DESC <i class="input-helper"></i>
+                </label>
               </div>
             </div>
           </div>
+
           <div class="template-demo">
             <a href="${pageContext.request.contextPath}/admin/insert.htm">
               <button type="button" class="btn btn-gradient-success btn-fw">
@@ -145,15 +151,14 @@
           <div class="col-lg-12 grid-margin stretch-card">
             <div class="card">
               <div class="card-body">
-                <h4 class="card-title">Blog</h4>
-
                 <table class="table table-dark">
                   <thead>
                   <tr>
                     <th>Title</th>
                     <th>Published</th>
-                    <th>Create at</th>
-                    <th>Manage</th>
+                    <th>Created at</th>
+                    <th>Updated at</th>
+                    <th style="display: flex; justify-content: center; align-items: center">Manage</th>
                   </tr>
                   </thead>
                   <tbody>
@@ -163,11 +168,19 @@
                           varStatus="loop"
                   >
                     <tr>
-                      <td><c:out value="${blog.title}" /></td>
+                      <td style="overflow: hidden !important;
+                      text-overflow: ellipsis !important;
+                      white-space: nowrap !important;
+                      max-width: 322px;
+                      vertical-align: middle;
+                      font-size: 0.875rem;
+                      line-height: 1;
+                      padding: 0.9375rem;
+                      "><c:out value="${blog.title}" /></td>
                       <c:choose>
                         <c:when test="${blog.publishAt == null}">
                           <td>
-                            <p>Pick a publish date</p>
+                            <p style="margin-bottom: 0 !important;">Pick a publish date</p>
                           </td>
                         </c:when>
                         <c:when test="${blog.publishAt != null}">
@@ -181,6 +194,10 @@
                         <fmt:formatDate value="${blog.createAtAsDate()}" pattern="MMMM d, yyyy HH:mm:ss" var="formattedCreateDate" />
                         <c:out value="${formattedCreateDate}" />
                       </td>
+                      <td>
+                        <fmt:formatDate value="${blog.updateAtAsDate()}" pattern="MMMM d, yyyy HH:mm:ss" var="formattedUpdateDate" />
+                        <c:out value="${formattedUpdateDate}" />
+                      </td>
                       <td style="width: 20%">
                         <a
                                 href="${pageContext.request.contextPath}/admin/edit/${blog.slug}.htm"
@@ -188,6 +205,7 @@
                           <button
                                   type="button"
                                   class="btn btn-dark btn-fw"
+                                  style="min-width: 110px; background: #00cdf6;"
                           >
                             Edit
                           </button>
@@ -199,6 +217,7 @@
                           <button
                                   type="button"
                                   class="btn btn-dark btn-fw"
+                                  style="min-width: 110px; background: #ff3333"
                           >
                             Delete
                           </button>
@@ -208,23 +227,16 @@
                   </c:forEach>
                   </tbody>
                 </table>
-
-                <div
-                        class="pagination-container"
-                        style="
+                <%-- Pagination elements --%>
+                <div class="pagination-container" style="
                         margin: 30px;
                         text-align: right;
                         top: 0;
                         right: 100%;
-                      "
-                >
-                  <a href="category/index.htm?pageCategory=-1">
-                    <button type="button">&#10094;</button>
-                  </a>
-                  Page of
-                  <a href="category/index.htm?pageCategory=1">
-                    <button type="button" disabled>&#10095;</button>
-                  </a>
+                      ">
+                  <button type="button" onclick="handlePageLeftButton()">&#10094;</button>
+                  Page ${currentPage + 1} of ${totalNumberOfPage}
+                  <button type="button" onclick="handlePageRightButton()">&#10095;</button>
                 </div>
               </div>
             </div>
@@ -242,17 +254,74 @@
 </div>
 <!-- container-scroller -->
 <!-- plugins:js -->
-<script src="vendors/js/vendor.bundle.base.js"></script>
+<script src="${pageContext.request.contextPath}/vendors/js/vendor.bundle.base.js"></script>
 <!-- endinject -->
 <!-- Plugin js for this page -->
 <!-- End plugin js for this page -->
 <!-- inject:js -->
-<script src="js/off-canvas.js"></script>
-<script src="js/hoverable-collapse.js"></script>
-<script src="js/misc.js"></script>
+<script src="${pageContext.request.contextPath}/js/off-canvas.js"></script>
+<script src="${pageContext.request.contextPath}/js/hoverable-collapse.js"></script>
+<script src="${pageContext.request.contextPath}/js/misc.js"></script>
+<%-- Pagination logic --%>
+<script type="text/javascript">
+  const baseUrl = "${pageContext.request.contextPath}/admin/index.htm";
+  const page = "${currentPage}";
+  const size = "${currentSize}";
+  const totalNumberOfPage = "${totalNumberOfPage}";
+  const orderBy = "${orderBy}";
+  const filteringSlug = "${filterBySlug}";
+
+  function handlePageLeftButton() {
+    const newPage = (+page === 0 ? totalNumberOfPage - 1 : +page - 1);
+    window.location.href = baseUrl + "?page=" + newPage + "&size=" + size;
+  }
+
+  function handlePageRightButton() {
+    const newPage = (+page === totalNumberOfPage - 1 ? 0 : +page + 1);
+    window.location.href = baseUrl + "?page=" + newPage + "&size=" + size;
+  }
+
+  function handleSortingOptionChange(orderBy) {
+    const url = baseUrl + "?page=" + (+page) + "&size=" + (size) + "&orderBy=" + orderBy;
+    window.location.href = url;
+  }
+
+  document.addEventListener("DOMContentLoaded", function() {
+      const radioButtons = document.querySelectorAll('input[name="sortingOptions"]');
+
+      radioButtons.forEach(radio => {
+          if (radio.value === orderBy) {
+              radio.checked = true;
+          }
+      });
+
+      const selections = document.getElementById("category-filter");
+      selections.addEventListener("change", () => {
+          let url = baseUrl + "?page=" + (+page) + "&size=" + (size) + "&orderBy=" + orderBy;
+          if (selections.value !== "null") {
+              url = url + "&slug=" + selections.value;
+          }
+          window.location.href = url;
+      })
+
+      selections.value = (filteringSlug === "" ? "null" : filteringSlug);
+  });
+</script>
 <!-- endinject -->
 
 <!-- Custom js for this page -->
 <!-- End custom js for this page -->
+
+<!-- jQuery script to highlight the nav items -->
+<script>
+  $(document).ready(function() {
+    if (window.location.pathname.includes('/admin/index.htm')) {
+      $('.link-item:first').css('background-color', '#00F66BFF');
+      $('.link-item:first').css('color', '#00F66BFF');// Highlight color for first li
+    } else {
+      $('.link-item-item').not(':first').css('background-color', '#00F66BFF'); // Highlight color for other li elements
+    }
+  });
+</script>
 </body>
 </html>

@@ -69,7 +69,7 @@ public class AdminController {
         }
         modelMap.addAttribute("adminInformation", claims.get());
 
-        List<Blog> blogs = this.blogService.findAllBlogByCategorySlug(page, size, orderBy, null);
+        List<Blog> blogs = this.blogService.findAllBlogByCategorySlug(page, size, orderBy, slug);
         modelMap.addAttribute("blogList", blogs);
 
         // * Send current requesting options

@@ -77,12 +77,10 @@
 
     <!-- Configure directories for file saving -->
     <bean id="fileUploadDirectory" class="com.example.javaee.beans.FileUploadDirectory">
-        <property name="baseDirectory" value="/Users/nnminh/Desktop"/>
+        <property name="baseDirectory" value="/Users/nnminh/Desktop/blog-attachments"/>
         <property name="directories">
             <map>
-                <entry key="doc" value="/documents"/>
-                <entry key="img" value="/imgs"/>
-                <entry key="postBase" value="/blog/post"/>
+                <entry key="blogBase" value="/blogs"/>
             </map>
         </property>
     </bean>
@@ -94,4 +92,5 @@
 
     <mvc:resources mapping="/images/**" location="/images/"/>
     <mvc:resources mapping="/css/**" location="/css/"/>
+    <mvc:resources mapping="/js/**" location="/js/"/>
 </beans>

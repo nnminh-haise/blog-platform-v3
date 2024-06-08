@@ -290,12 +290,21 @@
       const radioButtons = document.querySelectorAll('input[name="sortingOptions"]');
 
       radioButtons.forEach(radio => {
-          radio.addEventListener('change', function() {
-              if (this.value() === orderBy) {
-                  handleSortingOptionChange(this.value);
-              }
-          });
+          if (radio.value === orderBy) {
+              radio.checked = true;
+          }
       });
+
+      const selections = document.getElementById("category-filter");
+      selections.addEventListener("change", () => {
+          let url = baseUrl + "?page=" + (+page) + "&size=" + (size) + "&orderBy=" + orderBy;
+          if (selections.value !== "null") {
+              url = url + "&slug=" + selections.value;
+          }
+          window.location.href = url;
+      })
+
+      selections.value = (filteringSlug === "" ? "null" : filteringSlug);
   });
 </script>
 <!-- endinject -->

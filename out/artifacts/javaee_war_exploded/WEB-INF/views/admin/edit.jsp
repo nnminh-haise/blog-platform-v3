@@ -12,17 +12,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>Purple Admin</title>
     <!-- plugins:css -->
-    <link rel="stylesheet" href="vendors/mdi/css/materialdesignicons.min.css">
-    <link rel="stylesheet" href="vendors/css/vendor.bundle.base.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/vendors/mdi/css/materialdesignicons.min.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/vendors/css/vendor.bundle.base.css">
     <!-- endinject -->
     <!-- Plugin css for this page -->
     <!-- End plugin css for this page -->
     <!-- inject:css -->
     <!-- endinject -->
     <!-- Layout styles -->
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css">
     <!-- End layout styles -->
-    <link rel="shortcut icon" href="images/favicon.ico" />
+    <link rel="shortcut icon" href="${pageContext.request.contextPath}/images/favicon.ico" />
     <!-- Editor.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@editorjs/editorjs@latest"></script>
     <!-- Editor.js Plugins CDN -->
@@ -51,8 +51,12 @@
     <!-- partial:../../partials/_navbar.html -->
     <nav class="navbar default-layout-navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
         <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-center">
-            <a class="navbar-brand brand-logo" href="../../index.html"><img src="images/blogg.png" alt="logo" /></a>
-            <a class="navbar-brand brand-logo-mini" href="../../index.html"><img src="images/logo-mini.svg" alt="logo" /></a>
+            <a class="navbar-brand brand-logo" href="${pageContext.request.contextPath}/index.htm">
+                <img src="${pageContext.request.contextPath}/images/blogg.png" alt="logo" />
+            </a>
+            <a class="navbar-brand brand-logo-mini" href="${pageContext.request.contextPath}/index.htm">
+                <img src="${pageContext.request.contextPath}/images/logo-mini.svg" alt="logo" />
+            </a>
         </div>
         <div class="navbar-menu-wrapper d-flex align-items-stretch">
         </div>
@@ -62,18 +66,15 @@
         <!-- partial:../../partials/_sidebar.html -->
         <nav class="sidebar sidebar-offcanvas" id="sidebar">
             <ul class="nav">
-                <li class="nav-item nav-profile">
+                <li class="nav-item nav-profile" id="${adminInformation.sub}">
                     <a href="#" class="nav-link">
                         <div class="nav-profile-image">
-                            <img src="images/person-man.png" alt="profile">
-                            <span class="login-status online"></span>
-                            <!--change to offline or busy as needed-->
+                            <img src="${adminInformation.picture}" alt="profile"/>
                         </div>
                         <div class="nav-profile-text d-flex flex-column">
-                            <span class="font-weight-bold mb-2"> Blog Platform</span>
-                            <span class="text-secondary text-small">Admin</span>
+                            <span class="font-weight-bold mb-2">${adminInformation.name}</span>
+                            <span class="text-secondary text-small">${adminInformation.email}</span>
                         </div>
-                        <i class="mdi mdi-bookmark-check text-success nav-profile-badge"></i>
                     </a>
                 </li>
                 <li class="nav-item">
@@ -96,19 +97,21 @@
                                 <form:form class="forms-sample" id="main-container" modelAttribute="blogDto" enctype="multipart/form-data" method="post" action="${pageContext.request.contextPath}/admin/edit/${slug}.htm">
                                     <div class="form-group">
                                         <label >Title</label>
-                                        <form:input type="text" path="title" class="form-control" id="exampleInputName1" placeholder="Name"/>
+                                        <form:input type="text" path="title" class="form-control" id="exampleInputName1" placeholder="Blog's title"/>
                                     </div>
                                     <div class="form-group">
                                         <label>File upload</label>
-                                        <form:input type="file" path="attachment" name="img" />
+                                        <form:input type="file" path="attachment" name="img"/>
                                     </div>
                                     <div class="form-group">
                                         <div>Description</div>
-                                        <form:input path="description" id="description" style="display: none; !important" />
+                                        <form:input path="description" id="description" style="display: none; !important"/>
                                         <div id="editor"></div>
                                     </div>
-                                    <button onclick="saveData()" type="submit" class="btn btn-gradient-primary me-2">Submit</button>
-                                    <button type="reset" class="btn btn-light">Cancel</button>
+                                    <button onclick="saveData()" type="submit" class="btn btn-gradient-primary me-2">Save</button>
+                                    <button type="reset" class="btn btn-light">
+                                        Cancel
+                                    </button>
                                 </form:form>
                             </div>
                         </div>
