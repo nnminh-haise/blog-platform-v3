@@ -84,6 +84,9 @@ public class BlogService {
 
         Blog newBlog = new Blog();
         newBlog.setTitle(payload.getTitle());
+        newBlog.setSubTitle(payload.getTitle());
+        newBlog.setIsPopular(payload.getIs_popular());
+        newBlog.setPublishAt(currentTimestamp.toLocalDate());
         newBlog.setDescription(payload.getDescription());
         newBlog.setAttachment(savedAttachmentPath);
         newBlog.setCreateAt(currentTimestamp);

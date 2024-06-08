@@ -14,10 +14,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Controller
 @RequestMapping("/admin")
@@ -78,6 +77,7 @@ public class AdminController {
     @GetMapping("/insert.htm")
     public String createNewBlogViewRenderer(
             HttpServletRequest request,
+
             ModelMap modelMap) {
         Optional<OpenIdClaims> claims = this.adminService.validateRequest(request);
         if (!claims.isPresent()) {
@@ -91,7 +91,63 @@ public class AdminController {
 
         return "admin/insert";
     }
+    @GetMapping("/test/insert.htm")
+    public String test_insert(
+            HttpServletRequest request,
+            ModelMap modelMap) {
+        Optional<OpenIdClaims> claims = this.adminService.validateRequest(request);
+        if (!claims.isPresent()) {
+            System.out.println(
+                    "[Admin Controller] (Blog Insert Route) ? Bad request - Cannot fetch access token claims -> Redirect back to landing page");
+            return "redirect:/index.htm";
+        }
+//        System.out.println("1");
+//        modelMap.addAttribute("adminInformation", claims.get());
+//        System.out.println("2");
+//
+        modelMap.addAttribute("createBlogDto", new CreateBlogDto());
 
+        return "admin/my_insert";
+    }
+    @PostMapping("/test/insert.htm")
+    public String test_post_mapping(
+
+            HttpServletRequest request,
+
+            ModelMap modelMap,
+            @ModelAttribute("title") String title,
+            @ModelAttribute("description") String descriptoion,
+            @ModelAttribute("cates") List<String> cates ,
+            @ModelAttribute("is_popular") boolean is_popular,
+            @ModelAttribute("subtitle") String subtitle,
+            @ModelAttribute("attachment") MultipartFile file) {
+        Optional<OpenIdClaims> claims = this.adminService.validateRequest(request);
+        if (!claims.isPresent()) {
+            System.out.println(
+                    "[Admin Controller] (Blog Insert Route) ? Bad request - Cannot fetch access token claims -> Redirect back to landing page");
+            return "redirect:/index.htm";
+        }
+        System.out.println("title"+title);
+        System.out.println("attachment"+ file.getOriginalFilename());
+        modelMap.addAttribute("adminInformation", claims.get());
+        CreateBlogDto createBlogDto = new CreateBlogDto(title,subtitle,is_popular,descriptoion,file);
+        ServiceResponse<Blog> response = this.blogService.create(createBlogDto);
+        if (response.isError() || !response.getData().isPresent()) {
+            // TODO: handle error here!
+            return "redirect:/index.htm";
+        }
+
+        return "redirect:/admin/edit/" + response.getData().get().getSlug() + ".htm";
+    }
+    @ModelAttribute("slugs")
+    public Map<String, String> fetchAllSlugs() {
+        List<Category> categories = this.categoryService.findAll();
+        Map<String, String> slugs = new HashMap<>();
+        for (Category category: categories) {
+            slugs.put(category.getSlug(), category.getName());
+        }
+        return slugs;
+    }
     @PostMapping("/insert.htm")
     public String creatingNewBlogHandler(
             @ModelAttribute("createBlogDto") CreateBlogDto createBlogDto,
