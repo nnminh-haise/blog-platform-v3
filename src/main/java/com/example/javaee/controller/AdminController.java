@@ -3,6 +3,7 @@ package com.example.javaee.controller;
 import com.example.javaee.dto.BlogDto;
 import com.example.javaee.dto.CreateBlogDto;
 import com.example.javaee.dto.OpenIdClaims;
+import com.example.javaee.dto.UpdateBlogDto;
 import com.example.javaee.helper.ServiceResponse;
 import com.example.javaee.model.Blog;
 import com.example.javaee.model.Category;
@@ -16,6 +17,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -133,7 +135,7 @@ public class AdminController {
             return "redirect:/admin/index.htm";
         }
 
-        modelMap.addAttribute("blogDetail", requestedBlog.get());
+        modelMap.addAttribute("blogDto", requestedBlog.get());
 
         return "admin/edit";
     }
@@ -149,7 +151,16 @@ public class AdminController {
             return "redirect:/admin/index.htm";
         }
 
+        UpdateBlogDto payload = new UpdateBlogDto();
+        payload.setTitle(blogDto.getTitle());
+        payload.setDescription(blogDto.getDescription());
+        payload.setAttachment(blogDto.getAttachment());
+        // TODO: add update fields for these two fields
+        payload.setHiddenStatus(false);
+        payload.setPublishAt(new Date());
+
         // TODO: add update blog service
+        this.blogService.update(updatingBlog.get().getId(), payload);
 
         modelMap.addAttribute("blogDto", blogDto);
         return "admin/edit";

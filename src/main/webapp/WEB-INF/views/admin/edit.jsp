@@ -94,7 +94,7 @@
                             <div class="card-body">
                                 <h4 class="card-title">Blog</h4>
                                 <p class="card-description"> Edit Blog</p>
-                                <form:form class="forms-sample" id="main-container" modelAttribute="blogDetail" enctype="multipart/form-data" method="post" action="${pageContext.request.contextPath}/admin/edit/${slug}.htm">
+                                <form:form class="forms-sample" id="main-container" modelAttribute="blogDto" enctype="multipart/form-data" method="post" action="${pageContext.request.contextPath}/admin/edit/${slug}.htm">
                                     <div class="form-group">
                                         <label >Title</label>
                                         <form:input type="text" path="title" class="form-control" id="exampleInputName1" placeholder="Blog's title"/>

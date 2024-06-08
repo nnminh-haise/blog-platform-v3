@@ -151,7 +151,7 @@
                   <tr>
                     <th>Title</th>
                     <th>Published</th>
-                    <th>Create at</th>
+                    <th>Updated at</th>
                     <th>Manage</th>
                   </tr>
                   </thead>
@@ -177,8 +177,8 @@
                         </c:when>
                       </c:choose>
                       <td>
-                        <fmt:formatDate value="${blog.createAtAsDate()}" pattern="MMMM d, yyyy HH:mm:ss" var="formattedCreateDate" />
-                        <c:out value="${formattedCreateDate}" />
+                        <fmt:formatDate value="${blog.updateAtAsDate()}" pattern="MMMM d, yyyy HH:mm:ss" var="formattedUpdateDate" />
+                        <c:out value="${formattedUpdateDate}" />
                       </td>
                       <td style="width: 20%">
                         <a
