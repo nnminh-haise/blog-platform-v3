@@ -82,13 +82,13 @@
         </li>
         <li class="nav-item">
           <a class="nav-link" href="${pageContext.request.contextPath}/admin/index.htm">
-            <span class="menu-title">Blog list</span>
+            <span class="menu-title">Blogs</span>
             <i class="mdi mdi-contacts menu-icon"></i>
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="${pageContext.request.contextPath}/admin/category/index.htm">
-            <span class="menu-title">Category list</span>
+          <a class="nav-link" href="${pageContext.request.contextPath}/admin/categories/index.htm">
+            <span class="menu-title">Categories</span>
             <i class="mdi mdi-format-list-bulleted menu-icon"></i>
           </a>
         </li>
