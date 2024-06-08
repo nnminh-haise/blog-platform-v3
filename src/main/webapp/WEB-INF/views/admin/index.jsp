@@ -36,6 +36,8 @@
           rel="shortcut icon"
           href="${pageContext.request.contextPath}/images/favicon.ico"
   />
+  <!-- Include jQuery -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
 <div class="container-scroller">
@@ -48,20 +50,6 @@
       <a class="navbar-brand brand-logo-mini" href="${pageContext.request.contextPath}/index.html"
       ><img src="${pageContext.request.contextPath}/images/logo-mini.svg" alt="logo"
       /></a>
-    </div>
-    <div class="navbar-menu-wrapper d-flex align-items-stretch">
-      <div class="btn-group">
-        <div class="form-group">
-          <%-- Category nav bar --%>
-          <label for="category-filter">Categories</label>
-          <select class="form-control" id="category-filter" name="slug">
-            <option value="null">All categories</option>
-            <c:forEach var="category" items="${categories}">
-              <option value="${category.slug}">${category.name}</option>
-            </c:forEach>
-          </select>
-        </div>
-      </div>
     </div>
   </nav>
   <!-- partial -->
@@ -80,13 +68,13 @@
             </div>
           </a>
         </li>
-        <li class="nav-item">
+        <li class="nav-item link-item">
           <a class="nav-link" href="${pageContext.request.contextPath}/admin/index.htm">
             <span class="menu-title">Blogs</span>
             <i class="mdi mdi-contacts menu-icon"></i>
           </a>
         </li>
-        <li class="nav-item">
+        <li class="nav-item link-item">
           <a class="nav-link" href="${pageContext.request.contextPath}/admin/categories/index.htm">
             <span class="menu-title">Categories</span>
             <i class="mdi mdi-format-list-bulleted menu-icon"></i>
@@ -97,12 +85,32 @@
     <!-- partial -->
     <div class="main-panel">
       <div class="content-wrapper">
-        <div class="page-header">
-          <h3 class="page-title">Blogs</h3>
-
-          <%-- Order by section --%>
-          <div class="form-group row">
-            <label class="col-sm-6 col-form-label">Order By: Create Timestamp</label>
+        <h1 class="page-title mb-4" style="font-size: 1.5rem !important; font-weight: 600 !important;">Blogs</h1>
+        <div class="page-header" >
+          <div class="navbar-menu-wrapper d-flex align-items-stretch">
+            <div class="btn-group">
+              <div class="form-group"
+                   style="display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 0.5rem;
+                     margin-bottom: 0 !important;"
+              >
+                <%-- Category nav bar --%>
+                <label for="category-filter" style="margin-bottom: 0 !important;">Categories</label>
+                <select class="form-control" id="category-filter" name="slug">
+                  <option value="null">All categories</option>
+                  <c:forEach var="category" items="${categories}">
+                    <option value="${category.slug}">${category.name}</option>
+                  </c:forEach>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="form-group row" style="margin-bottom: 0 !important;">
+            <label class="col-sm-6 col-form-label" style="margin-bottom: 0 !important;"
+            >Order By: Published</label
+            >
             <div class="col-sm-3">
               <div class="form-check">
                 <label class="form-check-label">
@@ -143,8 +151,6 @@
           <div class="col-lg-12 grid-margin stretch-card">
             <div class="card">
               <div class="card-body">
-                <h4 class="card-title">Blog</h4>
-
                 <table class="table table-dark">
                   <thead>
                   <tr>
@@ -152,7 +158,7 @@
                     <th>Published</th>
                     <th>Created at</th>
                     <th>Updated at</th>
-                    <th>Manage</th>
+                    <th style="display: flex; justify-content: center; align-items: center">Manage</th>
                   </tr>
                   </thead>
                   <tbody>
@@ -162,11 +168,19 @@
                           varStatus="loop"
                   >
                     <tr>
-                      <td><c:out value="${blog.title}" /></td>
+                      <td style="overflow: hidden !important;
+                      text-overflow: ellipsis !important;
+                      white-space: nowrap !important;
+                      max-width: 322px;
+                      vertical-align: middle;
+                      font-size: 0.875rem;
+                      line-height: 1;
+                      padding: 0.9375rem;
+                      "><c:out value="${blog.title}" /></td>
                       <c:choose>
                         <c:when test="${blog.publishAt == null}">
                           <td>
-                            <p>Pick a publish date</p>
+                            <p style="margin-bottom: 0 !important;">Pick a publish date</p>
                           </td>
                         </c:when>
                         <c:when test="${blog.publishAt != null}">
@@ -191,6 +205,7 @@
                           <button
                                   type="button"
                                   class="btn btn-dark btn-fw"
+                                  style="min-width: 110px; background: #00cdf6;"
                           >
                             Edit
                           </button>
@@ -202,6 +217,7 @@
                           <button
                                   type="button"
                                   class="btn btn-dark btn-fw"
+                                  style="min-width: 110px; background: #ff3333"
                           >
                             Delete
                           </button>
@@ -286,5 +302,17 @@
 
 <!-- Custom js for this page -->
 <!-- End custom js for this page -->
+
+<!-- jQuery script to highlight the nav items -->
+<script>
+  $(document).ready(function() {
+    if (window.location.pathname.includes('/admin/index.htm')) {
+      $('.link-item:first').css('background-color', '#00F66BFF');
+      $('.link-item:first').css('color', '#00F66BFF');// Highlight color for first li
+    } else {
+      $('.link-item-item').not(':first').css('background-color', '#00F66BFF'); // Highlight color for other li elements
+    }
+  });
+</script>
 </body>
 </html>

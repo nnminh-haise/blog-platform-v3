@@ -109,7 +109,7 @@ MAIN
               class="card-body px-0 pb-0 d-flex flex-column align-items-start"
             >
               <h2 class="h4 font-weight-bold">
-                <a class="text-dark" href="">${favouriteBlogs.get(0).title}</a>
+                <a class="text-dark" href="${pageContext.request.contextPath}/blogs/${favouriteBlogs.get(0).slug}.htm">${favouriteBlogs.get(0).title}</a>
               </h2>
               <p class="card-text">${favouriteBlogs.get(0).subTitle}</p>
               <div>

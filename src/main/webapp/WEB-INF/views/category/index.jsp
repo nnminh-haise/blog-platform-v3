@@ -19,6 +19,7 @@
     <!-- Layout styles -->
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css">
     <!-- End layout styles -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <link rel="shortcut icon" href="${pageContext.request.contextPath}/images/favicon.ico" />
 </head>
 <body>
@@ -54,27 +55,30 @@
                     </a>
                 </li>
 
-                <li class="nav-item">
+                <li class="nav-item ">
                     <a class="nav-link" href="${pageContext.request.contextPath}/admin/index.htm">
                         <span class="menu-title">Blogs</span>
                         <i class="mdi mdi-contacts menu-icon"></i>
                     </a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item link-item">
                     <a class="nav-link" href="${pageContext.request.contextPath}/admin/categories/index.htm">
-                        <span class="menu-title">Category</span>
-                        <i class="mdi mdi-format-list-bulleted menu-icon"></i>
+                        <span class="menu-title">Categories</span>
+                        <i class="mdi mdi-contacts menu-icon"></i>
                     </a>
                 </li>
-
 
             </ul>
         </nav>
         <!-- partial -->
         <div class="main-panel">
             <div class="content-wrapper">
+                <a style="font-weight: 600; text-decoration: none; font-size: 1.5rem; margin-bottom: 1.5rem; color: black;" class="nav-link" href="${pageContext.request.contextPath}/admin/categories/index.htm">
+                    <span class="menu-title">Categories</span>
+                    <i class="mdi mdi-format-list-bulleted menu-icon"></i>
+                </a>
                 <div class="page-header">
-                    <h3 class="page-title"> Categories </h3>
+                    <div></div>
                     <div class="template-demo">
                         <a href="${pageContext.request.contextPath}/admin/categories/insert.htm" >
                             <button type="button" class="btn btn-gradient-success btn-fw">Add</button>
@@ -86,8 +90,7 @@
                     <div class="col-lg-12 stretch-card">
                         <div class="card">
                             <div class="card-body">
-                                <h4 class="card-title">Category List</h4>
-                                <table class="table table-bordered">
+                                <table class="table table-dark">
                                     <thead>
                                     <tr>
                                         <th> Name </th>
@@ -98,33 +101,15 @@
 
                                     <tbody>
                                     <c:forEach var="category" items="${categories}" varStatus="loop">
-                                        <c:set var="rowClass" value=""/>
-                                        <c:choose>
-                                            <c:when test="${loop.index % 5 == 0}">
-                                                <c:set var="rowClass" value="table-info"/>
-                                            </c:when>
-                                            <c:when test="${loop.index % 5 == 1}">
-                                                <c:set var="rowClass" value="table-warning"/>
-                                            </c:when>
-                                            <c:when test="${loop.index % 5 == 2}">
-                                                <c:set var="rowClass" value="table-danger"/>
-                                            </c:when>
-                                            <c:when test="${loop.index % 5 == 3}">
-                                                <c:set var="rowClass" value="table-success"/>
-                                            </c:when>
-                                            <c:when test="${loop.index % 5 == 4}">
-                                                <c:set var="rowClass" value="table-primary"/>
-                                            </c:when>
-                                        </c:choose>
                                         <tr class="${rowClass}">
                                             <td><c:out value="${category.name}" /></td>
                                             <td><c:out value="${category.slug}" /></td>
                                             <td style="width: 20%;">
-                                                <a href="${pageContext.request.contextPath}/admin/categories/edit/${category.slug}.htm">
-                                                    <button type="button" class="btn btn-gradient-warning btn-fw">Edit</button>
+                                                <a href="category/editor/${category.id}.htm?pageCategory=${pageCategory}" >
+                                                    <button type="button" class="btn btn-gradient-warning btn-fw"  style="min-width: 110px; background: #00cdf6;">Edit</button>
                                                 </a>
-                                                <a href="${pageContext.request.contextPath}/admin/categories/edit/${category.slug}.htm" onclick="return confirm('are you sure')">
-                                                    <button type="button" class="btn btn-gradient-danger btn-fw">Delete</button>
+                                                <a href="category/delete/${category.id}.htm?pageCategory=${pageCategory}" onclick="return confirm('are you sure')">
+                                                    <button type="button" class="btn btn-gradient-danger btn-fw"   style="min-width: 110px; background: #ff3333">Delete</button>
                                                 </a>
                                             </td>
                                         </tr>
@@ -172,5 +157,15 @@
 <!-- endinject -->
 <!-- Custom js for this page -->
 <!-- End custom js for this page -->
+<script>
+    $(document).ready(function() {
+        if (window.location.pathname.includes('/admin/categories/index.htm')) {
+            console.log('check')
+            $('.link-item').css('background-color', '#00F66BFF'); // Highlight color for first li
+            $('.link-item').css('color', 'white'); // Highlight color for first li
+
+        }
+    });
+</script>
 </body>
 </html>
