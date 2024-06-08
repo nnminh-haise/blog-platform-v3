@@ -63,7 +63,7 @@
               </h6>
               <p class="text-muted">${blog.subTitle}</p>
               <p class="text-muted">
-                  ${blog.publishAt}
+                  ${blog.createAt}
               </p>
             </span>
           </li>

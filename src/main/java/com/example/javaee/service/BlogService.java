@@ -117,8 +117,6 @@ public class BlogService {
         String savedAttachmentPath = this.fileUploadService.saveFile(payload.getAttachment(), savePath);
 
         // * Convert Date time from payload to LocalDate to save to database
-        Instant instant = payload.getPublishAt().toInstant();
-        LocalDate publishDate = instant.atZone(ZoneId.systemDefault()).toLocalDate();
         LocalDateTime currentTimestamp = LocalDateTime.now();
 
         // * Set updated fields to a Blog object
@@ -127,9 +125,7 @@ public class BlogService {
         updatedBlog.setDescription(payload.getDescription());
         updatedBlog.setAttachment(savedAttachmentPath);
         updatedBlog.setSlug(slug);
-        updatedBlog.setPublishAt(publishDate);
         updatedBlog.setUpdateAt(currentTimestamp);
-        updatedBlog.setHiddenStatus(payload.getHiddenStatus());
 
         RepositoryResponse<Blog> response = this.blogRepository.update(updatedBlog);
         if (response.hasErrorOf(RepositoryErrorType.CONSTRAINT_VIOLATION)) {

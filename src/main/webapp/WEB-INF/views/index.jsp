@@ -1,6 +1,7 @@
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %> <%@ taglib
-uri="http://www.springframework.org/tags/form" prefix="form" %> <%@ page
-contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <!DOCTYPE html>
 <html>
   <head>
@@ -105,21 +106,22 @@ MAIN
                 background-repeat: no-repeat;
               "
             ></div>
-            <div
-              class="card-body px-0 pb-0 d-flex flex-column align-items-start"
-            >
+            <div class="card-body px-0 pb-0 d-flex flex-column align-items-start">
               <h2 class="h4 font-weight-bold">
-                <a class="text-dark" href="${pageContext.request.contextPath}/blogs/${favouriteBlogs.get(0).slug}.htm">${favouriteBlogs.get(0).title}</a>
+                <a class="text-dark" href="${pageContext.request.contextPath}/blogs/${favouriteBlogs[0].slug}.htm">${favouriteBlogs[0].title}</a>
               </h2>
-              <p class="card-text">${favouriteBlogs.get(0).subTitle}</p>
-              <div>
-                <small class="d-block"
-                  ><a class="text-muted" href="./author.html"
-                    >Favid Rick</a
-                  ></small
-                >
-                <small class="text-muted">Dec 12 &middot; 5 min read</small>
+              <p class="card-text">${favouriteBlogs[0].subTitle}</p>
+              <div style="display: flex; gap: 4px; align-items: center; padding: 4px 8px; margin-bottom: 8px">
+                <c:forEach var="category" items="${favouriteBlogs[0].categories}">
+                  <div style="padding: 4px 8px; background-color: #e8f3ec; border-radius: 8px; font-size: 14px; color: #393E46; font-weight: 400">
+                    ${category.name}
+                  </div>
+                </c:forEach>
               </div>
+              <small class="text-muted">
+                <fmt:formatDate value="${favouriteBlogs[0].createAtAsDate()}" pattern="MMMM d, yyyy HH:mm:ss" var="formattedCreateDate" />
+                <c:out value="${formattedCreateDate}" />
+              </small>
             </div>
           </div>
         </div>
@@ -131,14 +133,22 @@ MAIN
                   <img height="80" src="${blog.thumbnail}" />
                   <div class="pl-3">
                     <h2 class="mb-2 h6 font-weight-bold">
-                      <a
-                        class="text-dark"
-                        href="${pageContext.request.contextPath}/blogs/${blog.slug}.htm"
-                      >
+                      <a class="text-dark"
+                         href="${pageContext.request.contextPath}/blogs/${blog.slug}.htm">
                         ${blog.title}
                       </a>
                     </h2>
-                    <small class="text-muted">${blog.publishAt}</small>
+                    <div style="display: flex; gap: 4px; align-items: center; padding: 4px 8px; margin-bottom: 8px">
+                      <c:forEach var="category" items="${blog.categories}">
+                        <div style="padding: 2px 6px; background-color: #e8f3ec; border-radius: 8px; font-size: 14px; color: #393E46; font-weight: 400">
+                            ${category.name}
+                        </div>
+                      </c:forEach>
+                    </div>
+                    <small class="text-muted">
+                      <fmt:formatDate value="${blog.createAtAsDate()}" pattern="MMMM d, yyyy HH:mm:ss" var="formattedCreateDate" />
+                      <c:out value="${formattedCreateDate}" />
+                    </small>
                   </div>
                 </div>
               </c:if>
@@ -167,18 +177,25 @@ MAIN
                   >
                 </h2>
                 <p>${blog.subTitle}</p>
-                <div class="card-text text-muted small">Author</div>
-                <small class="text-muted">${blog.publishAt}</small>
+                <div style="display: flex; gap: 4px; align-items: center; padding: 4px 8px; margin-bottom: 8px">
+                  <c:forEach var="category" items="${blog.categories}">
+                    <div style="padding: 2px 6px; background-color: #e8f3ec; border-radius: 8px; font-size: 14px; color: #393E46; font-weight: 400">
+                        ${category.name}
+                    </div>
+                  </c:forEach>
+                </div>
+                <small class="text-muted">
+                  <fmt:formatDate value="${blog.createAtAsDate()}" pattern="MMMM d, yyyy HH:mm:ss" var="formattedCreateDate" />
+                  <c:out value="${formattedCreateDate}" />
+                </small>
               </div>
               <img height="120" src="${blog.thumbnail}" />
             </div>
           </c:forEach>
           <div class="d-flex w-100 justify-content-center">
-            <button
-              class="rounded my-2 btn-gray w-25"
-              style="cursor: pointer"
-              id="loadMore"
-            >
+            <button class="rounded my-2 btn-gray w-25"
+                    style="background-color: #e8f3ec; border: none; border-radius: 8px;"
+                    id="loadMore">
               Xem tiếp
             </button>
           </div>
@@ -207,21 +224,10 @@ MAIN
       </div>
     </div>
 
-    <!--------------------------------------
-FOOTER
---------------------------------------->
+    <%-- Consider removing this section   --%>
     <div class="container mt-5">
       <footer class="bg-white border-top p-3 text-muted small">
-        <div class="row align-items-center justify-content-between">
-          <div>
-            <span class="navbar-brand mr-2"><strong>Mundana</strong></span>
-            Copyright &copy;
-            <script>
-              document.write(new Date().getFullYear());
-            </script>
-            . All rights reserved.
-          </div>
-        </div>
+
       </footer>
     </div>
   </body>

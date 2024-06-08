@@ -58,9 +58,9 @@ public class BlogRepository {
         Session session = sessionFactory.getCurrentSession();
         final String Q_FIND_ALL_BY_CATEGORY_SLUG = "SELECT DISTINCT cd.blog FROM CategoryDetail AS cd " +
                 "WHERE cd.blog.deleteAt IS NULL AND cd.category.slug = :categorySlug " +
-                "ORDER BY cd.blog.publishAt " + (orderBy.equals("asc") ? "ASC" : "DESC");
+                "ORDER BY cd.blog.createAt " + (orderBy.equals("asc") ? "ASC" : "DESC");
         final String Q_FIND_ALL = "SELECT b FROM Blog AS b WHERE b.deleteAt IS NULL " +
-                "ORDER BY b.publishAt " + (orderBy.equalsIgnoreCase("asc") ? "ASC" : "DESC");
+                "ORDER BY b.createAt " + (orderBy.equalsIgnoreCase("asc") ? "ASC" : "DESC");
 
         Query<Blog> query = session.createQuery(
                 (categorySlug == null ? Q_FIND_ALL : Q_FIND_ALL_BY_CATEGORY_SLUG), Blog.class);

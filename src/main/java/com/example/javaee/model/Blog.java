@@ -9,7 +9,9 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -31,10 +33,6 @@ public class Blog extends BaseEntity {
     @Column(name = "title", nullable = false, unique = true)
     private String title;
 
-    @DateTimeFormat(pattern = "yyyy/MM/dd")
-    @Column(name = "publish_at")
-    private LocalDate publishAt;
-
     @Column(name = "description", nullable = false)
     private String description;
 
@@ -49,9 +47,6 @@ public class Blog extends BaseEntity {
 
     @Column(name = "sub_title", nullable = true)
     private String subTitle;
-
-    @Column(name = "hidden_status", nullable = false)
-    private Boolean hiddenStatus = false;
 
     @Column(name = "is_popular", nullable = false)
     private Boolean isPopular = false;
@@ -71,26 +66,20 @@ public class Blog extends BaseEntity {
         return this.castLocalDateTimeToDate(this.getDeleteAt());
     }
 
-    public Date publishDateAsDate() {
-        return this.castLocalDateToDate(this.getPublishAt());
-    }
-
-    private Date castLocalDateToDate(LocalDate localDate) {
-        return Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
-    }
-
     private Date castLocalDateTimeToDate(LocalDateTime localDateTime) {
         return Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
+    }
+
+    public List<Category> getCategories() {
+        return this.categoryDetails.stream().map(CategoryDetail::getCategory).collect(Collectors.toList());
     }
 
     public String toString() {
         return "id = " + id +
                 " title = " + title +
-                " publish at = " + publishAt +
                 " description = " + description +
                 " attachment = " + attachment +
                 " slug = " + slug +
-                " hidden status = " + hiddenStatus +
                 " is popular = " + isPopular +
                 " created at = " + super.getCreateAt().toString() +
                 " updated at = " + super.getUpdateAt().toString();

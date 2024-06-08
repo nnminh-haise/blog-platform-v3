@@ -44,10 +44,10 @@
   <!-- partial:../../partials/_navbar.html -->
   <nav class="navbar default-layout-navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
     <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-center">
-      <a class="navbar-brand brand-logo" href="${pageContext.request.contextPath}/index.html"
+      <a class="navbar-brand brand-logo" href="${pageContext.request.contextPath}/index.htm"
       ><img src="${pageContext.request.contextPath}/images/blogg.png" alt="logo"
       /></a>
-      <a class="navbar-brand brand-logo-mini" href="${pageContext.request.contextPath}/index.html"
+      <a class="navbar-brand brand-logo-mini" href="${pageContext.request.contextPath}/index.htm"
       ><img src="${pageContext.request.contextPath}/images/logo-mini.svg" alt="logo"
       /></a>
     </div>
@@ -109,7 +109,7 @@
           </div>
           <div class="form-group row" style="margin-bottom: 0 !important;">
             <label class="col-sm-6 col-form-label" style="margin-bottom: 0 !important;"
-            >Order By: Published</label
+            >Order By: Create Date</label
             >
             <div class="col-sm-3">
               <div class="form-check">
@@ -155,7 +155,6 @@
                   <thead>
                   <tr>
                     <th>Title</th>
-                    <th>Published</th>
                     <th>Created at</th>
                     <th>Updated at</th>
                     <th style="display: flex; justify-content: center; align-items: center">Manage</th>
@@ -177,19 +176,6 @@
                       line-height: 1;
                       padding: 0.9375rem;
                       "><c:out value="${blog.title}" /></td>
-                      <c:choose>
-                        <c:when test="${blog.publishAt == null}">
-                          <td>
-                            <p style="margin-bottom: 0 !important;">Pick a publish date</p>
-                          </td>
-                        </c:when>
-                        <c:when test="${blog.publishAt != null}">
-                          <td>
-                            <fmt:formatDate value="${blog.publishDateAsDate()}" pattern="MMMM d, yyyy" var="formattedPublishDate" />
-                            <c:out value="${formattedPublishDate}" />
-                          </td>
-                        </c:when>
-                      </c:choose>
                       <td>
                         <fmt:formatDate value="${blog.createAtAsDate()}" pattern="MMMM d, yyyy HH:mm:ss" var="formattedCreateDate" />
                         <c:out value="${formattedCreateDate}" />

@@ -15,7 +15,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -38,19 +37,6 @@ public class AdminController {
     @ModelAttribute("categories")
     public List<Category> fetchAllCategories() {
         return this.categoryService.findAll();
-    }
-
-    @ModelAttribute("totalPages")
-    public Integer getLimitBlogPage() {
-        final int PAGE_SIZE = 5;
-
-        List<Blog> blogs = this.blogService.findAll();
-        int totalBlogs = blogs.size();
-        int totalPages = totalBlogs / PAGE_SIZE;
-        if (totalBlogs % PAGE_SIZE != 0) {
-            totalPages++;
-        }
-        return totalPages;
     }
 
     @GetMapping("/index.htm")
@@ -168,9 +154,6 @@ public class AdminController {
         payload.setTitle(blogDto.getTitle());
         payload.setDescription(blogDto.getDescription());
         payload.setAttachment(blogDto.getAttachment());
-        // TODO: add update fields for these two fields
-        payload.setHiddenStatus(false);
-        payload.setPublishAt(new Date());
 
         // TODO: add update blog service
         this.blogService.update(updatingBlog.get().getId(), payload);
