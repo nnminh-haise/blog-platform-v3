@@ -101,15 +101,20 @@ public class CategoryController {
         modelMap.addAttribute("adminInformation", claims.get());
 
         Optional<Category> requestedCategory = this.categoryService.findBySlug(slug);
+        System.out.println("category:" + requestedCategory.get().toString());
         if (!requestedCategory.isPresent()) {
             // TODO: handle error here
+            System.out.println("Error: Cannot find any category with the given slug");
             return "redirect:/admin/index.htm";
         }
+
+        List<Category> categories = this.categoryService.findAll();
+        modelMap.addAttribute("categories", categories);
 
         UpdateCategoryDto updatingCategoryDto = new UpdateCategoryDto();
         updatingCategoryDto.setName(requestedCategory.get().getName());
         modelMap.addAttribute("updateCategoryDto", updatingCategoryDto);
 
-        return "admin/edit";
+        return "category/edit";
     }
 }

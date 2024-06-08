@@ -120,10 +120,10 @@
                                             <td><c:out value="${category.name}" /></td>
                                             <td><c:out value="${category.slug}" /></td>
                                             <td style="width: 20%;">
-                                                <a href="category/editor/${category.id}.htm?pageCategory=${pageCategory}" >
+                                                <a href="${pageContext.request.contextPath}/admin/categories/edit/${category.slug}.htm">
                                                     <button type="button" class="btn btn-gradient-warning btn-fw">Edit</button>
                                                 </a>
-                                                <a href="category/delete/${category.id}.htm?pageCategory=${pageCategory}" onclick="return confirm('are you sure')">
+                                                <a href="${pageContext.request.contextPath}/admin/categories/edit/${category.slug}.htm" onclick="return confirm('are you sure')">
                                                     <button type="button" class="btn btn-gradient-danger btn-fw">Delete</button>
                                                 </a>
                                             </td>
