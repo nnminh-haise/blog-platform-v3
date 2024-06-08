@@ -7,16 +7,14 @@ import com.example.javaee.dto.UpdateBlogDto;
 import com.example.javaee.helper.ServiceResponse;
 import com.example.javaee.model.Blog;
 import com.example.javaee.model.Category;
+import com.example.javaee.service.AdminService;
 import com.example.javaee.service.BlogService;
 import com.example.javaee.service.CategoryService;
-import com.example.javaee.service.GoogleApiService;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -24,15 +22,15 @@ import java.util.Optional;
 @Controller
 @RequestMapping("/admin")
 public class AdminController {
-    private final GoogleApiService googleApiService;
+    private final AdminService adminService;
     private final BlogService blogService;
     private final CategoryService categoryService;
 
     public AdminController(
-            GoogleApiService googleApiService,
+            AdminService adminService,
             BlogService blogService,
             CategoryService categoryService) {
-        this.googleApiService = googleApiService;
+        this.adminService = adminService;
         this.blogService = blogService;
         this.categoryService = categoryService;
     }
@@ -63,7 +61,7 @@ public class AdminController {
             @RequestParam(name = "slug", required = false) String slug,
             HttpServletRequest request,
             ModelMap modelMap) {
-        Optional<OpenIdClaims> claims = this.validateRequest(request);
+        Optional<OpenIdClaims> claims = this.adminService.validateRequest(request);
         if (!claims.isPresent()) {
             System.out.println(
                     "[Admin Controller] (Admin Index Route) ? Bad request - Cannot fetch access token claims -> Redirect back to landing page");
@@ -81,7 +79,7 @@ public class AdminController {
     public String createNewBlogViewRenderer(
             HttpServletRequest request,
             ModelMap modelMap) {
-        Optional<OpenIdClaims> claims = this.validateRequest(request);
+        Optional<OpenIdClaims> claims = this.adminService.validateRequest(request);
         if (!claims.isPresent()) {
             System.out.println(
                     "[Admin Controller] (Blog Insert Route) ? Bad request - Cannot fetch access token claims -> Redirect back to landing page");
@@ -99,7 +97,7 @@ public class AdminController {
             @ModelAttribute("createBlogDto") CreateBlogDto createBlogDto,
             HttpServletRequest request,
             ModelMap modelMap) {
-        Optional<OpenIdClaims> claims = this.validateRequest(request);
+        Optional<OpenIdClaims> claims = this.adminService.validateRequest(request);
         if (!claims.isPresent()) {
             System.out.println(
                     "[Admin Controller] (Blog Insert Route) ? Bad request - Cannot fetch access token claims -> Redirect back to landing page");
@@ -121,7 +119,7 @@ public class AdminController {
             @PathVariable(name = "slug", required = true) String slug,
             HttpServletRequest request,
             ModelMap modelMap) {
-        Optional<OpenIdClaims> claims = this.validateRequest(request);
+        Optional<OpenIdClaims> claims = this.adminService.validateRequest(request);
         if (!claims.isPresent()) {
             System.out.println(
                     "[Admin Controller] (Blog Insert Route) ? Bad request - Cannot fetch access token claims -> Redirect back to landing page");
@@ -143,7 +141,15 @@ public class AdminController {
     @PostMapping(value = "/edit/{slug}.htm")
     public String updateBlogHandler(ModelMap modelMap,
             @ModelAttribute("BlogDto") BlogDto blogDto,
-            @PathVariable(name = "slug", required = true) String slug) {
+            @PathVariable(name = "slug", required = true) String slug,
+            HttpServletRequest request) {
+        Optional<OpenIdClaims> claims = this.adminService.validateRequest(request);
+        if (!claims.isPresent()) {
+            System.out.println(
+                    "[Admin Controller] (Blog Insert Route) ? Bad request - Cannot fetch access token claims -> Redirect back to landing page");
+            return "redirect:/index.htm";
+        }
+        modelMap.addAttribute("adminInformation", claims.get());
 
         Optional<Blog> updatingBlog = this.blogService.findBySlug(slug);
         if (!updatingBlog.isPresent()) {
@@ -164,25 +170,5 @@ public class AdminController {
 
         modelMap.addAttribute("blogDto", blogDto);
         return "admin/edit";
-    }
-
-    private Optional<OpenIdClaims> validateRequest(HttpServletRequest request) {
-        if (request == null) {
-            return Optional.empty();
-        }
-
-        HttpSession session = request.getSession();
-        String accessToken = String.valueOf(session.getAttribute("accessToken"));
-        String expireIn = String.valueOf(session.getAttribute("expireIn"));
-        if (accessToken == null || expireIn == null) {
-            return Optional.empty();
-        }
-
-        try {
-            OpenIdClaims claims = this.googleApiService.getUserInfo(accessToken);
-            return Optional.of(claims);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 }
