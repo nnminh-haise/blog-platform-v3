@@ -43,10 +43,10 @@
   <nav class="navbar default-layout-navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
     <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-center">
       <a class="navbar-brand brand-logo" href="${pageContext.request.contextPath}/index.html"
-      ><img src="images/blogg.png" alt="logo"
+      ><img src="${pageContext.request.contextPath}/images/blogg.png" alt="logo"
       /></a>
       <a class="navbar-brand brand-logo-mini" href="${pageContext.request.contextPath}/index.html"
-      ><img src="images/logo-mini.svg" alt="logo"
+      ><img src="${pageContext.request.contextPath}/images/logo-mini.svg" alt="logo"
       /></a>
     </div>
     <div class="navbar-menu-wrapper d-flex align-items-stretch">
@@ -207,24 +207,16 @@
                   </c:forEach>
                   </tbody>
                 </table>
-
-                <%-- TODO: implement pagination               --%>
-                <div
-                        class="pagination-container"
-                        style="
+                <%-- Pagination elements --%>
+                <div class="pagination-container" style="
                         margin: 30px;
                         text-align: right;
                         top: 0;
                         right: 100%;
-                      "
-                >
-                  <a href="category/index.htm?pageCategory=-1">
-                    <button type="button">&#10094;</button>
-                  </a>
-                  Page of
-                  <a href="category/index.htm?pageCategory=1">
-                    <button type="button" disabled>&#10095;</button>
-                  </a>
+                      ">
+                  <button type="button" onclick="handlePageLeftButton()">&#10094;</button>
+                  Page ${currentPage + 1} of ${totalNumberOfPage}
+                  <button type="button" onclick="handlePageRightButton()">&#10095;</button>
                 </div>
               </div>
             </div>
@@ -242,14 +234,33 @@
 </div>
 <!-- container-scroller -->
 <!-- plugins:js -->
-<script src="vendors/js/vendor.bundle.base.js"></script>
+<script src="${pageContext.request.contextPath}/vendors/js/vendor.bundle.base.js"></script>
 <!-- endinject -->
 <!-- Plugin js for this page -->
 <!-- End plugin js for this page -->
 <!-- inject:js -->
-<script src="js/off-canvas.js"></script>
-<script src="js/hoverable-collapse.js"></script>
-<script src="js/misc.js"></script>
+<script src="${pageContext.request.contextPath}/js/off-canvas.js"></script>
+<script src="${pageContext.request.contextPath}/js/hoverable-collapse.js"></script>
+<script src="${pageContext.request.contextPath}/js/misc.js"></script>
+<%-- Pagination logic --%>
+<script type="text/javascript">
+  const baseUrl = "${pageContext.request.contextPath}/admin/index.htm";
+  const page = "${currentPage}";
+  const size = "${currentSize}";
+  const totalNumberOfPage = "${totalNumberOfPage}";
+  const orderBy = "${orderBy}";
+  const filteringSlug = "${filterBySlug}";
+
+  function handlePageLeftButton() {
+    const newPage = (+page === 0 ? totalNumberOfPage - 1 : +page - 1);
+    window.location.href = baseUrl + "?page=" + newPage + "&size=" + size;
+  }
+
+  function handlePageRightButton() {
+    const newPage = (+page === totalNumberOfPage - 1 ? 0 : +page + 1);
+    window.location.href = baseUrl + "?page=" + newPage + "&size=" + size;
+  }
+</script>
 <!-- endinject -->
 
 <!-- Custom js for this page -->

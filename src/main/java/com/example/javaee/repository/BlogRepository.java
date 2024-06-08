@@ -44,17 +44,23 @@ public class BlogRepository {
         return query.uniqueResult();
     }
 
+    @Transactional
+    public Long countNumberOfBlog() {
+        Session session = sessionFactory.getCurrentSession();
+        final String Q_FIND_POPULAR_BLOG = "SELECT COUNT(b) FROM Blog AS b WHERE b.deleteAt IS NULL";
+        Query<Long> query = session.createQuery(Q_FIND_POPULAR_BLOG, Long.class);
+        return query.uniqueResult();
+    }
+
     // TODO [Low prior]: refactor this method
     @Transactional
     public List<Blog> findAllByCategorySlug(int page, int size, String orderBy, String categorySlug) {
         Session session = sessionFactory.getCurrentSession();
-        final String Q_FIND_ALL_BY_CATEGORY_SLUG =
-                "SELECT DISTINCT cd.blog FROM CategoryDetail AS cd " +
-                        "WHERE cd.blog.deleteAt IS NULL AND cd.category.slug = :categorySlug " +
-                        "ORDER BY cd.blog.publishAt " + (orderBy.equals("asc") ? "ASC" : "DESC");
-        final String Q_FIND_ALL =
-                "SELECT b FROM Blog AS b WHERE b.deleteAt IS NULL " +
-                        "ORDER BY b.publishAt " + (orderBy.equalsIgnoreCase("asc") ? "ASC" : "DESC");
+        final String Q_FIND_ALL_BY_CATEGORY_SLUG = "SELECT DISTINCT cd.blog FROM CategoryDetail AS cd " +
+                "WHERE cd.blog.deleteAt IS NULL AND cd.category.slug = :categorySlug " +
+                "ORDER BY cd.blog.publishAt " + (orderBy.equals("asc") ? "ASC" : "DESC");
+        final String Q_FIND_ALL = "SELECT b FROM Blog AS b WHERE b.deleteAt IS NULL " +
+                "ORDER BY b.publishAt " + (orderBy.equalsIgnoreCase("asc") ? "ASC" : "DESC");
 
         Query<Blog> query = session.createQuery(
                 (categorySlug == null ? Q_FIND_ALL : Q_FIND_ALL_BY_CATEGORY_SLUG), Blog.class);
@@ -69,9 +75,8 @@ public class BlogRepository {
     @Transactional
     public List<Blog> findFirstAmountOrderByCreateAt(Integer amount, String orderBy) {
         Session session = sessionFactory.getCurrentSession();
-        final String Q_FIND_ALL_BLOG =
-                "SELECT b FROM Blog AS b WHERE b.deleteAt IS NULL ORDER BY b.createAt " +
-                        (orderBy.equals("asc") ? "ASC" : "DESC");
+        final String Q_FIND_ALL_BLOG = "SELECT b FROM Blog AS b WHERE b.deleteAt IS NULL ORDER BY b.createAt " +
+                (orderBy.equals("asc") ? "ASC" : "DESC");
         Query<Blog> query = session.createQuery(Q_FIND_ALL_BLOG, Blog.class);
         query.setMaxResults(amount);
         return query.list();
@@ -80,17 +85,16 @@ public class BlogRepository {
     @Transactional
     public List<Blog> findFirstAmountInCategories(Integer amount, List<Category> categoryList, UUID exceptBlogId) {
         List<UUID> categoryIds = new ArrayList<>();
-        for (Category category: categoryList) {
+        for (Category category : categoryList) {
             categoryIds.add(category.getId());
         }
 
         Session session = sessionFactory.getCurrentSession();
-        final String Q_FIND_ALL_BLOG_IN_CATEGORIES_EXCEPT_FOR_BLOG =
-                "SELECT cd.blog FROM CategoryDetail AS cd " +
+        final String Q_FIND_ALL_BLOG_IN_CATEGORIES_EXCEPT_FOR_BLOG = "SELECT cd.blog FROM CategoryDetail AS cd " +
                 "WHERE " +
-                        "cd.blog.deleteAt IS NULL AND " +
-                        "(:exceptBlogId IS NULL OR NOT cd.blog.id = :exceptBlogId) AND " +
-                        "cd.category.id in :categoryIds " +
+                "cd.blog.deleteAt IS NULL AND " +
+                "(:exceptBlogId IS NULL OR NOT cd.blog.id = :exceptBlogId) AND " +
+                "cd.category.id in :categoryIds " +
                 "ORDER BY cd.blog.createAt ASC";
         Query<Blog> query = session.createQuery(Q_FIND_ALL_BLOG_IN_CATEGORIES_EXCEPT_FOR_BLOG, Blog.class);
         query.setParameter("categoryIds", categoryIds);
@@ -122,11 +126,10 @@ public class BlogRepository {
     @Transactional
     public List<Blog> findNumberOfPopularBlogsOrderBy(Integer amount, String orderBy) {
         Session session = sessionFactory.getCurrentSession();
-        final String Q_FIND_POPULAR_BLOG_WITH_AMOUNT_ORDER_BY =
-                "SELECT b FROM Blog AS b " +
+        final String Q_FIND_POPULAR_BLOG_WITH_AMOUNT_ORDER_BY = "SELECT b FROM Blog AS b " +
                 "WHERE " +
-                        "b.deleteAt IS NULL AND " +
-                        "b.isPopular = true " +
+                "b.deleteAt IS NULL AND " +
+                "b.isPopular = true " +
                 "ORDER BY b.createAt " + (orderBy.equalsIgnoreCase("asc") ? "ASC" : "DESC");
         Query<Blog> query = session.createQuery(Q_FIND_POPULAR_BLOG_WITH_AMOUNT_ORDER_BY, Blog.class);
         query.setMaxResults(amount);
@@ -156,10 +159,12 @@ public class BlogRepository {
             if (rootCause instanceof PSQLException) {
                 final String ROOT_CAUSE_MESSAGE = rootCause.getMessage();
                 System.out.println("Root cause   : " + ROOT_CAUSE_MESSAGE);
-                return RepositoryResponse.badResponse(RepositoryErrorType.CONSTRAINT_VIOLATION, EXCEPTION_MESSAGE, ROOT_CAUSE_MESSAGE);
+                return RepositoryResponse.badResponse(RepositoryErrorType.CONSTRAINT_VIOLATION, EXCEPTION_MESSAGE,
+                        ROOT_CAUSE_MESSAGE);
             } else {
                 System.out.println("Root cause   : Unknown Server Exception");
-                return RepositoryResponse.badResponse(RepositoryErrorType.CONSTRAINT_VIOLATION, EXCEPTION_MESSAGE, "Unknown Server Exception");
+                return RepositoryResponse.badResponse(RepositoryErrorType.CONSTRAINT_VIOLATION, EXCEPTION_MESSAGE,
+                        "Unknown Server Exception");
             }
         } finally {
             session.close();
@@ -188,10 +193,12 @@ public class BlogRepository {
             if (rootCause instanceof PSQLException) {
                 final String ROOT_CAUSE_MESSAGE = rootCause.getMessage();
                 System.out.println("Root cause   : " + ROOT_CAUSE_MESSAGE);
-                return RepositoryResponse.badResponse(RepositoryErrorType.CONSTRAINT_VIOLATION, EXCEPTION_MESSAGE, ROOT_CAUSE_MESSAGE);
+                return RepositoryResponse.badResponse(RepositoryErrorType.CONSTRAINT_VIOLATION, EXCEPTION_MESSAGE,
+                        ROOT_CAUSE_MESSAGE);
             } else {
                 System.out.println("Root cause   : Unknown Server Exception");
-                return RepositoryResponse.badResponse(RepositoryErrorType.CONSTRAINT_VIOLATION, EXCEPTION_MESSAGE, "Unknown Server Exception");
+                return RepositoryResponse.badResponse(RepositoryErrorType.CONSTRAINT_VIOLATION, EXCEPTION_MESSAGE,
+                        "Unknown Server Exception");
             }
         } finally {
             session.close();

@@ -40,7 +40,7 @@ public class BlogService {
         return this.blogRepository.findOnePopular();
     }
 
-    public List<Blog> findAllBlogByCategorySlug(int page, int size, String orderBy, String categorySlug) {
+    public List<Blog> findAllBlogByCategorySlug(Integer page, Integer size, String orderBy, String categorySlug) {
         return this.blogRepository.findAllByCategorySlug(page, size, orderBy, categorySlug);
     }
 
@@ -54,6 +54,11 @@ public class BlogService {
 
     public List<Blog> findFirstAmountInCategories(Integer amount, List<Category> categoryList, UUID exceptBlogId) {
         return this.blogRepository.findFirstAmountInCategories(amount, categoryList, exceptBlogId);
+    }
+
+    public Long countMaximumNumberOfPage(Integer size) {
+        Long totalNumberOfBlog = this.blogRepository.countNumberOfBlog();
+        return totalNumberOfBlog / size + (totalNumberOfBlog % size == 0 ? 0 : 1);
     }
 
     public Optional<Blog> findById(UUID id) {

@@ -72,6 +72,13 @@ public class AdminController {
         List<Blog> blogs = this.blogService.findAllBlogByCategorySlug(page, size, orderBy, null);
         modelMap.addAttribute("blogList", blogs);
 
+        // * Send current requesting options
+        modelMap.addAttribute("currentPage", page);
+        modelMap.addAttribute("currentSize", size);
+        modelMap.addAttribute("totalNumberOfPage", this.blogService.countMaximumNumberOfPage(size));
+        modelMap.addAttribute("orderBy", orderBy);
+        modelMap.addAttribute("filterBySlug", slug);
+
         return "admin/index";
     }
 
