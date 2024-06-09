@@ -77,12 +77,7 @@
 
     <!-- Configure directories for file saving -->
     <bean id="fileUploadDirectory" class="com.example.javaee.beans.FileUploadDirectory">
-        <property name="baseDirectory" value="C:/Users/ADMIN.DESKTOP-VFGLH8R/Desktop/blog-attachments/"/>
-        <property name="directories">
-            <map>
-                <entry key="blogBase" value="/blogs"/>
-            </map>
-        </property>
+        <property name="baseDirectory" value="/blogs"/>
     </bean>
 
     <context:component-scan base-package="com.example.javaee.controller"/>
