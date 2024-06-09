@@ -86,6 +86,7 @@ public class BlogService {
     public ServiceResponse<Blog> create(CreateBlogDto payload) {
         final LocalDateTime currentTimestamp = LocalDateTime.now();
         final String slug = this.getSlug(payload.getTitle());
+
         FilePathBuilder filePathBuilder = new FilePathBuilder();
         filePathBuilder
                 .beginWithBaseDirectory(this.fileUploadDirectory.getBaseDirectory())
@@ -103,6 +104,8 @@ public class BlogService {
 
         Blog newBlog = new Blog();
         newBlog.setTitle(payload.getTitle());
+        newBlog.setSubTitle(payload.getSubtitle());
+        newBlog.setIsPopular(payload.getIs_popular());
         newBlog.setDescription(payload.getDescription());
         newBlog.setAttachment(filePathBuilder.ofFile(payload.getAttachment()).build());
         newBlog.setThumbnail(payload.getAttachment().getOriginalFilename()); // TODO: update this with correct logic
@@ -125,35 +128,50 @@ public class BlogService {
             return ServiceResponse.ofNotFound(
                     "Blog not found", "Cannot find any blog with the given ID");
         }
-
+        Blog updatedBlog = updatingBlog.get();
         // * Save new file to local machine and update the file's path to database
         String slug = getSlug(payload.getTitle());
-        FilePathBuilder filePathBuilder = new FilePathBuilder();
-        filePathBuilder
-                .beginWithBaseDirectory(this.fileUploadDirectory.getBaseDirectory())
-                .addSubDirectory(slug);
-        Boolean savingAttachment = this.fileUploadService.saveFile(
-                payload.getAttachment(),
-                this.servletContext.getRealPath(filePathBuilder.build()));
-        System.out.println("dir:" + filePathBuilder.build());
 
-        if (!savingAttachment) {
-            return ServiceResponse.ofUnknownServerError(
-                    "Cannot save file!",
-                    "File path:" + filePathBuilder.build());
+        if (payload.getAttachment() != null) {
+          FilePathBuilder filePathBuilder = new FilePathBuilder();
+          filePathBuilder
+                  .beginWithBaseDirectory(this.fileUploadDirectory.getBaseDirectory())
+                  .addSubDirectory(slug);
+          Boolean savingAttachment = this.fileUploadService.saveFile(
+                  payload.getAttachment(),
+                  this.servletContext.getRealPath(filePathBuilder.build()));
+          System.out.println("dir:" + filePathBuilder.build());
+
+            if (!savingAttachment) {
+                return ServiceResponse.ofUnknownServerError(
+                        "Cannot save file!",
+                        "File path:" + filePathBuilder.build());
+
+            }
+          
+        }
+        else
+        {
+            updatedBlog.setAttachment(updatedBlog.getAttachment());
         }
 
+
         // * Convert Date time from payload to LocalDate to save to database
+//        Instant instant = payload.getPublishAt().toInstant();
+//        LocalDate publishDate = instant.atZone(ZoneId.systemDefault()).toLocalDate();
         LocalDateTime currentTimestamp = LocalDateTime.now();
 
         // * Set updated fields to a Blog object
-        Blog updatedBlog = updatingBlog.get();
+
         updatedBlog.setTitle(payload.getTitle());
         updatedBlog.setDescription(payload.getDescription());
+
         updatedBlog.setAttachment(filePathBuilder.ofFile(payload.getAttachment()).build());
         updatedBlog.setThumbnail(payload.getAttachment().getOriginalFilename());
         updatedBlog.setSlug(slug);
+//        updatedBlog.setPublishAt(publishDate);
         updatedBlog.setUpdateAt(currentTimestamp);
+//        updatedBlog.setHiddenStatus(payload.getHiddenStatus());
 
         RepositoryResponse<Blog> response = this.blogRepository.update(updatedBlog);
         if (response.hasErrorOf(RepositoryErrorType.CONSTRAINT_VIOLATION)) {
@@ -163,7 +181,6 @@ public class BlogService {
         return ServiceResponse.ofSuccess(
                 "Blog updated successfully", null, updatedBlog);
     }
-
     public ServiceResponse<Blog> remove(UUID id) {
         Optional<Blog> targetingBlog = this.blogRepository.findById(id);
         if (!targetingBlog.isPresent()) {

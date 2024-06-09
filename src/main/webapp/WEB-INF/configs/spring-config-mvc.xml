@@ -22,7 +22,7 @@
     <bean id="dataSource"
           class="org.springframework.jdbc.datasource.DriverManagerDataSource"
           p:driverClassName="org.postgresql.Driver"
-          p:url="jdbc:postgresql://localhost:5433/blog-platform"
+          p:url="jdbc:postgresql://localhost:5432/blog-platform"
           p:username="postgres"
           p:password="postgres">
     </bean>
@@ -57,7 +57,7 @@
 
     <!-- Configure Email for login account-->
     <bean id="signInGoogleAccount" class="com.example.javaee.beans.SignInGoogleAccount">
-        <property name="email" value="nnminh.sam.1803@gmail.com"/>
+        <property name="email" value="namkuner@gmail.com"/>
     </bean>
 
     <!-- Configure Application verification with Google Service API-->
@@ -77,7 +77,7 @@
 
     <!-- Configure directories for file saving -->
     <bean id="fileUploadDirectory" class="com.example.javaee.beans.FileUploadDirectory">
-        <property name="baseDirectory" value="/Users/nnminh/Desktop/blog-attachments"/>
+        <property name="baseDirectory" value="C:/Users/ADMIN.DESKTOP-VFGLH8R/Desktop/blog-attachments/"/>
         <property name="directories">
             <map>
                 <entry key="blogBase" value="/blogs"/>
