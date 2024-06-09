@@ -153,4 +153,15 @@ public class CategoryDetailRepository {
         System.out.println("Fetching process completed");
         return categoryDetailList;
     }
+    @Transactional
+    public List<CategoryDetail> findByCategoryId(UUID categoryId) {
+        Session session = sessionFactory.getCurrentSession();
+        final String Q_FIND_BY_CATEGORY_ID = "SELECT cd FROM CategoryDetail AS cd WHERE cd.deleteAt IS NULL AND cd.category.id = :categoryId";
+        System.out.println("Fetching category detail by category id = " + categoryId);
+        Query<CategoryDetail> query = session.createQuery(Q_FIND_BY_CATEGORY_ID, CategoryDetail.class);
+        query.setParameter("categoryId", categoryId);
+        List<CategoryDetail> categoryDetailList = query.list();
+        System.out.println("Fetching process completed");
+        return categoryDetailList;
+    }
 }

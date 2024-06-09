@@ -89,4 +89,7 @@ public class CategoryDetailService {
     public List<CategoryDetail> findByBlogId(UUID blogId) {
         return this.categoryDetailRepository.findByBlogId(blogId);
     }
+    public List<CategoryDetail> findByCategoryId(UUID categoryId) {
+        return this.categoryDetailRepository.findByCategoryId(categoryId);
+    }
 }

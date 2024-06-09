@@ -23,6 +23,14 @@
     <link rel="shortcut icon" href="${pageContext.request.contextPath}/images/favicon.ico" />
 </head>
 <body>
+<c:if test="${not empty message}">
+    <script type="text/javascript">
+        /* Gán biến message từ JSP */
+        var message = "${message}";
+        alert(message);
+    </script>
+    <p>${message}</p>
+</c:if>
 <div class="container-scroller">
     <!-- partial:../../partials/_navbar.html -->
     <nav class="navbar default-layout-navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">

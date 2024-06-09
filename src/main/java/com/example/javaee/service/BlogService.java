@@ -141,7 +141,7 @@ public class BlogService {
                   payload.getAttachment(),
                   this.servletContext.getRealPath(filePathBuilder.build()));
           System.out.println("dir:" + filePathBuilder.build());
-          updatedBlog.setAttachment(filePathBuilder.ofFile(payload.getAttachment()).build());
+            updatedBlog.setAttachment(filePathBuilder.ofFile(payload.getAttachment()).build());
             if (!savingAttachment) {
                 return ServiceResponse.ofUnknownServerError(
                         "Cannot save file!",
