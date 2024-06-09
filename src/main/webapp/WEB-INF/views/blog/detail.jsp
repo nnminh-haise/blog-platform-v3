@@ -101,7 +101,10 @@ HEADER
               <p class="mb-3">${blog.subTitle}</p>
             </div>
             <div class="col-md-6 pr-0">
-              <img style="height: 100%" src="${blog.thumbnail}" />
+              <img
+                style="height: 100%"
+                src="${pageContext.servletContext.contextPath}/blogs/${blog.slug}/${blog.thumbnail}"
+              />
             </div>
           </div>
         </div>
@@ -149,7 +152,8 @@ MAIN
           <div class="card border-0 mb-4 box-shadow h-xl-300">
             <div
               style="
-                background-image: url('${favouriteBlogs.get(0).thumbnail}');
+                /* background-image: url('${favouriteBlogs.get(0).thumbnail}'); */
+                background-image: url('${pageContext.servletContext.contextPath}/blogs/${favouriteBlogs.get(0).slug}/${favouriteBlogs.get(0).thumbnail}');
                 height: 150px;
                 background-size: cover;
                 background-repeat: no-repeat;
@@ -179,7 +183,11 @@ MAIN
             <c:forEach var="blog" items="${favouriteBlogs}" varStatus="status">
               <c:if test="${status.index > 0}">
                 <div class="mb-3 d-flex align-items-center rounded-lg">
-                  <img height="80" src="${blog.thumbnail}" />
+                  <!-- <img height="80" src="${blog.thumbnail}" /> -->
+                  <img
+                    height="80"
+                    src="${pageContext.servletContext.contextPath}/blogs/${blog.slug}/${blog.thumbnail}"
+                  />
                   <div class="pl-3">
                     <h2 class="mb-2 h6 font-weight-bold">
                       <a

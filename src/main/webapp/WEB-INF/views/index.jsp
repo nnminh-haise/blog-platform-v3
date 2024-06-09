@@ -1,7 +1,7 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %> <%@ taglib
+uri="http://www.springframework.org/tags/form" prefix="form" %> <%@ taglib
+uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %> <%@ page
+contentType="text/html;charset=UTF-8" language="java" %>
 <!DOCTYPE html>
 <html>
   <head>
@@ -81,7 +81,8 @@ HEADER
               class="col-md-6 d-none d-md-block pr-0"
               style="
                 background-size: cover;
-                background-image: url('${bannerBlog.thumbnail}');
+                background-image: url('${pageContext.servletContext.contextPath}/blogs/${bannerBlog.slug}/${bannerBlog.thumbnail}');
+                /* background-image: url('${bannerBlog.thumbnail}'); */
               "
             ></div>
           </div>
@@ -100,26 +101,57 @@ MAIN
           <div class="card border-0 mb-4 box-shadow h-xl-300">
             <div
               style="
-                background-image: url('${favouriteBlogs.get(0).thumbnail}');
+                /* background-image: url('${favouriteBlogs.get(0).thumbnail}'); */
+                background-image: url('${pageContext.servletContext.contextPath}/blogs/${favouriteBlogs.get(0).slug}/${favouriteBlogs.get(0).thumbnail}');
                 height: 150px;
                 background-size: cover;
                 background-repeat: no-repeat;
               "
             ></div>
-            <div class="card-body px-0 pb-0 d-flex flex-column align-items-start">
+            <div
+              class="card-body px-0 pb-0 d-flex flex-column align-items-start"
+            >
               <h2 class="h4 font-weight-bold">
-                <a class="text-dark" href="${pageContext.request.contextPath}/blogs/${favouriteBlogs[0].slug}.htm">${favouriteBlogs[0].title}</a>
+                <a
+                  class="text-dark"
+                  href="${pageContext.request.contextPath}/blogs/${favouriteBlogs[0].slug}.htm"
+                  >${favouriteBlogs[0].title}</a
+                >
               </h2>
               <p class="card-text">${favouriteBlogs[0].subTitle}</p>
-              <div style="display: flex; gap: 4px; align-items: center; padding: 4px 8px; margin-bottom: 8px">
-                <c:forEach var="category" items="${favouriteBlogs[0].categories}">
-                  <div style="padding: 4px 8px; background-color: #e8f3ec; border-radius: 8px; font-size: 14px; color: #393E46; font-weight: 400">
+              <div
+                style="
+                  display: flex;
+                  gap: 4px;
+                  align-items: center;
+                  padding: 4px 8px;
+                  margin-bottom: 8px;
+                "
+              >
+                <c:forEach
+                  var="category"
+                  items="${favouriteBlogs[0].categories}"
+                >
+                  <div
+                    style="
+                      padding: 4px 8px;
+                      background-color: #e8f3ec;
+                      border-radius: 8px;
+                      font-size: 14px;
+                      color: #393e46;
+                      font-weight: 400;
+                    "
+                  >
                     ${category.name}
                   </div>
                 </c:forEach>
               </div>
               <small class="text-muted">
-                <fmt:formatDate value="${favouriteBlogs[0].createAtAsDate()}" pattern="MMMM d, yyyy HH:mm:ss" var="formattedCreateDate" />
+                <fmt:formatDate
+                  value="${favouriteBlogs[0].createAtAsDate()}"
+                  pattern="MMMM d, yyyy HH:mm:ss"
+                  var="formattedCreateDate"
+                />
                 <c:out value="${formattedCreateDate}" />
               </small>
             </div>
@@ -130,23 +162,50 @@ MAIN
             <c:forEach var="blog" items="${favouriteBlogs}" varStatus="status">
               <c:if test="${status.index > 0}">
                 <div class="mb-3 d-flex align-items-center rounded-lg">
-                  <img height="80" src="${blog.thumbnail}" />
+                  <!-- <img height="80" src="${blog.thumbnail}" /> -->
+                  <img
+                    height="80"
+                    src="${pageContext.servletContext.contextPath}/blogs/${blog.slug}/${blog.thumbnail}"
+                  />
                   <div class="pl-3">
                     <h2 class="mb-2 h6 font-weight-bold">
-                      <a class="text-dark"
-                         href="${pageContext.request.contextPath}/blogs/${blog.slug}.htm">
+                      <a
+                        class="text-dark"
+                        href="${pageContext.request.contextPath}/blogs/${blog.slug}.htm"
+                      >
                         ${blog.title}
                       </a>
                     </h2>
-                    <div style="display: flex; gap: 4px; align-items: center; padding: 4px 8px; margin-bottom: 8px">
+                    <div
+                      style="
+                        display: flex;
+                        gap: 4px;
+                        align-items: center;
+                        padding: 4px 8px;
+                        margin-bottom: 8px;
+                      "
+                    >
                       <c:forEach var="category" items="${blog.categories}">
-                        <div style="padding: 2px 6px; background-color: #e8f3ec; border-radius: 8px; font-size: 14px; color: #393E46; font-weight: 400">
-                            ${category.name}
+                        <div
+                          style="
+                            padding: 2px 6px;
+                            background-color: #e8f3ec;
+                            border-radius: 8px;
+                            font-size: 14px;
+                            color: #393e46;
+                            font-weight: 400;
+                          "
+                        >
+                          ${category.name}
                         </div>
                       </c:forEach>
                     </div>
                     <small class="text-muted">
-                      <fmt:formatDate value="${blog.createAtAsDate()}" pattern="MMMM d, yyyy HH:mm:ss" var="formattedCreateDate" />
+                      <fmt:formatDate
+                        value="${blog.createAtAsDate()}"
+                        pattern="MMMM d, yyyy HH:mm:ss"
+                        var="formattedCreateDate"
+                      />
                       <c:out value="${formattedCreateDate}" />
                     </small>
                   </div>
@@ -177,25 +236,56 @@ MAIN
                   >
                 </h2>
                 <p>${blog.subTitle}</p>
-                <div style="display: flex; gap: 4px; align-items: center; padding: 4px 8px; margin-bottom: 8px">
+                <div
+                  style="
+                    display: flex;
+                    gap: 4px;
+                    align-items: center;
+                    padding: 4px 8px;
+                    margin-bottom: 8px;
+                  "
+                >
                   <c:forEach var="category" items="${blog.categories}">
-                    <div style="padding: 2px 6px; background-color: #e8f3ec; border-radius: 8px; font-size: 14px; color: #393E46; font-weight: 400">
-                        ${category.name}
+                    <div
+                      style="
+                        padding: 2px 6px;
+                        background-color: #e8f3ec;
+                        border-radius: 8px;
+                        font-size: 14px;
+                        color: #393e46;
+                        font-weight: 400;
+                      "
+                    >
+                      ${category.name}
                     </div>
                   </c:forEach>
                 </div>
                 <small class="text-muted">
-                  <fmt:formatDate value="${blog.createAtAsDate()}" pattern="MMMM d, yyyy HH:mm:ss" var="formattedCreateDate" />
+                  <fmt:formatDate
+                    value="${blog.createAtAsDate()}"
+                    pattern="MMMM d, yyyy HH:mm:ss"
+                    var="formattedCreateDate"
+                  />
                   <c:out value="${formattedCreateDate}" />
                 </small>
               </div>
-              <img height="120" src="${blog.thumbnail}" />
+              <!-- <img height="120" src="${blog.thumbnail}" /> -->
+              <img
+                height="120"
+                src="${pageContext.servletContext.contextPath}/blogs/${blog.slug}/${blog.thumbnail}"
+              />
             </div>
           </c:forEach>
           <div class="d-flex w-100 justify-content-center">
-            <button class="rounded my-2 btn-gray w-25"
-                    style="background-color: #e8f3ec; border: none; border-radius: 8px;"
-                    id="loadMore">
+            <button
+              class="rounded my-2 btn-gray w-25"
+              style="
+                background-color: #e8f3ec;
+                border: none;
+                border-radius: 8px;
+              "
+              id="loadMore"
+            >
               Xem tiếp
             </button>
           </div>
@@ -224,11 +314,9 @@ MAIN
       </div>
     </div>
 
-    <%-- Consider removing this section   --%>
+    <%-- Consider removing this section --%>
     <div class="container mt-5">
-      <footer class="bg-white border-top p-3 text-muted small">
-
-      </footer>
+      <footer class="bg-white border-top p-3 text-muted small"></footer>
     </div>
   </body>
   <script>
