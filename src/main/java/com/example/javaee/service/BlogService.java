@@ -1,5 +1,6 @@
 package com.example.javaee.service;
 
+import com.example.javaee.beans.FilePathBuilder;
 import com.example.javaee.beans.FileUploadDirectory;
 import com.example.javaee.dto.CreateBlogDto;
 import com.example.javaee.dto.UpdateBlogDto;
@@ -9,24 +10,25 @@ import com.example.javaee.helper.ServiceResponse;
 import com.example.javaee.model.Blog;
 import com.example.javaee.model.Category;
 import com.example.javaee.repository.BlogRepository;
+import jakarta.servlet.ServletContext;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.*;
 
 @Service
 public class BlogService {
+    private final ServletContext servletContext;
     private final FileUploadDirectory fileUploadDirectory;
     private final BlogRepository blogRepository;
     private final FileUploadService fileUploadService;
 
     public BlogService(
+            ServletContext servletContext,
             FileUploadDirectory fileUploadDirectory,
             BlogRepository blogRepository,
             FileUploadService fileUploadService) {
+        this.servletContext = servletContext;
         this.fileUploadDirectory = fileUploadDirectory;
         this.blogRepository = blogRepository;
         this.fileUploadService = fileUploadService;
@@ -84,16 +86,29 @@ public class BlogService {
     public ServiceResponse<Blog> create(CreateBlogDto payload) {
         final LocalDateTime currentTimestamp = LocalDateTime.now();
         final String slug = this.getSlug(payload.getTitle());
-        final String savePath = this.fileUploadDirectory.getDirectory("blogBase") + "/" + slug;
-        System.out.println("savePath: " + savePath);
-        String savedAttachmentPath = this.fileUploadService.saveFile(payload.getAttachment(), savePath);
-        System.out.println("savedAttachmentPath: " + savedAttachmentPath);
+
+        FilePathBuilder filePathBuilder = new FilePathBuilder();
+        filePathBuilder
+                .beginWithBaseDirectory(this.fileUploadDirectory.getBaseDirectory())
+                .addSubDirectory(slug);
+        Boolean savingAttachment = this.fileUploadService.saveFile(
+                payload.getAttachment(),
+                this.servletContext.getRealPath(filePathBuilder.build()));
+        System.out.println("dir:" + filePathBuilder.build());
+
+        if (!savingAttachment) {
+            return ServiceResponse.ofUnknownServerError(
+                    "Cannot save file!",
+                    "File path:" + filePathBuilder.build());
+        }
+
         Blog newBlog = new Blog();
         newBlog.setTitle(payload.getTitle());
         newBlog.setSubTitle(payload.getSubtitle());
         newBlog.setIsPopular(payload.getIs_popular());
         newBlog.setDescription(payload.getDescription());
-        newBlog.setAttachment(savedAttachmentPath);
+        newBlog.setAttachment(filePathBuilder.ofFile(payload.getAttachment()).build());
+        newBlog.setThumbnail(payload.getAttachment().getOriginalFilename()); // TODO: update this with correct logic
         newBlog.setCreateAt(currentTimestamp);
         newBlog.setUpdateAt(currentTimestamp);
         newBlog.setSlug(slug);
@@ -116,15 +131,30 @@ public class BlogService {
         Blog updatedBlog = updatingBlog.get();
         // * Save new file to local machine and update the file's path to database
         String slug = getSlug(payload.getTitle());
+
         if (payload.getAttachment() != null) {
-            final String savePath = this.fileUploadDirectory.getDirectory("blogBase") + "/" + slug;
-            String savedAttachmentPath = this.fileUploadService.saveFile(payload.getAttachment(), savePath);
-            updatedBlog.setAttachment(savedAttachmentPath);
+          FilePathBuilder filePathBuilder = new FilePathBuilder();
+          filePathBuilder
+                  .beginWithBaseDirectory(this.fileUploadDirectory.getBaseDirectory())
+                  .addSubDirectory(slug);
+          Boolean savingAttachment = this.fileUploadService.saveFile(
+                  payload.getAttachment(),
+                  this.servletContext.getRealPath(filePathBuilder.build()));
+          System.out.println("dir:" + filePathBuilder.build());
+
+            if (!savingAttachment) {
+                return ServiceResponse.ofUnknownServerError(
+                        "Cannot save file!",
+                        "File path:" + filePathBuilder.build());
+
+            }
+          
         }
         else
         {
             updatedBlog.setAttachment(updatedBlog.getAttachment());
         }
+
 
         // * Convert Date time from payload to LocalDate to save to database
 //        Instant instant = payload.getPublishAt().toInstant();
@@ -136,6 +166,8 @@ public class BlogService {
         updatedBlog.setTitle(payload.getTitle());
         updatedBlog.setDescription(payload.getDescription());
 
+        updatedBlog.setAttachment(filePathBuilder.ofFile(payload.getAttachment()).build());
+        updatedBlog.setThumbnail(payload.getAttachment().getOriginalFilename());
         updatedBlog.setSlug(slug);
 //        updatedBlog.setPublishAt(publishDate);
         updatedBlog.setUpdateAt(currentTimestamp);

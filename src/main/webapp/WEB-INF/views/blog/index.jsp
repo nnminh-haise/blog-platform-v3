@@ -42,7 +42,8 @@
               </h2>
               <p>${blog.subTitle}</p>
             </div>
-            <img height="120" src="${blog.thumbnail}">
+            <!-- <img height="120" src="${blog.thumbnail}"> -->
+            <img height="120" src="${pageContext.servletContext.contextPath}/blogs/${blog.slug}/${blog.thumbnail}">
           </div>
         </c:forEach>
         <c:if test="${fn:length(blogs) > 5}">
