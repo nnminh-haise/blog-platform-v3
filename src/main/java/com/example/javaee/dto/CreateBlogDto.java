@@ -10,6 +10,8 @@ import org.springframework.web.multipart.MultipartFile;
 @NoArgsConstructor
 public class CreateBlogDto {
     private String title;
+    private String subtitle;
+    private Boolean is_popular;
 
     private String description;
 

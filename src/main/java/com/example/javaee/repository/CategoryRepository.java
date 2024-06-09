@@ -115,4 +115,14 @@ public class CategoryRepository {
             session.close();
         }
     }
+    @Transactional
+    public List<Category> paginate(Integer page, Integer limit) {
+        Session session = sessionFactory.getCurrentSession();
+        final String Q_FIND_ALL_CATEGORY = "SELECT c FROM Category AS c WHERE c.deleteAt IS NULL";
+        Query<Category> query = session.createQuery(Q_FIND_ALL_CATEGORY, Category.class);
+        query.setFirstResult((page - 1) * limit);
+        query.setMaxResults(limit);
+        return query.list();
+    }
+
 }

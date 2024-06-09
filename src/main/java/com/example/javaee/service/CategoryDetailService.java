@@ -41,8 +41,13 @@ public class CategoryDetailService {
             return ServiceResponse.ofNotFound(
                     "Blog not found", "Cannot find any blog with the given ID");
         }
+        final LocalDateTime currentTimestamp = LocalDateTime.now();
+        CategoryDetail newCategoryDetail = new CategoryDetail();
+        newCategoryDetail.setCategory(targetingCategory.get());
+        newCategoryDetail.setBlog(targetingBlog.get());
+        newCategoryDetail.setCreateAt(currentTimestamp);
+        newCategoryDetail.setUpdateAt(currentTimestamp);
 
-        CategoryDetail newCategoryDetail = new CategoryDetail(targetingCategory.get(), targetingBlog.get());
         RepositoryResponse<CategoryDetail> response = this.categoryDetailRepository.create(newCategoryDetail);
         if (response.hasErrorOf(RepositoryErrorType.CONSTRAINT_VIOLATION)) {
             return ServiceResponse.ofBadRequest(
@@ -80,5 +85,11 @@ public class CategoryDetailService {
         }
         return ServiceResponse.ofSuccess(
                 "Category detail deleted successfully", response.getDescription(), buffer);
+    }
+    public List<CategoryDetail> findByBlogId(UUID blogId) {
+        return this.categoryDetailRepository.findByBlogId(blogId);
+    }
+    public List<CategoryDetail> findByCategoryId(UUID categoryId) {
+        return this.categoryDetailRepository.findByCategoryId(categoryId);
     }
 }
