@@ -1,6 +1,5 @@
 package com.example.javaee.controller;
 
-import com.example.javaee.dto.BlogDto;
 import com.example.javaee.dto.CreateBlogDto;
 import com.example.javaee.dto.CreateCategoryDetailDto;
 import com.example.javaee.dto.OpenIdClaims;
@@ -144,7 +143,7 @@ public class AdminController {
         List<String> selectedCategories = (cates != null) ? Arrays.asList(cates) : null;
         for (String cate : selectedCategories) {
             CreateCategoryDetailDto categoryDetail = new CreateCategoryDetailDto();
-            categoryDetail.setBlogId(response.getData().get().getId());
+            categoryDetail.setBlogId(serviceResponse.getData().get().getId());
             categoryDetail.setCategoryId(categoryService.findBySlug(cate).get().getId());
 
             ServiceResponse<CategoryDetail> response1 = this.categoryDetailService.create(categoryDetail);
@@ -154,8 +153,6 @@ public class AdminController {
                 System.out.println("category detail not created");
             }
         }
-
-        return "redirect:/admin/index.htm";
 
         return "redirect:/admin/edit/" + serviceResponse.getData().get().getSlug() + ".htm";
     }
@@ -252,7 +249,7 @@ public class AdminController {
 
         List<CategoryDetail> categoryDetails = this.categoryDetailService.findByBlogId(updatingBlog.get().getId());
         for (CategoryDetail categoryDetail : categoryDetails) {
-            ServiceResponse<CategoryDetail> response = this.categoryDetailService.remove(categoryDetail.getId());
+            ServiceResponse<CategoryDetail> categoryDetailServiceResponse = this.categoryDetailService.remove(categoryDetail.getId());
         }
 
         // TODO: add update blog service
