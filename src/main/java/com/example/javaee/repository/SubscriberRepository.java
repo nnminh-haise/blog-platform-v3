@@ -2,7 +2,6 @@ package com.example.javaee.repository;
 
 import com.example.javaee.helper.RepositoryErrorType;
 import com.example.javaee.helper.RepositoryResponse;
-import com.example.javaee.helper.ResponseType;
 import com.example.javaee.model.Subscriber;
 import jakarta.transaction.Transactional;
 import org.hibernate.Session;
@@ -10,8 +9,6 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 import org.postgresql.util.PSQLException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -69,10 +66,12 @@ public class SubscriberRepository {
             if (rootCause instanceof PSQLException) {
                 final String ROOT_CAUSE_MESSAGE = rootCause.getMessage();
                 System.out.println("Root cause   : " + ROOT_CAUSE_MESSAGE);
-                return RepositoryResponse.badResponse(RepositoryErrorType.CONSTRAINT_VIOLATION, EXCEPTION_MESSAGE, ROOT_CAUSE_MESSAGE);
+                return RepositoryResponse.badResponse(RepositoryErrorType.CONSTRAINT_VIOLATION, EXCEPTION_MESSAGE,
+                        ROOT_CAUSE_MESSAGE);
             } else {
                 System.out.println("Root cause   : Unknown Server Exception");
-                return RepositoryResponse.badResponse(RepositoryErrorType.CONSTRAINT_VIOLATION, EXCEPTION_MESSAGE, "Unknown Server Exception");
+                return RepositoryResponse.badResponse(RepositoryErrorType.CONSTRAINT_VIOLATION, EXCEPTION_MESSAGE,
+                        "Unknown Server Exception");
             }
         } finally {
             session.close();
@@ -101,10 +100,12 @@ public class SubscriberRepository {
             if (rootCause instanceof PSQLException) {
                 final String ROOT_CAUSE_MESSAGE = rootCause.getMessage();
                 System.out.println("Root cause   : " + ROOT_CAUSE_MESSAGE);
-                return RepositoryResponse.badResponse(RepositoryErrorType.CONSTRAINT_VIOLATION, EXCEPTION_MESSAGE, ROOT_CAUSE_MESSAGE);
+                return RepositoryResponse.badResponse(RepositoryErrorType.CONSTRAINT_VIOLATION, EXCEPTION_MESSAGE,
+                        ROOT_CAUSE_MESSAGE);
             } else {
                 System.out.println("Root cause   : Unknown Server Exception");
-                return RepositoryResponse.badResponse(RepositoryErrorType.CONSTRAINT_VIOLATION, EXCEPTION_MESSAGE, "Unknown Server Exception");
+                return RepositoryResponse.badResponse(RepositoryErrorType.CONSTRAINT_VIOLATION, EXCEPTION_MESSAGE,
+                        "Unknown Server Exception");
             }
         } finally {
             session.close();

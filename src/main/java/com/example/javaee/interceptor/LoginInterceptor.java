@@ -3,7 +3,6 @@ package com.example.javaee.interceptor;
 import com.example.javaee.beans.SignInGoogleAccount;
 import com.example.javaee.dto.OpenIdClaims;
 import com.example.javaee.service.GoogleApiService;
-import com.example.javaee.service.GoogleApiService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -13,6 +12,7 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
+// TODO: improve with token expire check
 public class LoginInterceptor implements HandlerInterceptor {
     private static final Logger logger = LoggerFactory.getLogger(LoginInterceptor.class);
     private final GoogleApiService googleApiService;

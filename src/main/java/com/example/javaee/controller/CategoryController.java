@@ -4,13 +4,11 @@ import com.example.javaee.dto.CreateCategoryDto;
 import com.example.javaee.dto.OpenIdClaims;
 import com.example.javaee.dto.UpdateCategoryDto;
 import com.example.javaee.helper.ServiceResponse;
-import com.example.javaee.model.Blog;
 import com.example.javaee.model.Category;
 import com.example.javaee.service.AdminService;
 import com.example.javaee.service.CategoryService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Controller;
-import org.springframework.stereotype.Service;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 

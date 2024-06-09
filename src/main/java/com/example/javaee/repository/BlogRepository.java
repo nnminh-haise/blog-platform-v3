@@ -137,8 +137,6 @@ public class BlogRepository {
     }
 
     public RepositoryResponse<Blog> create(Blog blog) {
-        RepositoryResponse<Blog> response = new RepositoryResponse<>();
-
         Session session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
         try {
