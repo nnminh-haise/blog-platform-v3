@@ -9,9 +9,13 @@ import org.springframework.web.multipart.MultipartFile;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UpdateBlogDto {
-    private String title;
 
-    private String description;
+    private String title;
+    private String subTitle;
+
 
     private MultipartFile attachment;
+
+    private Boolean isPopular;
+    private String description;
 }

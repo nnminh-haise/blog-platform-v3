@@ -142,4 +142,15 @@ public class CategoryDetailRepository {
             session.close();
         }
     }
+    @Transactional
+    public List<CategoryDetail> findByBlogId(UUID blogId) {
+        Session session = sessionFactory.getCurrentSession();
+        final String Q_FIND_BY_BLOG_ID = "SELECT cd FROM CategoryDetail AS cd WHERE cd.deleteAt IS NULL AND cd.blog.id = :blogId";
+        System.out.println("Fetching category detail by blog id = " + blogId);
+        Query<CategoryDetail> query = session.createQuery(Q_FIND_BY_BLOG_ID, CategoryDetail.class);
+        query.setParameter("blogId", blogId);
+        List<CategoryDetail> categoryDetailList = query.list();
+        System.out.println("Fetching process completed");
+        return categoryDetailList;
+    }
 }
