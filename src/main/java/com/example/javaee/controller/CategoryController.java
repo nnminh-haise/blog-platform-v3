@@ -3,6 +3,7 @@ package com.example.javaee.controller;
 import com.example.javaee.dto.CreateCategoryDto;
 import com.example.javaee.dto.OpenIdClaims;
 import com.example.javaee.dto.UpdateCategoryDto;
+import com.example.javaee.helper.ErrorResponse;
 import com.example.javaee.helper.ServiceResponse;
 import com.example.javaee.model.Category;
 import com.example.javaee.service.AdminService;
@@ -32,13 +33,19 @@ public class CategoryController {
     public String categoryIndexViewRenderer(
             HttpServletRequest request,
             ModelMap modelMap) {
-        Optional<OpenIdClaims> claims = this.adminService.validateRequest(request);
-        if (!claims.isPresent()) {
-            System.out.println(
-                    "[Admin Controller] (Admin Index Route) ? Bad request - Cannot fetch access token claims -> Redirect back to landing page");
-            return "redirect:/index.htm";
+        ServiceResponse<OpenIdClaims> response = this.adminService.validateRequest(request);
+        if (response.isError()) {
+            ErrorResponse errorResponse = response.buildError();
+            modelMap.addAttribute("errorResponse", errorResponse);
+            return "redirect:/error.htm";
         }
-        modelMap.addAttribute("adminInformation", claims.get());
+        if (!response.getData().isPresent()) {
+            modelMap.addAttribute("errorResponse", ErrorResponse.buildUnknownServerError(
+                    "Cannot Found User's Claim",
+                    "Cannot Find User's Claim Due To Unknown Server Error"));
+            return "redirect:/error.htm";
+        }
+        modelMap.addAttribute("adminInformation", response.getData().get());
 
         List<Category> categories = categoryService.findAll();
         modelMap.addAttribute("categories", categories);
@@ -50,13 +57,19 @@ public class CategoryController {
     public String categoryInsertViewRenderer(
             HttpServletRequest request,
             ModelMap modelMap) {
-        Optional<OpenIdClaims> claims = this.adminService.validateRequest(request);
-        if (!claims.isPresent()) {
-            System.out.println(
-                    "[Admin Controller] (Admin Index Route) ? Bad request - Cannot fetch access token claims -> Redirect back to landing page");
-            return "redirect:/index.htm";
+        ServiceResponse<OpenIdClaims> response = this.adminService.validateRequest(request);
+        if (response.isError()) {
+            ErrorResponse errorResponse = response.buildError();
+            modelMap.addAttribute("errorResponse", errorResponse);
+            return "redirect:/error.htm";
         }
-        modelMap.addAttribute("adminInformation", claims.get());
+        if (!response.getData().isPresent()) {
+            modelMap.addAttribute("errorResponse", ErrorResponse.buildUnknownServerError(
+                    "Cannot Found User's Claim",
+                    "Cannot Find User's Claim Due To Unknown Server Error"));
+            return "redirect:/error.htm";
+        }
+        modelMap.addAttribute("adminInformation", response.getData().get());
 
         modelMap.addAttribute("createCategoryDto", new CreateCategoryDto());
 
@@ -68,18 +81,24 @@ public class CategoryController {
             @ModelAttribute("createCategoryDto") CreateCategoryDto createCategoryDto,
             HttpServletRequest request,
             ModelMap modelMap) {
-        Optional<OpenIdClaims> claims = this.adminService.validateRequest(request);
-        if (!claims.isPresent()) {
-            System.out.println(
-                    "[Admin Controller] (Admin Index Route) ? Bad request - Cannot fetch access token claims -> Redirect back to landing page");
-            return "redirect:/index.htm";
+        ServiceResponse<OpenIdClaims> response = this.adminService.validateRequest(request);
+        if (response.isError()) {
+            ErrorResponse errorResponse = response.buildError();
+            modelMap.addAttribute("errorResponse", errorResponse);
+            return "redirect:/error.htm";
         }
-        modelMap.addAttribute("adminInformation", claims.get());
+        if (!response.getData().isPresent()) {
+            modelMap.addAttribute("errorResponse", ErrorResponse.buildUnknownServerError(
+                    "Cannot Found User's Claim",
+                    "Cannot Find User's Claim Due To Unknown Server Error"));
+            return "redirect:/error.htm";
+        }
+        modelMap.addAttribute("adminInformation", response.getData().get());
 
-        ServiceResponse<Category> response = this.categoryService.create(createCategoryDto);
-        if (!response.isSuccess()) {
-            // TODO: add error handling here
-            return "redirect://index.hm";
+        ServiceResponse<Category> serviceResponse = this.categoryService.create(createCategoryDto);
+        if (!serviceResponse.isSuccess()) {
+            modelMap.addAttribute("errorResponse", serviceResponse.buildError());
+            return "redirect:/error.htm";
         }
 
         return "redirect:/admin/categories/index.htm";
@@ -90,20 +109,26 @@ public class CategoryController {
             @PathVariable(name = "slug", required = true) String slug,
             HttpServletRequest request,
             ModelMap modelMap) {
-        Optional<OpenIdClaims> claims = this.adminService.validateRequest(request);
-        if (!claims.isPresent()) {
-            System.out.println(
-                    "[Admin Controller] (Blog Insert Route) ? Bad request - Cannot fetch access token claims -> Redirect back to landing page");
-            return "redirect:/index.htm";
+        ServiceResponse<OpenIdClaims> response = this.adminService.validateRequest(request);
+        if (response.isError()) {
+            ErrorResponse errorResponse = response.buildError();
+            modelMap.addAttribute("errorResponse", errorResponse);
+            return "redirect:/error.htm";
         }
-        modelMap.addAttribute("adminInformation", claims.get());
+        if (!response.getData().isPresent()) {
+            modelMap.addAttribute("errorResponse", ErrorResponse.buildUnknownServerError(
+                    "Cannot Found User's Claim",
+                    "Cannot Find User's Claim Due To Unknown Server Error"));
+            return "redirect:/error.htm";
+        }
+        modelMap.addAttribute("adminInformation", response.getData().get());
 
         Optional<Category> requestedCategory = this.categoryService.findBySlug(slug);
-        System.out.println("category:" + requestedCategory.get().toString());
         if (!requestedCategory.isPresent()) {
-            // TODO: handle error here
-            System.out.println("Error: Cannot find any category with the given slug");
-            return "redirect:/admin/index.htm";
+            modelMap.addAttribute("errorResponse", ErrorResponse.buildBadRequest(
+                    "Invalid Category Slug",
+                    "Cannot Find Any Category With The Given Slug"));
+            return "redirect:/error.htm";
         }
 
         List<Category> categories = this.categoryService.findAll();

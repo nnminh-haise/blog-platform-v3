@@ -7,17 +7,6 @@ import lombok.NoArgsConstructor;
 
 import java.util.Optional;
 
-enum ServiceErrorType {
-    NO_ERROR,
-    UNKNOWN_SERVICE_ERROR,
-    BAD_REQUEST,
-    FORBIDDEN,
-    UNAUTHORIZED,
-    NOT_FOUND,
-    OK,
-    CREATED
-}
-
 @Data
 @EqualsAndHashCode(callSuper = true)
 @AllArgsConstructor
@@ -83,5 +72,12 @@ public class ServiceResponse<T> extends BasicResponse <T> {
         serviceResponse.setError(ServiceErrorType.CREATED);
         serviceResponse.setData(Optional.ofNullable(data));
         return serviceResponse;
+    }
+
+    public ErrorResponse buildError() {
+        return new ErrorResponse(
+                this.getError().toString(),
+                this.getMessage(),
+                this.getDescription());
     }
 }

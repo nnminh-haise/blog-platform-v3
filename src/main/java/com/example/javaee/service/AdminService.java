@@ -1,6 +1,7 @@
 package com.example.javaee.service;
 
 import com.example.javaee.dto.OpenIdClaims;
+import com.example.javaee.helper.ServiceResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Service;
@@ -16,23 +17,30 @@ public class AdminService {
         this.googleApiService = googleApiService;
     }
 
-    public Optional<OpenIdClaims> validateRequest(HttpServletRequest request) {
+    public ServiceResponse<OpenIdClaims> validateRequest(HttpServletRequest request) {
         if (request == null) {
-            return Optional.empty();
+            return ServiceResponse.ofBadRequest(
+                    "No HttpServletRequest Provided",
+                    "Cannot found any HttpServletRequest");
         }
 
         HttpSession session = request.getSession();
         String accessToken = String.valueOf(session.getAttribute("accessToken"));
         String expireIn = String.valueOf(session.getAttribute("expireIn"));
         if (accessToken == null || expireIn == null) {
-            return Optional.empty();
+            return ServiceResponse.ofBadRequest(
+                    "No Access Token or Expire Time Found",
+                    "Cannot found any access token or expire time");
         }
 
         try {
             OpenIdClaims claims = this.googleApiService.getUserInfo(accessToken);
-            return Optional.of(claims);
+            return ServiceResponse.ofSuccess(
+                    "OpenID Claims found", "Authorized User!", claims);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            return ServiceResponse.ofUnknownServerError(
+                    e.getMessage(),
+                    e.getLocalizedMessage());
         }
     }
 }

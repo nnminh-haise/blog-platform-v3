@@ -4,6 +4,7 @@ import com.example.javaee.dto.BlogDto;
 import com.example.javaee.dto.CreateBlogDto;
 import com.example.javaee.dto.OpenIdClaims;
 import com.example.javaee.dto.UpdateBlogDto;
+import com.example.javaee.helper.ErrorResponse;
 import com.example.javaee.helper.ServiceResponse;
 import com.example.javaee.model.Blog;
 import com.example.javaee.model.Category;
@@ -47,13 +48,19 @@ public class AdminController {
             @RequestParam(name = "slug", required = false) String slug,
             HttpServletRequest request,
             ModelMap modelMap) {
-        Optional<OpenIdClaims> claims = this.adminService.validateRequest(request);
-        if (!claims.isPresent()) {
-            System.out.println(
-                    "[Admin Controller] (Admin Index Route) ? Bad request - Cannot fetch access token claims -> Redirect back to landing page");
-            return "redirect:/index.htm";
+        ServiceResponse<OpenIdClaims> response = this.adminService.validateRequest(request);
+        if (response.isError()) {
+            ErrorResponse errorResponse = response.buildError();
+            modelMap.addAttribute("errorResponse", errorResponse);
+            return "redirect:/error.htm";
         }
-        modelMap.addAttribute("adminInformation", claims.get());
+        if (!response.getData().isPresent()) {
+            modelMap.addAttribute("errorResponse", ErrorResponse.buildUnknownServerError(
+                    "Cannot Found User's Claim",
+                    "Cannot Find User's Claim Due To Unknown Server Error"));
+            return "redirect:/error.htm";
+        }
+        modelMap.addAttribute("adminInformation", response.getData().get());
 
         List<Blog> blogs = this.blogService.findAllBlogByCategorySlug(page, size, orderBy, slug);
         modelMap.addAttribute("blogList", blogs);
@@ -72,13 +79,19 @@ public class AdminController {
     public String createNewBlogViewRenderer(
             HttpServletRequest request,
             ModelMap modelMap) {
-        Optional<OpenIdClaims> claims = this.adminService.validateRequest(request);
-        if (!claims.isPresent()) {
-            System.out.println(
-                    "[Admin Controller] (Blog Insert Route) ? Bad request - Cannot fetch access token claims -> Redirect back to landing page");
-            return "redirect:/index.htm";
+        ServiceResponse<OpenIdClaims> response = this.adminService.validateRequest(request);
+        if (response.isError()) {
+            ErrorResponse errorResponse = response.buildError();
+            modelMap.addAttribute("errorResponse", errorResponse);
+            return "redirect:/error.htm";
         }
-        modelMap.addAttribute("adminInformation", claims.get());
+        if (!response.getData().isPresent()) {
+            modelMap.addAttribute("errorResponse", ErrorResponse.buildUnknownServerError(
+                    "Cannot Found User's Claim",
+                    "Cannot Find User's Claim Due To Unknown Server Error"));
+            return "redirect:/error.htm";
+        }
+        modelMap.addAttribute("adminInformation", response.getData().get());
 
         modelMap.addAttribute("createBlogDto", new CreateBlogDto());
 
@@ -90,21 +103,27 @@ public class AdminController {
             @ModelAttribute("createBlogDto") CreateBlogDto createBlogDto,
             HttpServletRequest request,
             ModelMap modelMap) {
-        Optional<OpenIdClaims> claims = this.adminService.validateRequest(request);
-        if (!claims.isPresent()) {
-            System.out.println(
-                    "[Admin Controller] (Blog Insert Route) ? Bad request - Cannot fetch access token claims -> Redirect back to landing page");
-            return "redirect:/index.htm";
+        ServiceResponse<OpenIdClaims> response = this.adminService.validateRequest(request);
+        if (response.isError()) {
+            ErrorResponse errorResponse = response.buildError();
+            modelMap.addAttribute("errorResponse", errorResponse);
+            return "redirect:/error.htm";
         }
-        modelMap.addAttribute("adminInformation", claims.get());
+        if (!response.getData().isPresent()) {
+            modelMap.addAttribute("errorResponse", ErrorResponse.buildUnknownServerError(
+                    "Cannot Found User's Claim",
+                    "Cannot Find User's Claim Due To Unknown Server Error"));
+            return "redirect:/error.htm";
+        }
+        modelMap.addAttribute("adminInformation", response.getData().get());
 
-        ServiceResponse<Blog> response = this.blogService.create(createBlogDto);
-        if (response.isError() || !response.getData().isPresent()) {
-            // TODO: handle error here!
-            return "redirect:/index.htm";
+        ServiceResponse<Blog> serviceResponse = this.blogService.create(createBlogDto);
+        if (serviceResponse.isError() || !serviceResponse.getData().isPresent()) {
+            modelMap.addAttribute("errorResponse", serviceResponse.buildError());
+            return "redirect:/error.htm";
         }
 
-        return "redirect:/admin/edit/" + response.getData().get().getSlug() + ".htm";
+        return "redirect:/admin/edit/" + serviceResponse.getData().get().getSlug() + ".htm";
     }
 
     @GetMapping("/edit/{slug}.htm")
@@ -112,18 +131,26 @@ public class AdminController {
             @PathVariable(name = "slug", required = true) String slug,
             HttpServletRequest request,
             ModelMap modelMap) {
-        Optional<OpenIdClaims> claims = this.adminService.validateRequest(request);
-        if (!claims.isPresent()) {
-            System.out.println(
-                    "[Admin Controller] (Blog Insert Route) ? Bad request - Cannot fetch access token claims -> Redirect back to landing page");
-            return "redirect:/index.htm";
+        ServiceResponse<OpenIdClaims> response = this.adminService.validateRequest(request);
+        if (response.isError()) {
+            ErrorResponse errorResponse = response.buildError();
+            modelMap.addAttribute("errorResponse", errorResponse);
+            return "redirect:/error.htm";
         }
-        modelMap.addAttribute("adminInformation", claims.get());
+        if (!response.getData().isPresent()) {
+            modelMap.addAttribute("errorResponse", ErrorResponse.buildUnknownServerError(
+                    "Cannot Found User's Claim",
+                    "Cannot Find User's Claim Due To Unknown Server Error"));
+            return "redirect:/error.htm";
+        }
+        modelMap.addAttribute("adminInformation", response.getData().get());
 
         Optional<Blog> requestedBlog = this.blogService.findBySlug(slug);
         if (!requestedBlog.isPresent()) {
-            // TODO: handle error here
-            return "redirect:/admin/index.htm";
+            modelMap.addAttribute("errorResponse", ErrorResponse.buildBadRequest(
+                    "Invalid Blog Slug",
+                    "Cannot Find Any Blog With The Given Slug"));
+            return "redirect:/error.htm";
         }
 
         modelMap.addAttribute("blogDto", requestedBlog.get());
@@ -136,18 +163,26 @@ public class AdminController {
             @ModelAttribute("BlogDto") BlogDto blogDto,
             @PathVariable(name = "slug", required = true) String slug,
             HttpServletRequest request) {
-        Optional<OpenIdClaims> claims = this.adminService.validateRequest(request);
-        if (!claims.isPresent()) {
-            System.out.println(
-                    "[Admin Controller] (Blog Insert Route) ? Bad request - Cannot fetch access token claims -> Redirect back to landing page");
-            return "redirect:/index.htm";
+        ServiceResponse<OpenIdClaims> response = this.adminService.validateRequest(request);
+        if (response.isError()) {
+            ErrorResponse errorResponse = response.buildError();
+            modelMap.addAttribute("errorResponse", errorResponse);
+            return "redirect:/error.htm";
         }
-        modelMap.addAttribute("adminInformation", claims.get());
+        if (!response.getData().isPresent()) {
+            modelMap.addAttribute("errorResponse", ErrorResponse.buildUnknownServerError(
+                    "Cannot Found User's Claim",
+                    "Cannot Find User's Claim Due To Unknown Server Error"));
+            return "redirect:/error.htm";
+        }
+        modelMap.addAttribute("adminInformation", response.getData().get());
 
         Optional<Blog> updatingBlog = this.blogService.findBySlug(slug);
         if (!updatingBlog.isPresent()) {
-            // TODO: handle error here
-            return "redirect:/admin/index.htm";
+            modelMap.addAttribute("errorResponse", ErrorResponse.buildBadRequest(
+                    "Invalid Blog Slug",
+                    "Cannot Find Any Blog With The Given Slug"));
+            return "redirect:/error.htm";
         }
 
         UpdateBlogDto payload = new UpdateBlogDto();
