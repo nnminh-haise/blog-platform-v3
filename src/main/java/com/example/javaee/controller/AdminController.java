@@ -201,17 +201,14 @@ public class AdminController {
                 .collect(Collectors.toList());
         modelMap.addAttribute("otherCategories", otherCategories);
 
-//        modelMap.addAttribute("blogAttachment", blog.getAttachment());
-
         return "admin/edit";
     }
 
     @PostMapping(value = "/edit/{slug}.htm")
     public String updateBlogHandler(ModelMap modelMap,
+            @RequestParam(value = "categories", required = false) String[] categorySlugs,
             @ModelAttribute("updateBlogDto") UpdateBlogDto updateBlogDto,
-            @RequestParam(value = "cates", required = false) String[] cates,
-            @PathVariable(name = "slug", required = true) String slug,
-
+            @PathVariable(name = "slug") String slug,
             HttpServletRequest request) {
 
         ServiceResponse<OpenIdClaims> response = this.adminService.validateRequest(request);
@@ -228,43 +225,51 @@ public class AdminController {
         }
         modelMap.addAttribute("adminInformation", response.getData().get());
 
-        Optional<Blog> updatingBlog = this.blogService.findBySlug(slug);
-        if (!updatingBlog.isPresent()) {
+        Optional<Blog> requestedBlog = this.blogService.findBySlug(slug);
+        if (!requestedBlog.isPresent()) {
             modelMap.addAttribute("errorResponse", ErrorResponse.buildBadRequest(
                     "Invalid Blog Slug",
                     "Cannot Find Any Blog With The Given Slug"));
             return "redirect:/error.htm";
         }
 
-        UpdateBlogDto payload = new UpdateBlogDto();
-        payload.setTitle(updateBlogDto.getTitle());
-        payload.setDescription(updateBlogDto.getDescription());
-        payload.setAttachment(updateBlogDto.getAttachment());
-        // TODO: add update fields for these two fields
-        payload.setIsPopular(updateBlogDto.getIsPopular());
-        payload.setSubTitle(updateBlogDto.getSubTitle());
-
-        List<CategoryDetail> categoryDetails = this.categoryDetailService.findByBlogId(updatingBlog.get().getId());
-        for (CategoryDetail categoryDetail : categoryDetails) {
-            ServiceResponse<CategoryDetail> categoryDetailServiceResponse = this.categoryDetailService.remove(categoryDetail.getId());
+        ServiceResponse<Blog> blogServiceResponse = this.blogService.update(requestedBlog.get().getId(), updateBlogDto);
+        if (blogServiceResponse.isError() || !blogServiceResponse.getData().isPresent()) {
+            modelMap.addAttribute("errorResponse", blogServiceResponse.buildError());
+            return "redirect:/error.htm";
         }
 
-        // TODO: add update blog service
-        this.blogService.update(updatingBlog.get().getId(), payload);
-        List<String> selectedCategories = (cates != null) ? Arrays.asList(cates) : null;
-        for (String cate : selectedCategories) {
-            CreateCategoryDetailDto categoryDetail = new CreateCategoryDetailDto();
-            categoryDetail.setBlogId(updatingBlog.get().getId());
-            categoryDetail.setCategoryId(categoryService.findBySlug(cate).get().getId());
+        List<String> blogCategories = requestedBlog
+                .get()
+                .getCategories()
+                .stream()
+                .map(Category::getSlug)
+                .collect(Collectors.toList());
 
-            ServiceResponse<CategoryDetail> response1 = this.categoryDetailService.create(categoryDetail);
-            if (response1.isSuccess()) {
-                System.out.println("category detail created");
-            } else {
-                System.out.println("category detail not created");
+        for (String categorySlug: categorySlugs) {
+            if (blogCategories.stream().anyMatch(blogCategorySlug -> blogCategorySlug.equals(categorySlug))) {
+                continue;
+            }
+
+            Optional<Category> category = this.categoryService.findBySlug(categorySlug);
+            if (!category.isPresent()) {
+                modelMap.addAttribute("errorResponse", ErrorResponse.buildUnknownServerError(
+                        "Category Not Found",
+                        "Cannot Find Any Category With Slug = " + slug));
+                return "redirect:/error.htm";
+            }
+
+            CreateCategoryDetailDto categoryDetailDto = new CreateCategoryDetailDto();
+            categoryDetailDto.setBlogId(blogServiceResponse.getData().get().getId());
+            categoryDetailDto.setCategoryId(category.get().getId());
+            ServiceResponse<CategoryDetail> categoryDetailServiceResponse = this.categoryDetailService
+                    .create(categoryDetailDto);
+            if (categoryDetailServiceResponse.isError()) {
+                modelMap.addAttribute("errorResponse", categoryDetailServiceResponse.buildError());
+                return "redirect:/error.htm";
             }
         }
 
-        return "redirect:/admin/index.htm";
+        return "redirect:/admin/edit/" + requestedBlog.get().getSlug() + ".htm";
     }
 }

@@ -284,6 +284,7 @@ public class CategoryController {
                     "Cannot Find User's Claim Due To Unknown Server Error"));
             return "redirect:/error.htm";
         }
+        modelMap.addAttribute("adminInformation", response.getData().get());
 
         Optional<Category> removingCategory = this.categoryService.findBySlug(slug);
         if (!removingCategory.isPresent()) {

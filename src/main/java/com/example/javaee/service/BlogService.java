@@ -128,49 +128,32 @@ public class BlogService {
                     "Blog not found", "Cannot find any blog with the given ID");
         }
         Blog updatedBlog = updatingBlog.get();
-        // * Save new file to local machine and update the file's path to database
         String slug = getSlug(payload.getTitle());
+        LocalDateTime currentTimestamp = LocalDateTime.now();
 
-        if (payload.getAttachment() != null) {
-          FilePathBuilder filePathBuilder = new FilePathBuilder();
-          filePathBuilder
+        updatedBlog.setTitle(payload.getTitle());
+        updatedBlog.setDescription(payload.getDescription());
+        updatedBlog.setSlug(slug);
+        updatedBlog.setUpdateAt(currentTimestamp);
+        updatedBlog.setIsPopular(payload.getIsPopular());
+
+        if (!payload.getAttachment().isEmpty()) {
+            FilePathBuilder filePathBuilder = new FilePathBuilder();
+            filePathBuilder
                   .beginWithBaseDirectory(this.fileUploadDirectory.getBaseDirectory())
                   .addSubDirectory(slug);
-          Boolean savingAttachment = this.fileUploadService.saveFile(
+            Boolean savingAttachment = this.fileUploadService.saveFile(
                   payload.getAttachment(),
                   this.servletContext.getRealPath(filePathBuilder.build()));
-          System.out.println("dir:" + filePathBuilder.build());
-            updatedBlog.setAttachment(filePathBuilder.ofFile(payload.getAttachment()).build());
             if (!savingAttachment) {
                 return ServiceResponse.ofUnknownServerError(
                         "Cannot save file!",
                         "File path:" + filePathBuilder.build());
 
             }
-          
+            updatedBlog.setAttachment(filePathBuilder.ofFile(payload.getAttachment()).build());
+            updatedBlog.setThumbnail(payload.getAttachment().getOriginalFilename());
         }
-        else
-        {
-            updatedBlog.setAttachment(updatedBlog.getAttachment());
-        }
-
-
-        // * Convert Date time from payload to LocalDate to save to database
-//        Instant instant = payload.getPublishAt().toInstant();
-//        LocalDate publishDate = instant.atZone(ZoneId.systemDefault()).toLocalDate();
-        LocalDateTime currentTimestamp = LocalDateTime.now();
-
-        // * Set updated fields to a Blog object
-
-        updatedBlog.setTitle(payload.getTitle());
-        updatedBlog.setDescription(payload.getDescription());
-
-
-        updatedBlog.setThumbnail(payload.getAttachment().getOriginalFilename());
-        updatedBlog.setSlug(slug);
-//        updatedBlog.setPublishAt(publishDate);
-        updatedBlog.setUpdateAt(currentTimestamp);
-//        updatedBlog.setHiddenStatus(payload.getHiddenStatus());
 
         RepositoryResponse<Blog> response = this.blogRepository.update(updatedBlog);
         if (response.hasErrorOf(RepositoryErrorType.CONSTRAINT_VIOLATION)) {
@@ -180,6 +163,7 @@ public class BlogService {
         return ServiceResponse.ofSuccess(
                 "Blog updated successfully", null, updatedBlog);
     }
+
     public ServiceResponse<Blog> remove(UUID id) {
         Optional<Blog> targetingBlog = this.blogRepository.findById(id);
         if (!targetingBlog.isPresent()) {

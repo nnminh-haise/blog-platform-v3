@@ -95,10 +95,11 @@
                     <div style="display: flex; gap: 1rem; align-items: center " class="mt-4">
                       <button type="submit" class="btn btn-gradient-primary ">Save</button>
                         <c:if test="${relatedBlogs.size() == 0}">
-                          <a href="${pageContext.request.contextPath}/admin/categories/remove/${selectingCategory.slug}.htm">
-                            <button id="removeCategoryButton" class="btn btn-gradient-danger me-2">
+<%--                          TODO: fix this weird bug where putting a button tag inside an a tag does not work--%>
+                          <a href="${pageContext.request.contextPath}/admin/categories/remove/${selectingCategory.slug}.htm" class="btn btn-gradient-danger me-2">
+<%--                            <button id="removeCategoryButton" class="btn btn-gradient-danger me-2" onclick="handleRemoveCategoryButton()">--%>
                               Remove
-                            </button>
+<%--                            </button>--%>
                           </a>
                         </c:if>
                     </div>
