@@ -94,7 +94,6 @@ public class BlogService {
         Boolean savingAttachment = this.fileUploadService.saveFile(
                 payload.getAttachment(),
                 this.servletContext.getRealPath(filePathBuilder.build()));
-        System.out.println("dir:" + filePathBuilder.build());
 
         if (!savingAttachment) {
             return ServiceResponse.ofUnknownServerError(
@@ -105,7 +104,7 @@ public class BlogService {
         Blog newBlog = new Blog();
         newBlog.setTitle(payload.getTitle());
         newBlog.setSubTitle(payload.getSubtitle());
-        newBlog.setIsPopular(payload.getIs_popular());
+        newBlog.setIsPopular(payload.getIsPopular());
         newBlog.setDescription(payload.getDescription());
         newBlog.setAttachment(filePathBuilder.ofFile(payload.getAttachment()).build());
         newBlog.setThumbnail(payload.getAttachment().getOriginalFilename()); // TODO: update this with correct logic

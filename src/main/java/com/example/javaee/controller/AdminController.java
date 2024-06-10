@@ -32,16 +32,12 @@ public class AdminController {
     public AdminController(
             AdminService adminService,
             BlogService blogService,
-            CategoryService categoryService, CategoryDetailService categoryDetailService) {
+            CategoryService categoryService,
+            CategoryDetailService categoryDetailService) {
         this.adminService = adminService;
         this.blogService = blogService;
         this.categoryService = categoryService;
         this.categoryDetailService = categoryDetailService;
-    }
-
-    @ModelAttribute("categories")
-    public List<Category> fetchAllCategories() {
-        return this.categoryService.findAll();
     }
 
     @GetMapping("/index.htm")
@@ -82,7 +78,6 @@ public class AdminController {
     @GetMapping("/insert.htm")
     public String createNewBlogViewRenderer(
             HttpServletRequest request,
-
             ModelMap modelMap) {
         ServiceResponse<OpenIdClaims> response = this.adminService.validateRequest(request);
         if (response.isError()) {
@@ -100,13 +95,16 @@ public class AdminController {
 
         modelMap.addAttribute("createBlogDto", new CreateBlogDto());
 
+        List<Category> categories = this.categoryService.findAll();
+        modelMap.addAttribute("categories", categories);
+
         return "admin/insert";
     }
 
     @PostMapping("/insert.htm")
     public String creatingNewBlogHandler(
-            @RequestParam(value = "cates", required = false) String[] cates, // TODO: refactor the name of this param
             @ModelAttribute("createBlogDto") CreateBlogDto createBlogDto,
+            @RequestParam("categories") String[] categorySlugs,
             HttpServletRequest request,
             ModelMap modelMap) {
         ServiceResponse<OpenIdClaims> response = this.adminService.validateRequest(request);
@@ -123,33 +121,38 @@ public class AdminController {
         }
         modelMap.addAttribute("adminInformation", response.getData().get());
 
-        ServiceResponse<Blog> serviceResponse = this.blogService.create(createBlogDto);
-        if (serviceResponse.isError() || !serviceResponse.getData().isPresent()) {
-            modelMap.addAttribute("errorResponse", serviceResponse.buildError());
+        ServiceResponse<Blog> blogServiceResponse = this.blogService.create(createBlogDto);
+        if (blogServiceResponse.isError() || !blogServiceResponse.getData().isPresent()) {
+            modelMap.addAttribute("errorResponse", blogServiceResponse.buildError());
             return "redirect:/error.htm";
         }
 
-        // TODO: Refactor this code logic
-        List<String> selectedCategories = (cates != null) ? Arrays.asList(cates) : null;
-        for (String cate : selectedCategories) {
-            CreateCategoryDetailDto categoryDetail = new CreateCategoryDetailDto();
-            categoryDetail.setBlogId(serviceResponse.getData().get().getId());
-            categoryDetail.setCategoryId(categoryService.findBySlug(cate).get().getId());
+        for (String slug: categorySlugs) {
+            Optional<Category> category = this.categoryService.findBySlug(slug);
+            if (!category.isPresent()) {
+                modelMap.addAttribute("errorResponse", ErrorResponse.buildUnknownServerError(
+                        "Category Not Found",
+                        "Cannot Find Any Category With Slug = " + slug));
+                return "redirect:/error.htm";
+            }
 
-            ServiceResponse<CategoryDetail> response1 = this.categoryDetailService.create(categoryDetail);
-            if (response1.isSuccess()) {
-                System.out.println("category detail created");
-            } else {
-                System.out.println("category detail not created");
+            CreateCategoryDetailDto categoryDetailDto = new CreateCategoryDetailDto();
+            categoryDetailDto.setBlogId(blogServiceResponse.getData().get().getId());
+            categoryDetailDto.setCategoryId(category.get().getId());
+            ServiceResponse<CategoryDetail> categoryDetailServiceResponse = this.categoryDetailService
+                    .create(categoryDetailDto);
+            if (categoryDetailServiceResponse.isError()) {
+                modelMap.addAttribute("errorResponse", categoryDetailServiceResponse.buildError());
+                return "redirect:/error.htm";
             }
         }
 
-        return "redirect:/admin/edit/" + serviceResponse.getData().get().getSlug() + ".htm";
+        return "redirect:/admin/edit/" + blogServiceResponse.getData().get().getSlug() + ".htm";
     }
 
     @GetMapping("/edit/{slug}.htm")
     public String adminEditBlogViewRenderer(
-            @PathVariable(name = "slug", required = true) String slug,
+            @PathVariable(name = "slug") String slug,
             HttpServletRequest request,
             ModelMap modelMap) {
         ServiceResponse<OpenIdClaims> response = this.adminService.validateRequest(request);
@@ -180,22 +183,13 @@ public class AdminController {
         updateBlogDto.setIsPopular(blog.getIsPopular());
         updateBlogDto.setSubTitle(blog.getSubTitle());
 
+        List<Category> blogCategories = blog.getCategories();
+
+        modelMap.addAttribute("selectingBlog", blog);
         modelMap.addAttribute("updateBlogDto", updateBlogDto);
-        modelMap.addAttribute("slug", slug);
         modelMap.addAttribute("blogAttachment", blog.getAttachment());
+        modelMap.addAttribute("blogCategories", blogCategories);
 
-        // * Get all categories of the blog.
-        // TODO: fix this logic
-        List<CategoryDetail> categoryDetails = this.categoryDetailService.findByBlogId(blog.getId());
-
-        List<String> categorySlugs = new ArrayList<>();
-        for (CategoryDetail categoryDetail : categoryDetails) {
-            Optional<Category> category = this.categoryService.findById(categoryDetail.getCategory().getId());
-            if (category.isPresent()) {
-                categorySlugs.add(category.get().getSlug());
-            }
-        }
-        modelMap.addAttribute("categorySlugs", categorySlugs);
         return "admin/edit";
     }
 
