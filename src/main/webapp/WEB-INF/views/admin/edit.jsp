@@ -66,16 +66,6 @@
 
   <!-- Editor.js Code Plugin CDN -->
   <script src="https://cdn.jsdelivr.net/npm/@editorjs/code@latest"></script>
-  <style>
-      .checkbox-row {
-          display: flex;
-          flex-wrap: wrap;
-      }
-      .checkbox-column {
-          flex: 0 0 25%; /* 25% width for 4 columns per row */
-      }
-  </style>
-
   <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css">
   <!-- End layout styles -->
   <link rel="shortcut icon" href="${pageContext.request.contextPath}/images/favicon.ico" />
@@ -148,12 +138,24 @@
                   <div class="form-group">
                     <label for="categories">Category</label>
                     <div id="categories" class="checkbox-row">
-                      <c:forEach var="category" items="${blogCategories}" varStatus="loop">
+                      <c:forEach var="category" items="${blogCategories}" varStatus="loopStatus">
                         <div class="checkbox-column">
                           <div class="form-check">
                             <label class="form-check-label">
-                              <input type="checkbox" class="form-check-input" name="categories" value="${category.slug}"
+                              <input type="checkbox" class="form-check-input" name="categories" value="${category.slug}" checked>
                                 ${category.name}
+                              <i class="input-helper"></i>
+                            </label>
+                          </div>
+                        </div>
+                      </c:forEach>
+                      <c:forEach var="category" items="${otherCategories}" varStatus="loopStatus">
+                        <div class="checkbox-column">
+                          <div class="form-check">
+                            <label class="form-check-label">
+                              <input type="checkbox" class="form-check-input" name="categories" value="${category.slug}">
+                                ${category.name}
+                              <i class="input-helper"></i>
                             </label>
                           </div>
                         </div>
@@ -207,6 +209,15 @@
   <!-- page-body-wrapper ends -->
 </div>
 <!-- container-scroller -->
+<style>
+    .checkbox-row {
+        display: flex;
+        flex-wrap: wrap;
+    }
+    .checkbox-column {
+        flex: 0 0 25%; /* 25% width for 4 columns per row */
+    }
+</style>
 <!-- plugins:js -->
 <script src="vendors/js/vendor.bundle.base.js"></script>
 <!-- endinject -->

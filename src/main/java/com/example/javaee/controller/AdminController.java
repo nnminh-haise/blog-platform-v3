@@ -19,6 +19,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/admin")
@@ -64,6 +65,8 @@ public class AdminController {
 
         List<Blog> blogs = this.blogService.findAllBlogByCategorySlug(page, size, orderBy, slug);
         modelMap.addAttribute("blogList", blogs);
+
+        modelMap.addAttribute("categories", this.categoryService.findAll());
 
         // * Send current requesting options
         modelMap.addAttribute("currentPage", page);
@@ -177,18 +180,28 @@ public class AdminController {
             return "redirect:/error.htm";
         }
         Blog blog = requestedBlog.get();
+        modelMap.addAttribute("selectingBlog", blog);
+
         UpdateBlogDto updateBlogDto = new UpdateBlogDto();
         updateBlogDto.setTitle(blog.getTitle());
         updateBlogDto.setDescription(blog.getDescription());
         updateBlogDto.setIsPopular(blog.getIsPopular());
         updateBlogDto.setSubTitle(blog.getSubTitle());
+        modelMap.addAttribute("updateBlogDto", updateBlogDto);
 
         List<Category> blogCategories = blog.getCategories();
-
-        modelMap.addAttribute("selectingBlog", blog);
-        modelMap.addAttribute("updateBlogDto", updateBlogDto);
-        modelMap.addAttribute("blogAttachment", blog.getAttachment());
         modelMap.addAttribute("blogCategories", blogCategories);
+
+        List<Category> fullCategories = this.categoryService.findAll();
+        List<Category> otherCategories = fullCategories
+                .stream()
+                .filter(category -> blogCategories
+                        .stream()
+                        .noneMatch(blogCategory -> blogCategory.getSlug().equals(category.getSlug())))
+                .collect(Collectors.toList());
+        modelMap.addAttribute("otherCategories", otherCategories);
+
+//        modelMap.addAttribute("blogAttachment", blog.getAttachment());
 
         return "admin/edit";
     }
