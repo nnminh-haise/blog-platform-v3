@@ -22,7 +22,7 @@
     <bean id="dataSource"
           class="org.springframework.jdbc.datasource.DriverManagerDataSource"
           p:driverClassName="org.postgresql.Driver"
-          p:url="jdbc:postgresql://localhost:5432/blog-platform"
+          p:url="jdbc:postgresql://localhost:5433/blog-platform"
           p:username="postgres"
           p:password="postgres">
     </bean>
@@ -57,7 +57,7 @@
 
     <!-- Configure Email for login account-->
     <bean id="signInGoogleAccount" class="com.example.javaee.beans.SignInGoogleAccount">
-        <property name="email" value="namkuner@gmail.com"/>
+        <property name="email" value="nnminh.sam.1803@gmail.com"/>
     </bean>
 
     <!-- Configure Application verification with Google Service API-->
@@ -86,8 +86,9 @@
     <context:component-scan base-package="com.example.javaee.model"/>
 
     <mvc:resources mapping="/images/**" location="/images/"/>
-    <mvc:resources mapping="/img/**" location="/img/"/>
     <mvc:resources mapping="/blogs/**" location="/blogs/"/>
+    <mvc:resources mapping="/fonts/**" location="/fonts/"/>
+    <mvc:resources mapping="/img/**" location="/img/"/>
     <mvc:resources mapping="/css/**" location="/css/"/>
     <mvc:resources mapping="/js/**" location="/js/"/>
 </beans>
