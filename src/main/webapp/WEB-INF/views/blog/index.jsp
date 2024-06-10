@@ -19,7 +19,7 @@
       <ul class="navbar-nav mr-auto d-flex align-items-center">
         <c:forEach var="category" items="${categories}">
           <li class="nav-item">
-            <a class="nav-link" href="${pageContext.request.contextPath}/blogs/index.htm?category=${category.slug}">
+            <a class="nav-link" style="width: max-content;" href="${pageContext.request.contextPath}/blogs/index.htm?category=${category.slug}">
                 ${category.name}
               <span class="sr-only">(current)</span>
             </a>

@@ -24,7 +24,7 @@ contentType="text/html;charset=UTF-8" language="java" %>
       <div class="container">
         <a
           class="navbar-brand"
-          href="${pageContext.request.contextPath}/blogs/index.htm"
+          href="${pageContext.request.contextPath}/index.htm"
           ><strong>Mundana</strong></a
         >
         <button
@@ -44,6 +44,7 @@ contentType="text/html;charset=UTF-8" language="java" %>
               <li class="nav-item">
                 <a
                   class="nav-link"
+                  style="width: max-content"
                   href="${pageContext.request.contextPath}/blogs/index.htm?category=${category.slug}"
                 >
                   ${category.name}
@@ -103,8 +104,9 @@ MAIN
               style="
                 /* background-image: url('${favouriteBlogs.get(0).thumbnail}'); */
                 background-image: url('${pageContext.servletContext.contextPath}/blogs/${favouriteBlogs.get(0).slug}/${favouriteBlogs.get(0).thumbnail}');
-                height: 150px;
-                background-size: cover;
+                height: 300px;
+                      background-position: center;
+                background-size: cover; border-radius: 1rem;
                 background-repeat: no-repeat;
               "
             ></div>
@@ -164,7 +166,9 @@ MAIN
                 <div class="mb-3 d-flex align-items-center rounded-lg">
                   <!-- <img height="80" src="${blog.thumbnail}" /> -->
                   <img
-                    height="80"
+                          height="100"
+                          width="150"
+                          style="min-width: 170px;"
                     src="${pageContext.servletContext.contextPath}/blogs/${blog.slug}/${blog.thumbnail}"
                   />
                   <div class="pl-3">
@@ -271,7 +275,9 @@ MAIN
               </div>
               <!-- <img height="120" src="${blog.thumbnail}" /> -->
               <img
-                height="120"
+                height="100"
+                width="150"
+                style="min-width: 170px;"
                 src="${pageContext.servletContext.contextPath}/blogs/${blog.slug}/${blog.thumbnail}"
               />
             </div>
@@ -283,10 +289,11 @@ MAIN
                 background-color: #e8f3ec;
                 border: none;
                 border-radius: 8px;
+                cursor: pointer;
               "
               id="loadMore"
             >
-              Xem tiếp
+              Read more
             </button>
           </div>
         </div>

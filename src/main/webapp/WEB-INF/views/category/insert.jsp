@@ -56,16 +56,21 @@
             </div>
           </a>
         </li>
-
+        <style>
+          .btn-gradient-green {
+            background: linear-gradient(to right, #84d9d2, #07cdae) !important;
+            color: white;
+          }
+        </style>
         <li class="nav-item">
-          <a class="nav-link" href="${pageContext.request.contextPath}/admin/index.htm">
-            <span class="menu-title">Blogs</span>
+          <a  class="nav-link" href="${pageContext.request.contextPath}/admin/index.htm">
+            <span style="color: black"  class="menu-title">Blogs</span>
             <i class="mdi mdi-contacts menu-icon"></i>
           </a>
         </li>
-        <li class="nav-item">
+        <li class="nav-item btn-gradient-green">
           <a class="nav-link" href="${pageContext.request.contextPath}/admin/categories/index.htm">
-            <span class="menu-title">Categories</span>
+            <span style="color: white" class="menu-title">Categories</span>
             <i class="mdi mdi-format-list-bulleted menu-icon"></i>
           </a>
         </li>
@@ -81,13 +86,14 @@
                 <h4 class="card-title">Create New Category</h4>
                 <form:form class="form-inline" method="post" action="${pageContext.request.contextPath}/admin/categories/insert.htm" modelAttribute="createCategoryDto">
                   <div class="form-group">
-                    <label class="sr-only">Category Name</label>
                     <form:input  class="form-control mb-2 mr-sm-2" path="name" placeholder="Category's name"/>
                   </div>
-                  <button type="submit" class="btn btn-gradient-primary mb-2">Create</button>
-                  <button class="btn btn-light">
-                    <a href="${pageContext.request.contextPath}/admin/categories/index.htm">Cancel</a>
-                  </button>
+                 <div style="display: flex; gap: 1rem; align-items: center">
+                   <button type="submit" class="btn btn-gradient-primary">Create</button>
+                   <button class="btn btn-light">
+                     <a style="text-decoration: none; color: black;" href="${pageContext.request.contextPath}/admin/categories/index.htm">Cancel</a>
+                   </button>
+                 </div>
                 </form:form>
               </div>
             </div>

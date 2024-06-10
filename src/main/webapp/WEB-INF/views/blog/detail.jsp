@@ -1,6 +1,8 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %> <%@ taglib
 uri="http://www.springframework.org/tags/form" prefix="form" %> <%@ page
 contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib
+        uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <html>
   <head>
     <title>${blog.title}</title>
@@ -63,6 +65,7 @@ NAVBAR
               <li class="nav-item">
                 <a
                   class="nav-link"
+                  style="width: max-content"
                   href="${pageContext.request.contextPath}/blogs/index.htm?category=${category.slug}"
                 >
                   ${category.name}<span class="sr-only">(current)</span>
@@ -83,8 +86,8 @@ HEADER
         class="jumbotron jumbotron-fluid mb-3 pl-0 pt-0 pb-0 bg-white position-relative"
       >
         <div style="height: 55%" class="tofront">
-          <div class="row justify-content-between">
-            <div class="col-md-6 pt-6 pb-6 pr-6 align-self-center">
+          <div class="row justify-content-between align-items-center">
+            <div class="col-md-6 pt-6 pb-6 pr-4 align-self-center">
               <c:forEach var="category" items="${blogCategoryList}">
                 <p class="text-uppercase font-weight-bold">
                   <a
@@ -102,7 +105,7 @@ HEADER
             </div>
             <div class="col-md-6 pr-0">
               <img
-                style="height: 100%"
+                style="aspect-ratio: 2/1"
                 src="${pageContext.servletContext.contextPath}/blogs/${blog.slug}/${blog.thumbnail}"
               />
             </div>
@@ -115,7 +118,7 @@ HEADER
     <!--------------------------------------
 MAIN
 --------------------------------------->
-    <div class="container pt-4 pb-4" style="margin-top: 150px">
+    <div class="container pt-2 pb-4" >
       <div class="row justify-content-center">
         <div class="col-lg-2 pr-4 mb-4 col-md-12">
           <div class="sticky-top text-center">
@@ -151,14 +154,14 @@ MAIN
         <div class="col-lg-6">
           <div class="card border-0 mb-4 box-shadow h-xl-300">
             <div
-              style="
-                /* background-image: url('${favouriteBlogs.get(0).thumbnail}'); */
-                background-image: url('${pageContext.servletContext.contextPath}/blogs/${favouriteBlogs.get(0).slug}/${favouriteBlogs.get(0).thumbnail}');
-                height: 150px;
-                background-size: cover;
-                background-repeat: no-repeat;
-                border-radius: 0.5rem;
-              "
+                    style="
+                            /* background-image: url('${favouriteBlogs.get(0).thumbnail}'); */
+                            background-image: url('${pageContext.servletContext.contextPath}/blogs/${favouriteBlogs.get(0).slug}/${favouriteBlogs.get(0).thumbnail}');
+                            height: 300px;
+                            background-position: center;
+                            background-size: cover; border-radius: 1rem;
+                            background-repeat: no-repeat;
+                            "
             ></div>
             <div
               class="card-body px-0 pb-0 d-flex flex-column align-items-start"
@@ -173,7 +176,14 @@ MAIN
                     >Favid Rick</a
                   ></small
                 >
-                <small class="text-muted">Dec 12 &middot; 5 min read</small>
+                <small class="text-muted">
+                  <fmt:formatDate
+                          value="${favouriteBlogs[0].createAtAsDate()}"
+                          pattern="MMMM d, yyyy HH:mm:ss"
+                          var="formattedCreateDate"
+                  />
+                  <c:out value="${formattedCreateDate}" />
+                </small>
               </div>
             </div>
           </div>
@@ -185,7 +195,9 @@ MAIN
                 <div class="mb-3 d-flex align-items-center rounded-lg">
                   <!-- <img height="80" src="${blog.thumbnail}" /> -->
                   <img
-                    height="80"
+                          height="100"
+                          width="150"
+                          style="min-width: 170px;"
                     src="${pageContext.servletContext.contextPath}/blogs/${blog.slug}/${blog.thumbnail}"
                   />
                   <div class="pl-3">
@@ -197,7 +209,14 @@ MAIN
                         ${blog.title}
                       </a>
                     </h2>
-                    <small class="text-muted">${blog.createAt}</small>
+                    <small class="text-muted">
+                      <fmt:formatDate
+                              value="${blog.createAtAsDate()}"
+                              pattern="MMMM d, yyyy HH:mm:ss"
+                              var="formattedCreateDate"
+                      />
+                      <c:out value="${formattedCreateDate}" />
+                    </small>
                   </div>
                 </div>
               </c:if>

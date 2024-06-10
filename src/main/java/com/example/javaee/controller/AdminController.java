@@ -61,7 +61,7 @@ public class AdminController {
             return "redirect:/error.htm";
         }
         modelMap.addAttribute("adminInformation", response.getData().get());
-
+        modelMap.addAttribute("categories", this.categoryService.findAll());
         List<Blog> blogs = this.blogService.findAllBlogByCategorySlug(page, size, orderBy, slug);
         modelMap.addAttribute("blogList", blogs);
 

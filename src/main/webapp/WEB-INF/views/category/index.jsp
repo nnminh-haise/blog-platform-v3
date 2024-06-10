@@ -22,6 +22,12 @@
   <!-- Layout styles -->
   <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css">
   <!-- End layout styles -->
+  <style>
+    .btn-gradient-green {
+      background: linear-gradient(to right, #84d9d2, #07cdae) !important;
+      color: white;
+    }
+  </style>
   <link rel="shortcut icon" href="${pageContext.request.contextPath}/images/favicon.ico" />
 </head>
 <body>
@@ -54,14 +60,14 @@
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="${pageContext.request.contextPath}/admin/index.htm">
-            <span class="menu-title">Blogs</span>
+          <a  class="nav-link" href="${pageContext.request.contextPath}/admin/index.htm">
+            <span style="color: black"  class="menu-title">Blogs</span>
             <i class="mdi mdi-contacts menu-icon"></i>
           </a>
         </li>
-        <li class="nav-item">
+        <li class="nav-item btn-gradient-green">
           <a class="nav-link" href="${pageContext.request.contextPath}/admin/categories/index.htm">
-            <span class="menu-title">Categories</span>
+            <span style="color: white" class="menu-title">Categories</span>
             <i class="mdi mdi-format-list-bulleted menu-icon"></i>
           </a>
         </li>
@@ -82,7 +88,7 @@
           <div class="col-lg-12 stretch-card">
             <div class="card">
               <div class="card-body">
-                <table class="table table-bordered">
+                <table class="table table-dark">
                   <thead>
                   <tr>
                     <th>Name</th>
@@ -105,7 +111,11 @@
                       </td>
                       <td style="width: 20%;">
                         <a href="${pageContext.request.contextPath}/admin/categories/edit/${category.slug}.htm">
-                          <button type="button" class="btn btn-gradient-warning btn-fw">Edit</button>
+                          <button type="button"
+                                  class="btn btn-dark btn-fw"
+                                  style="min-width: 110px; background: #00cdf6;">
+                            Edit
+                          </button>
                         </a>
 <%--                        <a href="${pageContext.request.contextPath}/admin/categories/delete/${category.slug}.htm" onclick="return confirm('are you sure')">--%>
 <%--                          <button type="button" class="btn btn-gradient-danger btn-fw">Delete</button>--%>

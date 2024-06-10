@@ -18,6 +18,12 @@
   <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css">
   <!-- End layout styles -->
   <link rel="shortcut icon" href="${pageContext.request.contextPath}/images/favicon.ico" />
+  <style>
+    .btn-gradient-green {
+      background: linear-gradient(to right, #84d9d2, #07cdae) !important;
+      color: white;
+    }
+  </style>
 </head>
 <body>
 <div class="container-scroller">
@@ -48,15 +54,21 @@
             </div>
           </a>
         </li>
+        <style>
+          .btn-gradient-green {
+            background: linear-gradient(to right, #84d9d2, #07cdae) !important;
+            color: white;
+          }
+        </style>
         <li class="nav-item">
-          <a class="nav-link" href="${pageContext.request.contextPath}/admin/index.htm">
-            <span class="menu-title">Blogs</span>
+          <a  class="nav-link" href="${pageContext.request.contextPath}/admin/index.htm">
+            <span style="color: black"  class="menu-title">Blogs</span>
             <i class="mdi mdi-contacts menu-icon"></i>
           </a>
         </li>
-        <li class="nav-item">
+        <li class="nav-item btn-gradient-green">
           <a class="nav-link" href="${pageContext.request.contextPath}/admin/categories/index.htm">
-            <span class="menu-title">Categories</span>
+            <span style="color: white" class="menu-title">Categories</span>
             <i class="mdi mdi-format-list-bulleted menu-icon"></i>
           </a>
         </li>
@@ -80,7 +92,16 @@
                              modelAttribute="updateCategoryDto">
                     <label for="exampleInputName1">Category's name</label>
                     <form:input type="text" path ="name"  class="form-control" id="exampleInputName1" placeholder="Category's name" />
-                    <button type="submit" class="btn btn-gradient-primary me-2">Save</button>
+                    <div style="display: flex; gap: 1rem; align-items: center " class="mt-4">
+                      <button type="submit" class="btn btn-gradient-primary ">Save</button>
+                        <c:if test="${relatedBlogs.size() == 0}">
+                          <a href="${pageContext.request.contextPath}/admin/categories/remove/${selectingCategory.slug}.htm">
+                            <button id="removeCategoryButton" class="btn btn-gradient-danger me-2">
+                              Remove
+                            </button>
+                          </a>
+                        </c:if>
+                    </div>
                   </form:form>
                 </div>
                 <div class="form-group">
@@ -137,17 +158,6 @@
               </div>
             </div>
           </div>
-
-        </div>
-        <div class="form-group">
-          <c:if test="${relatedBlogs.size() == 0}">
-            <h4 style="margin-top: 10px">Remove Category</h4>
-            <a href="${pageContext.request.contextPath}/admin/categories/remove/${selectingCategory.slug}.htm">
-              <button id="removeCategoryButton" class="btn btn-gradient-primary me-2">
-                Remove
-              </button>
-            </a>
-          </c:if>
         </div>
       </div>
       <!-- content-wrapper ends -->
