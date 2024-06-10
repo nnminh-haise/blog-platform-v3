@@ -12562,6 +12562,10 @@ code {
     background: linear-gradient(to right, #da8cff, #9a55ff); }
   .btn-gradient-primary:hover {
     opacity: .8; }
+  .btn-gradient-green {
+    color: white;
+    background: linear-gradient(to right, #84d9d2, #07cdae) !important;
+  }
   .btn-gradient-primary:not(.btn-gradient-light) {
     color: #ffffff; }
     .btn-gradient-primary:not(.btn-gradient-light):hover, .btn-gradient-primary:not(.btn-gradient-light):focus, .btn-gradient-primary:not(.btn-gradient-light):active {

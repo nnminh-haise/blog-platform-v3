@@ -112,6 +112,10 @@ public class BlogController {
         return this.blogService.findNumberOfPopularBlogsOrderBy(5, "asc");
     }
 
+    @ModelAttribute("bannerBlog")
+    public Blog getBannerBlog() {
+        return this.blogService.findOnePopular();
+    }
     @ModelAttribute("favouriteBlogs")
     public List<Blog> getFavouriteBlogs() {
         return this.blogService.findLastAmount(4);

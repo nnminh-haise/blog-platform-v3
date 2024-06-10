@@ -38,6 +38,12 @@
   />
   <!-- Include jQuery -->
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <style>
+    .btn-gradient-green {
+      background: linear-gradient(to right, #84d9d2, #07cdae) !important;
+      color: white;
+    }
+  </style>
 </head>
 <body>
 <div class="container-scroller">
@@ -69,14 +75,14 @@
           </a>
         </li>
         <li class="nav-item link-item">
-          <a class="nav-link" href="${pageContext.request.contextPath}/admin/index.htm">
-            <span class="menu-title">Blogs</span>
+          <a  class="nav-link" href="${pageContext.request.contextPath}/admin/index.htm">
+            <span style="color: white" class="menu-title">Blogs</span>
             <i class="mdi mdi-contacts menu-icon"></i>
           </a>
         </li>
         <li class="nav-item link-item">
           <a class="nav-link" href="${pageContext.request.contextPath}/admin/categories/index.htm">
-            <span class="menu-title">Categories</span>
+            <span style="color: black" class="menu-title">Categories</span>
             <i class="mdi mdi-format-list-bulleted menu-icon"></i>
           </a>
         </li>
@@ -293,8 +299,7 @@
 <script>
   $(document).ready(function() {
     if (window.location.pathname.includes('/admin/index.htm')) {
-      $('.link-item:first').css('background-color', '#00F66BFF');
-      $('.link-item:first').css('color', '#00F66BFF');// Highlight color for first li
+      $('.link-item:first').addClass('btn-gradient-green');
     } else {
       $('.link-item-item').not(':first').css('background-color', '#00F66BFF'); // Highlight color for other li elements
     }

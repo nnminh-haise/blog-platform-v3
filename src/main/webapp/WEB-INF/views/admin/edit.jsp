@@ -66,6 +66,19 @@
 
   <!-- Editor.js Code Plugin CDN -->
   <script src="https://cdn.jsdelivr.net/npm/@editorjs/code@latest"></script>
+  <style>
+      .checkbox-row {
+          display: flex;
+          flex-wrap: wrap;
+      }
+      .checkbox-column {
+          flex: 0 0 25%; /* 25% width for 4 columns per row */
+      }  .btn-gradient-green {
+           color: white !important;
+           background: linear-gradient(to right, #84d9d2, #07cdae) !important;
+         }
+  </style>
+
   <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css">
   <!-- End layout styles -->
   <link rel="shortcut icon" href="${pageContext.request.contextPath}/images/favicon.ico" />
@@ -98,9 +111,9 @@
             </div>
           </a>
         </li>
-        <li class="nav-item">
+        <li class="nav-item btn-gradient-green">
           <a class="nav-link" href="${pageContext.request.contextPath}/admin/index.htm">
-            <span class="menu-title">Blogs</span>
+            <span style="color: white" class="menu-title">Blogs</span>
             <i class="mdi mdi-contacts menu-icon"></i>
           </a>
         </li>
