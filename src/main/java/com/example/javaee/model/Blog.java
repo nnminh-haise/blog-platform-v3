@@ -2,10 +2,7 @@ package com.example.javaee.model;
 
 import jakarta.persistence.*;
 import lombok.*;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -51,24 +48,34 @@ public class Blog extends BaseEntity {
     @OneToMany(mappedBy = "blog", fetch = FetchType.EAGER)
     private Collection<CategoryDetail> categoryDetails;
 
-    public Date createAtAsDate() {
-        return this.castLocalDateTimeToDate(this.getCreateAt());
-    }
-
-    public Date updateAtAsDate() {
-        return this.castLocalDateTimeToDate(this.getUpdateAt());
-    }
-
-    public Date deleteAtAsDate() {
-        return this.castLocalDateTimeToDate(this.getDeleteAt());
-    }
-
-    private Date castLocalDateTimeToDate(LocalDateTime localDateTime) {
-        return Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
+    public Long getNumberOfCategory() {
+        return this.categoryDetails
+                .stream()
+                .filter(categoryDetail -> categoryDetail.getDeleteAt() == null)
+                .map(CategoryDetail::getCategory)
+                .filter(category -> category.getDeleteAt() == null)
+                .count();
     }
 
     public List<Category> getCategories() {
-        return this.categoryDetails.stream().map(CategoryDetail::getCategory).collect(Collectors.toList());
+        return this.categoryDetails
+                .stream()
+                .filter(categoryDetail -> categoryDetail.getDeleteAt() == null)
+                .map(CategoryDetail::getCategory)
+                .filter(category -> category.getDeleteAt() == null)
+                .collect(Collectors.toList());
+    }
+
+    public List<Category> getCategories(int page, int size) {
+        int offset = page * size;
+        return this.categoryDetails
+                .stream()
+                .filter(categoryDetail -> categoryDetail.getDeleteAt() == null)
+                .map(CategoryDetail::getCategory)
+                .skip(offset)
+                .limit(size)
+                .filter(category -> category.getDeleteAt() == null)
+                .collect(Collectors.toList());
     }
 
     public String toString() {

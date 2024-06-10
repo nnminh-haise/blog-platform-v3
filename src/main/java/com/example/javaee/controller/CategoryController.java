@@ -5,46 +5,35 @@ import com.example.javaee.dto.OpenIdClaims;
 import com.example.javaee.dto.UpdateCategoryDto;
 import com.example.javaee.helper.ErrorResponse;
 import com.example.javaee.helper.ServiceResponse;
+import com.example.javaee.model.Blog;
 import com.example.javaee.model.Category;
 import com.example.javaee.model.CategoryDetail;
 import com.example.javaee.service.AdminService;
+import com.example.javaee.service.BlogService;
 import com.example.javaee.service.CategoryDetailService;
 import com.example.javaee.service.CategoryService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @Controller
 @RequestMapping("admin/categories")
 public class CategoryController {
+    private final BlogService blogService;
     private final CategoryService categoryService;
     private final AdminService adminService;
-    public int pageSizes = 5;
     private final CategoryDetailService categoryDetailService;
 
-    @ModelAttribute("totalPages")
-    public Integer getLimitPageCategory() {
-        List<Category> response = categoryService.findAll();
-        if (response == null) {
-            return 1;
-        }
-        int total = response.size();
-        int limit = total / pageSizes;
-        if (total % pageSizes != 0) {
-            limit++;
-        }
-        return limit;
-    }
-
     public CategoryController(
+            BlogService blogService,
             CategoryService categoryService,
-            AdminService adminService, CategoryDetailService categoryDetailService) {
+            AdminService adminService,
+            CategoryDetailService categoryDetailService) {
+        this.blogService = blogService;
         this.categoryService = categoryService;
         this.adminService = adminService;
         this.categoryDetailService = categoryDetailService;
@@ -52,9 +41,11 @@ public class CategoryController {
 
     @GetMapping("index.htm")
     public String categoryIndexViewRenderer(
+            @RequestParam(value = "page", defaultValue = "0", required = false) Integer page,
+            @RequestParam(value = "size", defaultValue = "5", required = false) Integer size,
+            @RequestParam(value = "orderBy", defaultValue = "asc", required = false) String orderBy,
             HttpServletRequest request,
-            ModelMap modelMap,
-            @RequestParam(name = "pageCategory", defaultValue = "1") Integer pageCategory) {
+            ModelMap modelMap) {
         ServiceResponse<OpenIdClaims> response = this.adminService.validateRequest(request);
         if (response.isError()) {
             ErrorResponse errorResponse = response.buildError();
@@ -69,11 +60,15 @@ public class CategoryController {
         }
         modelMap.addAttribute("adminInformation", response.getData().get());
 
-        System.out.println("pageCategory: " + pageCategory);
+        // * Finding categories base on the pagination values
+        List<Category> categories = this.categoryService.findAll(page, size, orderBy);
+        modelMap.addAttribute("categories", categories);
 
-        modelMap.addAttribute("pageCategory", pageCategory);
-        List<Category> response = categoryService.paginate(pageCategory, pageSizes);
-        modelMap.addAttribute("categories", response);
+        // * Parsing the values to the view for handling pagination when fetching new page
+        modelMap.addAttribute("currentPage", page);
+        modelMap.addAttribute("currentSize", size);
+        modelMap.addAttribute("totalNumberOfPage", this.categoryService.countMaximumNumberOfPage(size));
+        modelMap.addAttribute("orderBy", orderBy);
 
         return "category/index";
     }
@@ -101,42 +96,10 @@ public class CategoryController {
         return "category/insert";
     }
 
+    // TODO [Low prior]: upgrade error handling page
     @PostMapping("insert.htm")
     public String categoryInsertHandler(
             @ModelAttribute("createCategoryDto") CreateCategoryDto createCategoryDto,
-            HttpServletRequest request,
-            ModelMap modelMap) {
-        Optional<OpenIdClaims> claims = this.adminService.validateRequest(request);
-        if (!claims.isPresent()) {
-            System.out.println(
-                    "[Admin Controller] (Admin Index Route) ? Bad request - Cannot fetch access token claims -> Redirect back to landing page");
-            return "redirect:/index.htm";
-        }
-        modelMap.addAttribute("adminInformation", claims.get());
-
-        ServiceResponse<Category> serviceResponse = this.categoryService.create(createCategoryDto);
-        if (!serviceResponse.isSuccess()) {
-            modelMap.addAttribute("errorResponse", serviceResponse.buildError());
-            return "redirect:/error.htm";
-        if (createCategoryDto.getName().isEmpty()) {
-            modelMap.addAttribute("message", "Name is required");
-            return "category/insert";
-        }
-        if(categoryService.findBySlug(categoryService.getSlug(createCategoryDto.getName())).isPresent()){
-            modelMap.addAttribute("message", "Name is exists");
-            return "category/insert";
-        }
-        ServiceResponse<Category> response = this.categoryService.create(createCategoryDto);
-        if (!response.isSuccess()) {
-            // TODO: add error handling here
-            return "redirect://index.hm";
-        }
-        redirectAttributes.addFlashAttribute("message", "Create category successfully!");
-        return "redirect:/admin/categories/index.htm";
-    }
-
-    @GetMapping("/editor/{id}.htm")
-    public String adminEditCategoryViewRenderer(
             HttpServletRequest request,
             ModelMap modelMap) {
         ServiceResponse<OpenIdClaims> response = this.adminService.validateRequest(request);
@@ -150,13 +113,37 @@ public class CategoryController {
                     "Cannot Found User's Claim",
                     "Cannot Find User's Claim Due To Unknown Server Error"));
             return "redirect:/error.htm";
-            ModelMap model,
-             @PathVariable("id") UUID id, @RequestParam( name="pageCategory",defaultValue = "1") Integer pageCategory) {
-        Optional<OpenIdClaims> claims = this.adminService.validateRequest(request);
-        if (!claims.isPresent()) {
-            System.out.println(
-                    "[Admin Controller] (Blog Insert Route) ? Bad request - Cannot fetch access token claims -> Redirect back to landing page");
-            return "redirect:/index.htm";
+        }
+        modelMap.addAttribute("adminInformation", response.getData().get());
+
+        ServiceResponse<Category> creatingCategoryServiceResponse = this.categoryService.create(createCategoryDto);
+        if (!creatingCategoryServiceResponse.isSuccess()) {
+            modelMap.addAttribute("errorResponse", creatingCategoryServiceResponse.buildError());
+            return "redirect:/error.htm";
+        }
+
+        return "redirect:/admin/categories/index.htm";
+    }
+
+    @GetMapping("/edit/{slug}.htm")
+    public String adminEditCategoryViewRenderer(
+            @PathVariable("slug") String slug,
+            @RequestParam(value = "page", defaultValue = "0", required = false) Integer page,
+            @RequestParam(value = "size", defaultValue = "5", required = false) Integer size,
+            @RequestParam(value = "orderBy", defaultValue = "asc", required = false) String orderBy,
+            HttpServletRequest request,
+            ModelMap modelMap) {
+        ServiceResponse<OpenIdClaims> response = this.adminService.validateRequest(request);
+        if (response.isError()) {
+            ErrorResponse errorResponse = response.buildError();
+            modelMap.addAttribute("errorResponse", errorResponse);
+            return "redirect:/error.htm";
+        }
+        if (!response.getData().isPresent()) {
+            modelMap.addAttribute("errorResponse", ErrorResponse.buildUnknownServerError(
+                    "Cannot Found User's Claim",
+                    "Cannot Find User's Claim Due To Unknown Server Error"));
+            return "redirect:/error.htm";
         }
         modelMap.addAttribute("adminInformation", response.getData().get());
 
@@ -168,80 +155,150 @@ public class CategoryController {
             return "redirect:/error.htm";
         }
 
-        List<Category> categories = this.categoryService.findAll();
-        modelMap.addAttribute("categories", categories);
+        modelMap.addAttribute("selectingCategory", requestedCategory.get());
+        modelMap.addAttribute("updateCategoryDto", new UpdateCategoryDto(requestedCategory.get().getName()));
 
-        UpdateCategoryDto updatingCategoryDto = new UpdateCategoryDto();
-        updatingCategoryDto.setName(requestedCategory.get().getName());
-        modelMap.addAttribute("updateCategoryDto", updatingCategoryDto);
+        List<Blog> relatedBlogs = requestedCategory.get().getRelatedBlogs(page, size);
+        modelMap.addAttribute("relatedBlogs", relatedBlogs);
 
-        model.addAttribute("id_editor", id);
-        Optional<Category> optionalCategory = categoryService.findById(id);
-        Category category = optionalCategory.get();
-        model.addAttribute("createCategoryDto",category);
-        model.addAttribute("pageCategory", pageCategory);
-
-        List<Category> response = categoryService.paginate(pageCategory, pageSizes);
-
-        System.out.println("id of the category: " + category.getName());
-        model.addAttribute("categories", response);
+        // * Parsing the values to the view for handling pagination when fetching new page
+        modelMap.addAttribute("currentPage", page);
+        modelMap.addAttribute("currentSize", size);
+        Long numberOfItems = requestedCategory.get().getNumberOfBlog();
+        Long numberOfPage = numberOfItems / size + ((numberOfItems % size == 0) ? 0 : 1);
+        modelMap.addAttribute("totalNumberOfPage", numberOfPage);
+        modelMap.addAttribute("orderBy", orderBy);
 
         return "category/edit";
     }
 
-    @PostMapping("/editor/{id}.htm")
-    public String edit(ModelMap model, @ModelAttribute("createCategoryDto") Category category,
-            @PathVariable("id") UUID id, @RequestParam(name = "pageCategory", defaultValue = "1") Integer pageCategory,
-            RedirectAttributes redirectAttributes) {
-        model.addAttribute("createCategoryDto", category);
-        model.addAttribute("pageCategory", pageCategory);
-        model.addAttribute("categories", categoryService.paginate(pageCategory, pageSizes));
-        if (category.getName().isEmpty()) {
-            model.addAttribute("message", "Name is required");
-            return "category/edit";
+    @PostMapping("/edit/{slug}.htm")
+    public String adminEditCategoryHandler(
+            @PathVariable("slug") String slug,
+            @RequestParam(value = "page", defaultValue = "0", required = false) Integer page,
+            @RequestParam(value = "size", defaultValue = "5", required = false) Integer size,
+            @RequestParam(value = "orderBy", defaultValue = "asc", required = false) String orderBy,
+            @ModelAttribute("updateCategoryDto") UpdateCategoryDto updateCategoryDto,
+            HttpServletRequest request,
+            ModelMap modelMap) {
+        ServiceResponse<OpenIdClaims> response = this.adminService.validateRequest(request);
+        if (response.isError()) {
+            ErrorResponse errorResponse = response.buildError();
+            modelMap.addAttribute("errorResponse", errorResponse);
+            return "redirect:/error.htm";
+        }
+        if (!response.getData().isPresent()) {
+            modelMap.addAttribute("errorResponse", ErrorResponse.buildUnknownServerError(
+                    "Cannot Found User's Claim",
+                    "Cannot Find User's Claim Due To Unknown Server Error"));
+            return "redirect:/error.htm";
+        }
+        modelMap.addAttribute("adminInformation", response.getData().get());
+
+        Optional<Category> updatingCategory = this.categoryService.findBySlug(slug);
+        if (!updatingCategory.isPresent()) {
+            modelMap.addAttribute("errorResponse", ErrorResponse.buildBadRequest(
+                    "Cannot Found Category",
+                    "Cannot Find Any Category With The Given Slug"));
+            return "redirect:/error.htm";
         }
 
-        String slug = categoryService.getSlug(category.getName());
-        Optional<Category> optionalCategory = categoryService.findBySlug(slug);
-
-        if (optionalCategory.isPresent() && !optionalCategory.get().getId().equals(id)) {
-            model.addAttribute("message", "Name is exists");
-            return "category/edit";
+        ServiceResponse<Category> updatedCategoryResponse = this.categoryService.update(
+                updatingCategory.get().getId(), updateCategoryDto);
+        if (updatedCategoryResponse.isError()) {
+            modelMap.addAttribute("errorResponse", updatedCategoryResponse.buildError());
+            return "redirect:/error.htm";
         }
 
-        UpdateCategoryDto updateCategoryDto = new UpdateCategoryDto(category.getName());
-        ServiceResponse<Category> response = categoryService.update(id, updateCategoryDto);
-
-        if (!response.isSuccess()) {
-            model.addAttribute("message", "Update failed");
-
-            return "category/edit";
-        }
-        model.addAttribute("pageCategory", pageCategory);
-        List<Category> res = categoryService.paginate(pageCategory, pageSizes);
-        System.out.println("id of the category: " + category.getName());
-        model.addAttribute("categories", res);
-        redirectAttributes.addFlashAttribute("message", "Form submitted successfully!");
-        return "redirect:/admin/categories/index.htm?pageCategory=" + pageCategory;
+        return "redirect:/admin/categories/edit/" + updatedCategoryResponse.getData().get().getSlug() + ".htm";
     }
 
-    @RequestMapping(value = "/delete/{id}.htm", method = RequestMethod.GET)
-    public String delete(ModelMap model, @PathVariable("id") UUID id,
-            @RequestParam(name = "pageCategory", defaultValue = "1") Integer pageCategory,
-            RedirectAttributes redirectAttributes) {
-        model.addAttribute("pageCategory", pageCategory);
-        model.addAttribute("categories", categoryService.paginate(pageCategory, pageSizes));
-        List<CategoryDetail> res = categoryDetailService.findByCategoryId(id);
-        if (res.size() > 0) {
-            model.addAttribute("message", "Category is exists in blog. Please remove blog before delete category");
-            return "category/index";
+    @GetMapping("/delete.htm")
+    public String adminRemoveCategoryDetailHandler(
+            @RequestParam(value = "blogSlug") String blogSlug,
+            @RequestParam(value = "categorySlug") String categorySlug,
+            ModelMap modelMap,
+            HttpServletRequest request) {
+        ServiceResponse<OpenIdClaims> response = this.adminService.validateRequest(request);
+        if (response.isError()) {
+            ErrorResponse errorResponse = response.buildError();
+            modelMap.addAttribute("errorResponse", errorResponse);
+            return "redirect:/error.htm";
         }
-        ServiceResponse<Category> response = categoryService.delete(id);
-        if (!response.isSuccess()) {
-            model.addAttribute("message", "Delete failed");
-            return "category/index";
+        if (!response.getData().isPresent()) {
+            modelMap.addAttribute("errorResponse", ErrorResponse.buildUnknownServerError(
+                    "Cannot Found User's Claim",
+                    "Cannot Find User's Claim Due To Unknown Server Error"));
+            return "redirect:/error.htm";
         }
-        redirectAttributes.addFlashAttribute("message", "Delete successfully!");
-        return "redirect:/admin/categories/index.htm?pageCategory=" + pageCategory;
+        modelMap.addAttribute("adminInformation", response.getData().get());
+
+        Optional<Blog> requestingBlog = this.blogService.findBySlug(blogSlug);
+        if (!requestingBlog.isPresent()) {
+            modelMap.addAttribute("errorResponse", ErrorResponse.buildBadRequest(
+                    "Blog Not Found",
+                    "Cannot Find Any Blog With The Given Slug"));
+            return "redirect:/error.htm";
+        }
+
+        Optional<Category> requestingCategory = this.categoryService.findBySlug(categorySlug);
+        if (!requestingCategory.isPresent()) {
+            modelMap.addAttribute("errorResponse", ErrorResponse.buildBadRequest(
+                    "Category Not Found",
+                    "Cannot Find Any Category With The Given Slug"));
+            return "redirect:/error.htm";
+        }
+
+        Optional<CategoryDetail> removingDetail = this.categoryDetailService.findByBlogIdAndCategoryId(
+                requestingBlog.get().getId(), requestingCategory.get().getId());
+        if (!removingDetail.isPresent()) {
+            modelMap.addAttribute("errorResponse", ErrorResponse.buildBadRequest(
+                    "Category Detail Not Found",
+                    "Cannot Find Any Category Detail With The Given Slugs"));
+            return "redirect:/error.htm";
+        }
+
+        ServiceResponse<CategoryDetail> removedDetailResponse = this.categoryDetailService.remove(removingDetail.get().getId());
+        if (removedDetailResponse.isError()) {
+            modelMap.addAttribute("errorResponse", removedDetailResponse.buildError());
+            return "redirect:/error.htm";
+        }
+
+        return "redirect:/admin/categories/edit/" + requestingCategory.get().getSlug() + ".htm";
+    }
+
+    @GetMapping("/remove/{slug}.htm")
+    public String adminCategoryRemoveCategoryHandler(
+            @PathVariable("slug") String slug,
+            ModelMap modelMap,
+            HttpServletRequest request) {
+        ServiceResponse<OpenIdClaims> response = this.adminService.validateRequest(request);
+        if (response.isError()) {
+            ErrorResponse errorResponse = response.buildError();
+            modelMap.addAttribute("errorResponse", errorResponse);
+            return "redirect:/error.htm";
+        }
+        if (!response.getData().isPresent()) {
+            modelMap.addAttribute("errorResponse", ErrorResponse.buildUnknownServerError(
+                    "Cannot Found User's Claim",
+                    "Cannot Find User's Claim Due To Unknown Server Error"));
+            return "redirect:/error.htm";
+        }
+
+        Optional<Category> removingCategory = this.categoryService.findBySlug(slug);
+        if (!removingCategory.isPresent()) {
+            modelMap.addAttribute("errorResponse", ErrorResponse.buildBadRequest(
+                    "Category Not Found",
+                    "Cannot Find Any Category With The Given Slug"));
+            return "redirect:/error.htm";
+        }
+
+        ServiceResponse<Category> serviceResponse = this.categoryService.delete(removingCategory.get().getId());
+        if (serviceResponse.isError()) {
+            modelMap.addAttribute("errorResponse", serviceResponse.buildError());
+            return "redirect:/error.htm";
+        }
+
+        return "redirect:/admin/categories/index.htm";
     }
 }

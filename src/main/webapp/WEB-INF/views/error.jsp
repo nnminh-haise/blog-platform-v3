@@ -48,11 +48,11 @@
   </style>
 </head>
 <body>
-<div class="error-container">
-  <h1>${errorResponse.error}</h1>
-  <p>Message: ${errorResponse.message}</p>
-  <p>Description: ${errorResponse.description}</p>
-  <a href="${pageContext.request.contextPath}/index.htm" class="back-link">Back to Home</a>
-</div>
+  <div class="error-container">
+    <h1>${errorResponse.error}</h1>
+    <p>Message: ${errorResponse.message}</p>
+    <p>Description: ${errorResponse.description}</p>
+    <a href="${pageContext.request.contextPath}/index.htm" class="back-link">Back to Home</a>
+  </div>
 </body>
 </html>

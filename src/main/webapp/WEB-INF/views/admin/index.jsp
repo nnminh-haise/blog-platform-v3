@@ -185,26 +185,17 @@
                         <c:out value="${formattedUpdateDate}" />
                       </td>
                       <td style="width: 20%">
-                        <a
-                                href="${pageContext.request.contextPath}/admin/edit/${blog.slug}.htm"
-                        >
-                          <button
-                                  type="button"
+                        <a href="${pageContext.request.contextPath}/admin/edit/${blog.slug}.htm">
+                          <button type="button"
                                   class="btn btn-dark btn-fw"
-                                  style="min-width: 110px; background: #00cdf6;"
-                          >
+                                  style="min-width: 110px; background: #00cdf6;">
                             Edit
                           </button>
                         </a>
-                        <a
-                                href="${pageContext.request.contextPath}/admin/edit/${blog.slug}.htm"
-                                onclick="return confirm('are you sure')"
-                        >
-                          <button
-                                  type="button"
+                        <a href="${pageContext.request.contextPath}/admin/edit/${blog.slug}.htm" onclick="return confirm('are you sure')">
+                          <button type="button"
                                   class="btn btn-dark btn-fw"
-                                  style="min-width: 110px; background: #ff3333"
-                          >
+                                  style="min-width: 110px; background: #ff3333">
                             Delete
                           </button>
                         </a>

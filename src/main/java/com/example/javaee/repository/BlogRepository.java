@@ -57,7 +57,7 @@ public class BlogRepository {
     public List<Blog> findAllByCategorySlug(int page, int size, String orderBy, String categorySlug) {
         Session session = sessionFactory.getCurrentSession();
         final String Q_FIND_ALL_BY_CATEGORY_SLUG = "SELECT DISTINCT cd.blog FROM CategoryDetail AS cd " +
-                "WHERE cd.blog.deleteAt IS NULL AND cd.category.slug = :categorySlug " +
+                "WHERE cd.blog.deleteAt IS NULL AND cd.category.deleteAt IS NULL AND cd.category.slug = :categorySlug " +
                 "ORDER BY cd.blog.createAt " + (orderBy.equals("asc") ? "ASC" : "DESC");
         final String Q_FIND_ALL = "SELECT b FROM Blog AS b WHERE b.deleteAt IS NULL " +
                 "ORDER BY b.createAt " + (orderBy.equalsIgnoreCase("asc") ? "ASC" : "DESC");
@@ -94,7 +94,7 @@ public class BlogRepository {
                 "WHERE " +
                 "cd.blog.deleteAt IS NULL AND " +
                 "(:exceptBlogId IS NULL OR NOT cd.blog.id = :exceptBlogId) AND " +
-                "cd.category.id in :categoryIds " +
+                "cd.category.id in :categoryIds AND cd.category.deleteAt IS NULL " +
                 "ORDER BY cd.blog.createAt ASC";
         Query<Blog> query = session.createQuery(Q_FIND_ALL_BLOG_IN_CATEGORIES_EXCEPT_FOR_BLOG, Blog.class);
         query.setParameter("categoryIds", categoryIds);

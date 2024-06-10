@@ -43,7 +43,23 @@ public class CategoryDetailRepository {
         System.out.println("Fetching category detail by id = " + id);
         Query<CategoryDetail> query = session.createQuery(Q_FIND_BY_ID, CategoryDetail.class);
         query.setParameter("id", id);
-        CategoryDetail categoryDetail = (CategoryDetail) query.uniqueResult();
+        CategoryDetail categoryDetail = query.uniqueResult();
+        System.out.println("Fetching process completed");
+        return Optional.ofNullable(categoryDetail);
+    }
+
+    @Transactional
+    public Optional<CategoryDetail> findByBlogIdAndCategoryId(UUID blogId, UUID categoryId) {
+        System.out.println("blogId:" + blogId);
+        System.out.println("categoryId:" + categoryId);
+        Session session = sessionFactory.getCurrentSession();
+        final String Q_FIND_BY_BLOG_ID_AND_CATEGORY_ID =
+                "SELECT cd FROM CategoryDetail AS cd WHERE cd.deleteAt IS NULL AND cd.blog.id = :blogId AND cd.category.id = :categoryId";
+        System.out.println("Fetching category detail by blog id = " + blogId + " and category id = " + categoryId);
+        Query<CategoryDetail> query = session.createQuery(Q_FIND_BY_BLOG_ID_AND_CATEGORY_ID, CategoryDetail.class);
+        query.setParameter("blogId", blogId);
+        query.setParameter("categoryId", categoryId);
+        CategoryDetail categoryDetail = query.uniqueResult();
         System.out.println("Fetching process completed");
         return Optional.ofNullable(categoryDetail);
     }

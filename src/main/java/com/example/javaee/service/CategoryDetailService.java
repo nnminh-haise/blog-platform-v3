@@ -18,14 +18,18 @@ import java.util.UUID;
 
 @Service
 public class CategoryDetailService {
-    @Autowired
-    private CategoryDetailRepository categoryDetailRepository;
+    private final CategoryDetailRepository categoryDetailRepository;
+    private final CategoryRepository categoryRepository;
+    private final BlogRepository blogRepository;
 
-    @Autowired
-    private CategoryRepository categoryRepository;
-
-    @Autowired
-    private BlogRepository blogRepository;
+    public CategoryDetailService(
+            CategoryDetailRepository categoryDetailRepository,
+            CategoryRepository categoryRepository,
+            BlogRepository blogRepository) {
+        this.categoryDetailRepository = categoryDetailRepository;
+        this.categoryRepository = categoryRepository;
+        this.blogRepository = blogRepository;
+    }
 
     public ServiceResponse<CategoryDetail> create(CreateCategoryDetailDto createCategoryDetailDto) {
         Optional<Category> targetingCategory = categoryRepository.findById(
@@ -70,6 +74,10 @@ public class CategoryDetailService {
         return this.categoryDetailRepository.findById(id);
     }
 
+    public Optional<CategoryDetail> findByBlogIdAndCategoryId(UUID blogId, UUID categoryId) {
+        return this.categoryDetailRepository.findByBlogIdAndCategoryId(blogId, categoryId);
+    }
+
     public ServiceResponse<CategoryDetail> remove(UUID id) {
         Optional<CategoryDetail> deletingCategoryDetail = this.categoryDetailRepository.findById(id);
         if (!deletingCategoryDetail.isPresent()) {
@@ -88,8 +96,5 @@ public class CategoryDetailService {
     }
     public List<CategoryDetail> findByBlogId(UUID blogId) {
         return this.categoryDetailRepository.findByBlogId(blogId);
-    }
-    public List<CategoryDetail> findByCategoryId(UUID categoryId) {
-        return this.categoryDetailRepository.findByCategoryId(categoryId);
     }
 }

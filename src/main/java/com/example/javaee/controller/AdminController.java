@@ -39,16 +39,6 @@ public class AdminController {
         this.categoryDetailService = categoryDetailService;
     }
 
-    @ModelAttribute("slugs")
-    public Map<String, String> fetchAllSlugs() {
-        List<Category> categories = this.categoryService.findAll();
-        Map<String, String> slugs = new HashMap<>();
-        for (Category category : categories) {
-            slugs.put(category.getSlug(), category.getName());
-        }
-        return slugs;
-    }
-
     @ModelAttribute("categories")
     public List<Category> fetchAllCategories() {
         return this.categoryService.findAll();
@@ -58,7 +48,7 @@ public class AdminController {
     public String adminIndexViewRenderer(
             @RequestParam(name = "page", defaultValue = "0", required = false) Integer page,
             @RequestParam(name = "size", defaultValue = "5", required = false) Integer size,
-            @RequestParam(name = "orderBy", defaultValue = "asc") String orderBy,
+            @RequestParam(name = "orderBy", defaultValue = "asc", required = false) String orderBy,
             @RequestParam(name = "slug", required = false) String slug,
             HttpServletRequest request,
             ModelMap modelMap) {

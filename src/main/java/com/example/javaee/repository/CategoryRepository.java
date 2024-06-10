@@ -29,8 +29,20 @@ public class CategoryRepository {
     @Transactional
     public List<Category> findAll() {
         Session session = sessionFactory.getCurrentSession();
-        final String Q_FIND_ALL_CATEGORY = "SELECT c FROM Category AS c WHERE c.deleteAt IS NULL";
-        Query<Category> query = session.createQuery(Q_FIND_ALL_CATEGORY, Category.class);
+        final String Q_FIND_ALL = "SELECT c FROM Category AS c WHERE c.deleteAt IS NULL";
+        Query<Category> query = session.createQuery(Q_FIND_ALL, Category.class);
+        return query.list();
+    }
+
+    @Transactional
+    public List<Category> findAll(int page, int size, String orderBy) {
+        Session session = sessionFactory.getCurrentSession();
+        final String Q_FIND_ALL = "SELECT c FROM Category AS c WHERE c.deleteAt IS NULL " +
+                "ORDER BY c.createAt " + (orderBy.equalsIgnoreCase("asc") ? "ASC" : "DESC");
+
+        Query<Category> query = session.createQuery(Q_FIND_ALL, Category.class);
+        query.setFirstResult(page * size);
+        query.setMaxResults(size);
         return query.list();
     }
 
@@ -52,6 +64,14 @@ public class CategoryRepository {
         query.setParameter("slug", slug);
         Category category = query.uniqueResult();
         return Optional.ofNullable(category);
+    }
+
+    @Transactional
+    public Long countNumberOfCategory() {
+        Session session = sessionFactory.getCurrentSession();
+        final String Q_FIND_POPULAR_BLOG = "SELECT COUNT(c) FROM Category AS c WHERE c.deleteAt IS NULL";
+        Query<Long> query = session.createQuery(Q_FIND_POPULAR_BLOG, Long.class);
+        return query.uniqueResult();
     }
 
     public RepositoryResponse<Category> create(Category category) {
@@ -115,14 +135,4 @@ public class CategoryRepository {
             session.close();
         }
     }
-    @Transactional
-    public List<Category> paginate(Integer page, Integer limit) {
-        Session session = sessionFactory.getCurrentSession();
-        final String Q_FIND_ALL_CATEGORY = "SELECT c FROM Category AS c WHERE c.deleteAt IS NULL";
-        Query<Category> query = session.createQuery(Q_FIND_ALL_CATEGORY, Category.class);
-        query.setFirstResult((page - 1) * limit);
-        query.setMaxResults(limit);
-        return query.list();
-    }
-
 }

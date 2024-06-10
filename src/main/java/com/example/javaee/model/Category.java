@@ -4,7 +4,9 @@ import lombok.*;
 
 import jakarta.persistence.*;
 import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -31,6 +33,36 @@ public class Category extends BaseEntity {
 
     @OneToMany(mappedBy = "category", fetch = FetchType.EAGER)
     private Collection<CategoryDetail> categoryDetails;
+
+    public Long getNumberOfBlog() {
+        return this.categoryDetails
+                .stream()
+                .filter(categoryDetail -> categoryDetail.getDeleteAt() == null)
+                .map(CategoryDetail::getBlog)
+                .filter(blog -> blog.getDeleteAt() == null)
+                .count();
+    }
+
+    public List<Blog> getRelatedBlogs() {
+        return this.categoryDetails
+                .stream()
+                .filter(categoryDetail -> categoryDetail.getDeleteAt() == null)
+                .map(CategoryDetail::getBlog)
+                .filter(blog -> blog.getDeleteAt() == null)
+                .collect(Collectors.toList());
+    }
+
+    public List<Blog> getRelatedBlogs(int page, int size) {
+        int offset = page * size;
+        return this.categoryDetails
+                .stream()
+                .filter(categoryDetail -> categoryDetail.getDeleteAt() == null)
+                .map(CategoryDetail::getBlog)
+                .skip(offset)
+                .limit(size)
+                .filter(blog -> blog.getDeleteAt() == null)
+                .collect(Collectors.toList());
+    }
 
     public String toString() {
         return "id = " + id + " name = " + name + " slug = " + slug;

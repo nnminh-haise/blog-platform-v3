@@ -2,49 +2,30 @@ package com.example.javaee.service;
 
 import com.example.javaee.dto.CreateCategoryDto;
 import com.example.javaee.dto.UpdateCategoryDto;
-import com.example.javaee.exceptions.ResourceNotFoundException;
 import com.example.javaee.helper.RepositoryErrorType;
 import com.example.javaee.helper.RepositoryResponse;
 import com.example.javaee.helper.ServiceResponse;
 import com.example.javaee.model.Category;
 import com.example.javaee.repository.CategoryRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.text.Normalizer;
 import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
 public class CategoryService {
-    @Autowired
-    private CategoryRepository categoryRepository;
+    private final CategoryRepository categoryRepository;
 
-    public static String getSlug(String input) {
-        if (input == null) {
-            return null;
-        }
-
-        // Convert to lower case
-        String slug = input.toLowerCase();
-
-        // Remove accents and diacritics
-        slug = Normalizer.normalize(slug, Normalizer.Form.NFD);
-        slug = slug.replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
-
-        // Replace spaces and non-word characters with a dash
-        slug = slug.replaceAll("[^\\w\\s]", ""); // Loại bỏ các ký tự không phải là chữ, số hoặc khoảng trắng
-        slug = slug.replaceAll("\\s+", "-"); // Thay thế tất cả khoảng trắng bằng dấu gạch nối
-
-        // Trim dashes from the beginning and end
-        slug = slug.replaceAll("^-|-$", "");
-
-        return slug;
+    public CategoryService(CategoryRepository categoryRepository) {
+        this.categoryRepository = categoryRepository;
     }
 
     public List<Category> findAll() {
         return this.categoryRepository.findAll();
+    }
+
+    public List<Category> findAll(Integer page, Integer size, String orderBy) {
+        return this.categoryRepository.findAll(page, size, orderBy);
     }
 
     public Optional<Category> findById(UUID id) {
@@ -57,6 +38,11 @@ public class CategoryService {
         }
 
         return this.categoryRepository.findBySlug(slug);
+    }
+
+    public Long countMaximumNumberOfPage(Integer size) {
+        Long totalNumberOfCategory = this.categoryRepository.countNumberOfCategory();
+        return totalNumberOfCategory / size + (totalNumberOfCategory % size == 0 ? 0 : 1);
     }
 
     public ServiceResponse<Category> create(CreateCategoryDto dto) {
@@ -119,8 +105,11 @@ public class CategoryService {
         return ServiceResponse.ofSuccess(
                 "Updated category!", null, deletedCategory);
     }
-    public List<Category> paginate(int page, int size) {
-        return this.categoryRepository.paginate(page, size);
-    }
 
+    private String getSlug(String title) {
+        return title
+                .toLowerCase()
+                .trim()
+                .replace(" ", "-");
+    }
 }
