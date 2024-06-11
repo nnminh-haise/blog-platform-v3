@@ -1,10 +1,8 @@
 package com.example.javaee.controller;
 
-import com.example.javaee.dto.CreateBlogDto;
-import com.example.javaee.dto.CreateCategoryDetailDto;
-import com.example.javaee.dto.OpenIdClaims;
-import com.example.javaee.dto.UpdateBlogDto;
+import com.example.javaee.dto.*;
 import com.example.javaee.helper.ErrorResponse;
+import com.example.javaee.helper.ServiceErrorType;
 import com.example.javaee.helper.ServiceResponse;
 import com.example.javaee.model.Blog;
 import com.example.javaee.model.Category;
@@ -270,44 +268,99 @@ public class AdminController {
             return "redirect:/error.htm";
         }
 
-//        List<Category> currentBlogCategories = requestedBlog.get().getCategories();
-//        for (Category currentBlogCategory: currentBlogCategories) {
-//            for (String selectingCategorySlug: selectingCategorySlugs) {
-//
-//            }
-//        }
+        if (selectingCategorySlugs == null || selectingCategorySlugs.isEmpty()) {
+            List<Category> currentBlogCategories = requestedBlog.get().getCategories();
+            for (Category currentBlogCategory: currentBlogCategories) {
+                Optional<CategoryDetail> removingCategoryDetail = this.categoryDetailService
+                        .findByBlogIdAndCategoryId(requestedBlog.get().getId(), currentBlogCategory.getId());
+                if (!removingCategoryDetail.isPresent()) {
+                    redirectAttributes.addFlashAttribute(
+                            "errorResponse",
+                            ErrorResponse.buildBadRequest(
+                                    "Invalid Category Detail",
+                                    "Cannot Find Any Category Detail With The Given Blog Id And Category Id"));
+                    return "redirect:/error.htm";
+                }
 
-//        List<String> blogCategories = requestedBlog
-//                .get()
-//                .getCategories()
-//                .stream()
-//                .map(Category::getSlug)
-//                .collect(Collectors.toList());
-//
-//        for (String categorySlug: categorySlugs) {
-//            if (blogCategories.stream().anyMatch(blogCategorySlug -> blogCategorySlug.equals(categorySlug))) {
-//                continue;
-//            }
-//
-//            Optional<Category> category = this.categoryService.findBySlug(categorySlug);
-//            if (!category.isPresent()) {
-//                modelMap.addAttribute("errorResponse", ErrorResponse.buildUnknownServerError(
-//                        "Category Not Found",
-//                        "Cannot Find Any Category With Slug = " + slug));
-//                return "redirect:/error.htm";
-//            }
-//
-//            CreateCategoryDetailDto categoryDetailDto = new CreateCategoryDetailDto();
-//            categoryDetailDto.setBlogId(blogServiceResponse.getData().get().getId());
-//            categoryDetailDto.setCategoryId(category.get().getId());
-//            ServiceResponse<CategoryDetail> categoryDetailServiceResponse = this.categoryDetailService
-//                    .create(categoryDetailDto);
-//            if (categoryDetailServiceResponse.isError()) {
-//                modelMap.addAttribute("errorResponse", categoryDetailServiceResponse.buildError());
-//                return "redirect:/error.htm";
-//            }
-//        }
+                ServiceResponse<CategoryDetail> removingCategoryDetailServiceResponse = this.categoryDetailService
+                        .remove(removingCategoryDetail.get().getId());
+                if (removingCategoryDetailServiceResponse.isError()) {
+                    redirectAttributes.addFlashAttribute(
+                            "errorResponse",
+                            removingCategoryDetailServiceResponse.buildError());
+                    return "redirect:/error.htm";
+                }
+            }
 
+            redirectAttributes.addFlashAttribute("alertMessage", "Blog updated");
+            return "redirect:/admin/edit/" + requestedBlog.get().getSlug() + ".htm";
+        }
+
+        List<Category> currentBlogCategories = requestedBlog.get().getCategories();
+        Set<String> updatedBlogCategories = new HashSet<>();
+
+        // * Removing old categories
+        for (Category currentBlogCategory: currentBlogCategories) {
+            if (selectingCategorySlugs
+                    .stream()
+                    .noneMatch(categorySlug -> categorySlug.equals(currentBlogCategory.getSlug()))) {
+                Optional<CategoryDetail> removingCategoryDetail = this.categoryDetailService
+                        .findByBlogIdAndCategoryId(requestedBlog.get().getId(), currentBlogCategory.getId());
+                if (!removingCategoryDetail.isPresent()) {
+                    redirectAttributes.addFlashAttribute(
+                            "errorResponse",
+                            ErrorResponse.buildBadRequest(
+                                    "Invalid Category Detail",
+                                    "Cannot Find Any Category Detail With The Given Blog Id And Category Id"));
+                    return "redirect:/error.htm";
+                }
+
+                ServiceResponse<CategoryDetail> categoryDetailServiceResponse =
+                        this.categoryDetailService.remove(removingCategoryDetail.get().getId());
+                if (categoryDetailServiceResponse.isError()) {
+                    redirectAttributes.addFlashAttribute(
+                            "errorResponse",
+                            categoryDetailServiceResponse.buildError());
+                    return "redirect:/error.htm";
+                }
+            }
+            else {
+                updatedBlogCategories.add(currentBlogCategory.getSlug());
+            }
+        }
+
+        // * Adding new category detail
+        for (String selectingCategorySlug: selectingCategorySlugs) {
+            Optional<Category> selectingCategory = this.categoryService.findBySlug(selectingCategorySlug);
+            if (!selectingCategory.isPresent()) {
+                redirectAttributes.addFlashAttribute(
+                        "errorResponse",
+                        ErrorResponse.buildBadRequest(
+                                "Invalid Category Slug",
+                                "Cannot Find Any Category With The Given Slug = " + selectingCategorySlug));
+                return "redirect:/error.htm";
+            }
+
+            if (updatedBlogCategories
+                    .stream()
+                    .noneMatch(existedCategorySlug -> existedCategorySlug.equals(selectingCategorySlug))) {
+                CreateCategoryDetailDto createCategoryDetailDto = new CreateCategoryDetailDto();
+                createCategoryDetailDto.setCategoryId(selectingCategory.get().getId());
+                createCategoryDetailDto.setBlogId(requestedBlog.get().getId());
+                ServiceResponse<CategoryDetail> categoryDetailServiceResponse =
+                        this.categoryDetailService.create(createCategoryDetailDto);
+                if (categoryDetailServiceResponse.isError()) {
+                    redirectAttributes.addFlashAttribute(
+                            "errorResponse",
+                            categoryDetailServiceResponse.buildError());
+                    return "redirect:/error.htm";
+                }
+
+                updatedBlogCategories.add(selectingCategorySlug);
+            }
+        }
+
+        redirectAttributes.addFlashAttribute("alertMessage", "Blog updated");
         return "redirect:/admin/edit/" + requestedBlog.get().getSlug() + ".htm";
     }
 
