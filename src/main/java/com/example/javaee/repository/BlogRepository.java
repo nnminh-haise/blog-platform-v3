@@ -213,4 +213,39 @@ public class BlogRepository {
             session.close();
         }
     }
+
+
+    public RepositoryResponse<Blog> remove(Blog blog) {
+        Session session = sessionFactory.openSession();
+        Transaction transaction = session.beginTransaction();
+        try {
+            System.out.println("Removing blog with id = " + blog.getId());
+            session.remove(blog);
+            transaction.commit();
+            session.close();
+            System.out.println("Removing process success");
+
+            return RepositoryResponse.goodResponse("Blog removed", blog);
+        } catch (Exception exception) {
+            transaction.rollback();
+
+            Throwable rootCause = getRootCause(exception);
+            final String EXCEPTION_MESSAGE = exception.getMessage();
+
+            System.out.println("Error message: " + EXCEPTION_MESSAGE);
+
+            if (rootCause instanceof PSQLException) {
+                final String ROOT_CAUSE_MESSAGE = rootCause.getMessage();
+                System.out.println("Root cause   : " + ROOT_CAUSE_MESSAGE);
+                return RepositoryResponse.badResponse(RepositoryErrorType.CONSTRAINT_VIOLATION, EXCEPTION_MESSAGE,
+                        ROOT_CAUSE_MESSAGE);
+            } else {
+                System.out.println("Root cause   : Unknown Server Exception");
+                return RepositoryResponse.badResponse(RepositoryErrorType.CONSTRAINT_VIOLATION, EXCEPTION_MESSAGE,
+                        "Unknown Server Exception");
+            }
+        } finally {
+            session.close();
+        }
+    }
 }

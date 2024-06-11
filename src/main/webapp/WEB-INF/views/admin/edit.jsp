@@ -6,6 +6,7 @@
 <html lang="en" >
 <head>
   <!-- Required meta tags -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <title>Blog Admin</title>
@@ -73,7 +74,6 @@
   <!-- inject:js -->
   <script src="${pageContext.request.contextPath}/js/off-canvas.js"></script>
   <script src="${pageContext.request.contextPath}/js/hoverable-collapse.js"></script>
-  <script src="${pageContext.request.contextPath}/js/file-upload.js"></script>
   <script src="${pageContext.request.contextPath}/js/misc.js"></script>
   <style>
       .checkbox-row {
@@ -427,6 +427,18 @@
             }
         });
     }
+</script>
+
+<script>
+    $(document).ready(function() {
+        $('.file-upload-browse').on('click', function() {
+            var file = $(this).parent().parent().parent().find('.file-upload-default');
+            file.trigger('click');
+        });
+        $('.file-upload-default').on('change', function() {
+            $(this).parent().find('.form-control').val($(this).val().replace(/C:\\fakepath\\/i, ''));
+        });
+    });
 </script>
 
 </body>

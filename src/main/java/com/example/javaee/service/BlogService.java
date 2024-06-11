@@ -212,14 +212,12 @@ public class BlogService {
                     "Blog not found", "Cannot find any blog with the given ID");
         }
 
-        Blog buffer = targetingBlog.get();
-        buffer.setDeleteAt(LocalDateTime.now());
-        RepositoryResponse<Blog> response = this.blogRepository.update(buffer);
+        RepositoryResponse<Blog> response = this.blogRepository.remove(targetingBlog.get());
         if (response.hasErrorOf(RepositoryErrorType.CONSTRAINT_VIOLATION)) {
             return ServiceResponse.ofBadRequest(
                     response.getMessage(), response.getDescription());
         }
-        return ServiceResponse.ofSuccess("Blog deleted successfully", null, buffer);
+        return ServiceResponse.ofSuccess("Blog deleted successfully", null, targetingBlog.get());
     }
 
     private String getSlug(String title) {

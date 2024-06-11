@@ -105,18 +105,13 @@ public class CategoryService {
                     "Category not found", "Cannot find any category with the given ID");
         }
 
-        LocalDateTime currentTimestamp = LocalDateTime.now();
-
-        Category deletedCategory = deletingCategory.get();
-        deletedCategory.setDeleteAt(currentTimestamp);
-
-        RepositoryResponse<Category> response = this.categoryRepository.update(deletedCategory);
+        RepositoryResponse<Category> response = this.categoryRepository.remove(deletingCategory.get());
         if (response.hasErrorOf(RepositoryErrorType.CONSTRAINT_VIOLATION)) {
             return ServiceResponse.ofBadRequest(
                     response.getMessage(), response.getDescription());
         }
         return ServiceResponse.ofSuccess(
-                "Updated category!", null, deletedCategory);
+                "Updated category!", null, deletingCategory.get());
     }
 
     private String getSlug(String title) {
