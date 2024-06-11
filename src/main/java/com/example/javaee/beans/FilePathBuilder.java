@@ -27,7 +27,9 @@ public class FilePathBuilder {
     }
 
     public FilePathBuilder ofFile(MultipartFile file) {
-        this.pathBuilder.append(file.getOriginalFilename());
+        this.pathBuilder
+                .append("/")
+                .append(file.getOriginalFilename());
         return this;
     }
 
