@@ -268,15 +268,6 @@
                     },
                     inlineToolbar: true,
                 },
-                image: {
-                    class: ImageTool,
-                    config: {
-                        endpoints: {
-                            byFile: "https://your-backend.com/uploadFile",
-                            byUrl: "https://your-backend.com/fetchUrl",
-                        },
-                    },
-                },
                 embed: {
                     class: Embed,
                     inlineToolbar: true,
@@ -303,7 +294,6 @@
                     "link",
                     "unorderedList",
                     "orderedList",
-                    "image",
                     "embed",
                     "code",
                 ],
@@ -336,15 +326,6 @@
                     },
                     inlineToolbar: true,
                 },
-                image: {
-                    class: ImageTool,
-                    config: {
-                        endpoints: {
-                            byFile: "https://your-backend.com/uploadFile",
-                            byUrl: "https://your-backend.com/fetchUrl",
-                        },
-                    },
-                },
                 embed: {
                     class: Embed,
                     inlineToolbar: true,
@@ -370,7 +351,6 @@
                     "link",
                     "unorderedList",
                     "orderedList",
-                    "image",
                     "embed",
                     "code",
                 ],
