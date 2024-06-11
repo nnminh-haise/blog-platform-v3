@@ -51,29 +51,31 @@ public class AdminController {
             ModelMap modelMap) {
         ServiceResponse<OpenIdClaims> response = this.adminService.validateRequest(request);
         if (response.isError()) {
-            ErrorResponse errorResponse = response.buildError();
-            modelMap.addAttribute("errorResponse", errorResponse);
+            modelMap.addAttribute("errorResponse", response.buildError());
             return "redirect:/error.htm";
         }
         if (!response.getData().isPresent()) {
             modelMap.addAttribute("errorResponse", ErrorResponse.buildUnknownServerError(
-                    "Cannot Found User's Claim",
+                    "User's Claim Not Found",
                     "Cannot Find User's Claim Due To Unknown Server Error"));
             return "redirect:/error.htm";
         }
         modelMap.addAttribute("adminInformation", response.getData().get());
-        modelMap.addAttribute("categories", this.categoryService.findAll());
+
+        modelMap.addAttribute("categoryListForFilterOptions", this.categoryService.findAll());
+
         List<Blog> blogs = this.blogService.findAllBlogByCategorySlug(page, size, orderBy, slug);
         modelMap.addAttribute("blogList", blogs);
 
-        modelMap.addAttribute("categories", this.categoryService.findAll());
+        Long numberOfPage = this.blogService.countNumberOfPage(size, slug);
+        System.out.println("numberOfPage:" + numberOfPage);
 
         // * Send current requesting options
         modelMap.addAttribute("currentPage", page);
         modelMap.addAttribute("currentSize", size);
-        modelMap.addAttribute("totalNumberOfPage", this.blogService.countMaximumNumberOfPage(size));
+        modelMap.addAttribute("numberOfPage", this.blogService.countNumberOfPage(size, slug));
         modelMap.addAttribute("orderBy", orderBy);
-        modelMap.addAttribute("filterBySlug", slug);
+        modelMap.addAttribute("slug", slug);
 
         return "admin/index";
     }

@@ -52,6 +52,17 @@ public class BlogRepository {
         return query.uniqueResult();
     }
 
+    @Transactional
+    public Long countNumberOfBlog(String slug) {
+        Session session = sessionFactory.getCurrentSession();
+        final String Q_FIND_POPULAR_BLOG =
+                "SELECT COUNT(cd.blog) FROM CategoryDetail AS cd " +
+                "WHERE cd.blog.deleteAt IS NULL AND (:slug IS NULL OR cd.category.slug = :slug)";
+        Query<Long> query = session.createQuery(Q_FIND_POPULAR_BLOG, Long.class);
+        query.setParameter("slug", slug);
+        return query.uniqueResult();
+    }
+
     // TODO [Low prior]: refactor this method
     @Transactional
     public List<Blog> findAllByCategorySlug(int page, int size, String orderBy, String categorySlug) {

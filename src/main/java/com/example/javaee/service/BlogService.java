@@ -58,8 +58,14 @@ public class BlogService {
         return this.blogRepository.findFirstAmountInCategories(amount, categoryList, exceptBlogId);
     }
 
-    public Long countMaximumNumberOfPage(Integer size) {
+    public Long countNumberOfPage(Integer size) {
         Long totalNumberOfBlog = this.blogRepository.countNumberOfBlog();
+        return totalNumberOfBlog / size + (totalNumberOfBlog % size == 0 ? 0 : 1);
+    }
+
+    public Long countNumberOfPage(Integer size, String slug) {
+        Long totalNumberOfBlog = this.blogRepository.countNumberOfBlog(slug);
+        System.out.println("[service] blog count:" + totalNumberOfBlog);
         return totalNumberOfBlog / size + (totalNumberOfBlog % size == 0 ? 0 : 1);
     }
 
