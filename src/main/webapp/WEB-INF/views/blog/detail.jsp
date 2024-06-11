@@ -121,22 +121,6 @@ MAIN
     <div class="container pt-2 pb-4" >
       <div class="row justify-content-center">
         <div class="col-lg-2 pr-4 mb-4 col-md-12">
-          <div class="sticky-top text-center">
-            <div class="text-muted">Share this</div>
-            <div class="share d-inline-block">
-              <!-- AddToAny BEGIN -->
-              <div class="a2a_kit a2a_kit_size_32 a2a_default_style">
-                <a class="a2a_dd" href="https://www.addtoany.com/share"></a>
-                <a class="a2a_button_facebook"></a>
-                <a class="a2a_button_twitter"></a>
-              </div>
-              <script
-                async
-                src="https://static.addtoany.com/menu/page.js"
-              ></script>
-              <!-- AddToAny END -->
-            </div>
-          </div>
         </div>
         <div class="col-md-12 col-lg-8">
           <div id="blogDescription" style="display:none; !important;">
@@ -152,7 +136,7 @@ MAIN
       <h5 class="font-weight-bold spanborder"><span>Read next</span></h5>
       <div class="row">
         <div class="col-lg-6">
-          <div class="card border-0 mb-4 box-shadow h-xl-300">
+          <div class="card border-0 mb-4 box-shadow h-xl-500">
             <div
                     style="
                             /* background-image: url('${favouriteBlogs.get(0).thumbnail}'); */
@@ -189,7 +173,7 @@ MAIN
           </div>
         </div>
         <div class="col-lg-6">
-          <div class="flex-md-row mb-4 box-shadow h-xl-300">
+          <div class="flex-md-row mb-4 box-shadow h-xl-500">
             <c:forEach var="blog" items="${favouriteBlogs}" varStatus="status">
               <c:if test="${status.index > 0}">
                 <div class="mb-3 d-flex align-items-center rounded-lg">
@@ -297,15 +281,6 @@ JAVASCRIPTS
           },
           inlineToolbar: true,
         },
-        image: {
-          class: ImageTool,
-          config: {
-            endpoints: {
-              byFile: "https://your-backend.com/uploadFile",
-              byUrl: "https://your-backend.com/fetchUrl",
-            },
-          },
-        },
         embed: {
           class: Embed,
           inlineToolbar: true,
@@ -332,7 +307,6 @@ JAVASCRIPTS
           "link",
           "unorderedList",
           "orderedList",
-          "image",
           "embed",
           "code",
         ],

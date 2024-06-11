@@ -5,6 +5,7 @@
 <!DOCTYPE html>
 <html lang="en" >
 <head>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <title>
@@ -173,9 +174,19 @@
                       </c:forEach>
                     </div>
                   </div>
+<%--                  <div class="form-group">--%>
+<%--                    <h6>Thumbnail</h6>--%>
+<%--                    <form:input type="file" path="attachment" name="thumbnail"/>--%>
+<%--                  </div>--%>
                   <div class="form-group">
-                    <h6>Thumbnail</h6>
-                    <form:input type="file" path="attachment" name="thumbnail"/>
+                    <label>File upload</label>
+                    <form:input type="file" path="attachment" name="attachment" class="file-upload-default" />
+                    <div class="input-group col-xs-12">
+                      <input type="text" class="form-control file-upload-info"  disabled="true" placeholder="Upload Image" />
+                      <span class="input-group-append">
+                        <button class="file-upload-browse btn btn-gradient-primary" type="button">Upload</button>
+                      </span>
+                    </div>
                   </div>
                   <div class="row">
                     <div class="col-md-6">
@@ -234,7 +245,6 @@
 <!-- inject:js -->
 <script src="${pageContext.request.contextPath}/js/off-canvas.js"></script>
 <script src="${pageContext.request.contextPath}/js/hoverable-collapse.js"></script>
-<script src="${pageContext.request.contextPath}/js/file-upload.js"></script>
 <script src="${pageContext.request.contextPath}/js/misc.js"></script>
 
 <script>
@@ -268,15 +278,6 @@
                     },
                     inlineToolbar: true,
                 },
-                image: {
-                    class: ImageTool,
-                    config: {
-                        endpoints: {
-                            byFile: "https://your-backend.com/uploadFile",
-                            byUrl: "https://your-backend.com/fetchUrl",
-                        },
-                    },
-                },
                 embed: {
                     class: Embed,
                     inlineToolbar: true,
@@ -303,7 +304,6 @@
                     "link",
                     "unorderedList",
                     "orderedList",
-                    "image",
                     "embed",
                     "code",
                 ],
@@ -336,15 +336,6 @@
                     },
                     inlineToolbar: true,
                 },
-                image: {
-                    class: ImageTool,
-                    config: {
-                        endpoints: {
-                            byFile: "https://your-backend.com/uploadFile",
-                            byUrl: "https://your-backend.com/fetchUrl",
-                        },
-                    },
-                },
                 embed: {
                     class: Embed,
                     inlineToolbar: true,
@@ -370,7 +361,6 @@
                     "link",
                     "unorderedList",
                     "orderedList",
-                    "image",
                     "embed",
                     "code",
                 ],
@@ -389,6 +379,18 @@
             console.log("error: ", error);
         });
     }
+</script>
+
+<script>
+    $(document).ready(function() {
+        $('.file-upload-browse').on('click', function() {
+            var file = $(this).parent().parent().parent().find('.file-upload-default');
+            file.trigger('click');
+        });
+        $('.file-upload-default').on('change', function() {
+            $(this).parent().find('.form-control').val($(this).val().replace(/C:\\fakepath\\/i, ''));
+        });
+    });
 </script>
 <!-- endinject -->
 <!-- Custom js for this page -->

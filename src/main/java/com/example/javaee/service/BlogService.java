@@ -150,7 +150,7 @@ public class BlogService {
                 "Success", "New Blog Created", newBlog);
     }
 
-    public ServiceResponse<Blog> update(UUID id, UpdateBlogDto payload) {
+    public ServiceResponse<Blog> update(UUID id, @Valid UpdateBlogDto payload) {
         Optional<Blog> updatingBlog = this.blogRepository.findById(id);
         if (!updatingBlog.isPresent()) {
             return ServiceResponse.ofNotFound(
@@ -159,6 +159,18 @@ public class BlogService {
         Blog updatedBlog = updatingBlog.get();
         String slug = getSlug(payload.getTitle());
         LocalDateTime currentTimestamp = LocalDateTime.now();
+
+        if (payload.getTitle() == null || payload.getTitle().isEmpty()) {
+            return ServiceResponse.ofBadRequest(
+                    "Invalid UpdateBlogDto",
+                    "Blog's Title Cannot Be Null Or Empty");
+        }
+
+        if (payload.getSubTitle() == null || payload.getSubTitle().isEmpty()) {
+            return ServiceResponse.ofBadRequest(
+                    "Invalid UpdateBlogDto",
+                    "Blog's Subtitle Cannot Be Null Or Empty");
+        }
 
         updatedBlog.setTitle(payload.getTitle());
         updatedBlog.setDescription(payload.getDescription());

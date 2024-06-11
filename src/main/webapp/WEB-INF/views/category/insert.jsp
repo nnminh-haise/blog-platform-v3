@@ -90,9 +90,6 @@
                   </div>
                  <div style="display: flex; gap: 1rem; align-items: center">
                    <button type="submit" class="btn btn-gradient-primary">Create</button>
-                   <button class="btn btn-light">
-                     <a style="text-decoration: none; color: black;" href="${pageContext.request.contextPath}/admin/categories/index.htm">Cancel</a>
-                   </button>
                  </div>
                 </form:form>
               </div>
