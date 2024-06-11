@@ -6,6 +6,7 @@
 <html lang="en" >
 <head>
   <!-- Required meta tags -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <title>Blog Admin</title>
@@ -66,6 +67,14 @@
 
   <!-- Editor.js Code Plugin CDN -->
   <script src="https://cdn.jsdelivr.net/npm/@editorjs/code@latest"></script>
+  <script src="${pageContext.request.contextPath}/vendors/js/vendor.bundle.base.js"></script>
+  <!-- endinject -->
+  <!-- Plugin js for this page -->
+  <!-- End plugin js for this page -->
+  <!-- inject:js -->
+  <script src="${pageContext.request.contextPath}/js/off-canvas.js"></script>
+  <script src="${pageContext.request.contextPath}/js/hoverable-collapse.js"></script>
+  <script src="${pageContext.request.contextPath}/js/misc.js"></script>
   <style>
       .checkbox-row {
           display: flex;
@@ -198,9 +207,19 @@
                       </c:forEach>
                     </div>
                   </div>
+<%--                  <div class="form-group">--%>
+<%--                    <h6>Thumbnail</h6>--%>
+<%--                    <form:input type="file" path="attachment" name="thumbnail"/>--%>
+<%--                  </div>--%>
                   <div class="form-group">
-                    <h6>Thumbnail</h6>
-                    <form:input type="file" path="attachment" name="thumbnail"/>
+                    <label>File upload</label>
+                    <form:input type="file" path="attachment" name="file" class="file-upload-default" />
+                    <div class="input-group col-xs-12">
+                      <input type="text" class="form-control file-upload-info" name ="file" disabled="true" value="${selectingBlog.attachment}" placeholder="Upload Image" />
+                      <span class="input-group-append">
+                                            <button class="file-upload-browse btn btn-gradient-primary" type="button">Upload</button>
+                                        </span>
+                    </div>
                   </div>
                   <div class="row">
                     <div class="col-md-6">
@@ -255,15 +274,7 @@
     }
 </style>
 <!-- plugins:js -->
-<script src="vendors/js/vendor.bundle.base.js"></script>
-<!-- endinject -->
-<!-- Plugin js for this page -->
-<!-- End plugin js for this page -->
-<!-- inject:js -->
-<script src="js/off-canvas.js"></script>
-<script src="js/hoverable-collapse.js"></script>
-<script src="js/misc.js"></script>
-<script src="js/file-upload.js"></script>
+
 <script>
     let editor;
     const value = document.getElementById("description").value
@@ -416,6 +427,18 @@
             }
         });
     }
+</script>
+
+<script>
+    $(document).ready(function() {
+        $('.file-upload-browse').on('click', function() {
+            var file = $(this).parent().parent().parent().find('.file-upload-default');
+            file.trigger('click');
+        });
+        $('.file-upload-default').on('change', function() {
+            $(this).parent().find('.form-control').val($(this).val().replace(/C:\\fakepath\\/i, ''));
+        });
+    });
 </script>
 
 </body>

@@ -85,16 +85,11 @@ public class CategoryDetailService {
                     "Category detail not found", "Cannot find any category detail with the given ID");
         }
 
-        CategoryDetail buffer = deletingCategoryDetail.get();
-        buffer.setDeleteAt(LocalDateTime.now());
-        RepositoryResponse<CategoryDetail> response = this.categoryDetailRepository.update(buffer);
+        RepositoryResponse<CategoryDetail> response = this.categoryDetailRepository.remove(deletingCategoryDetail.get());
         if (response.hasErrorOf(RepositoryErrorType.CONSTRAINT_VIOLATION)) {
             return ServiceResponse.ofUnknownServerError(response.getMessage(), response.getDescription());
         }
         return ServiceResponse.ofSuccess(
-                "Category detail deleted successfully", response.getDescription(), buffer);
-    }
-    public List<CategoryDetail> findByBlogId(UUID blogId) {
-        return this.categoryDetailRepository.findByBlogId(blogId);
+                "Category detail deleted successfully", response.getDescription(), deletingCategoryDetail.get());
     }
 }
