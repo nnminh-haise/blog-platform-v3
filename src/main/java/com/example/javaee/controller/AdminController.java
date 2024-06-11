@@ -2,7 +2,6 @@ package com.example.javaee.controller;
 
 import com.example.javaee.dto.*;
 import com.example.javaee.helper.ErrorResponse;
-import com.example.javaee.helper.ServiceErrorType;
 import com.example.javaee.helper.ServiceResponse;
 import com.example.javaee.model.Blog;
 import com.example.javaee.model.Category;
