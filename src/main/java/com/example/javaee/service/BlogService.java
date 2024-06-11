@@ -173,6 +173,7 @@ public class BlogService {
         }
 
         updatedBlog.setTitle(payload.getTitle());
+        updatedBlog.setSubTitle(payload.getSubTitle());
         updatedBlog.setDescription(payload.getDescription());
         updatedBlog.setSlug(slug);
         updatedBlog.setUpdateAt(currentTimestamp);
