@@ -78,6 +78,29 @@
            background: linear-gradient(to right, #84d9d2, #07cdae) !important;
          }
   </style>
+  <style>
+      .custom-popup-class {
+          border: 2px solid #333;
+          border-radius: 10px;
+      }
+      .custom-title-class {
+          color: #ff0000;
+      }
+      .custom-confirm-button-class {
+          background-color: #008CBA;
+          color: white;
+          border: none;
+          padding: 10px 20px;
+          text-align: center;
+          text-decoration: none;
+          display: inline-block;
+          font-size: 16px;
+          margin: 4px 2px;
+          cursor: pointer;
+          border-radius: 5px;
+      }
+  </style>
+
 
   <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css">
   <!-- End layout styles -->
@@ -394,8 +417,27 @@
         });
     }
 </script>
-<!-- endinject -->
-<!-- Custom js for this page -->
-<!-- End custom js for this page -->
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    const alertMessage = "${alertMessage}";
+    console.log("alert:", alertMessage);
+    if (alertMessage.length > 0) {
+        Swal.fire({
+            title: 'Blog Platform CMS Message',
+            text: alertMessage,
+            icon: 'info',
+            confirmButtonText: 'OK',
+            background: '#EEF5FF',
+            customClass: {
+                popup: 'custom-popup-class',
+                title: 'custom-title-class',
+                confirmButton: 'custom-confirm-button-class'
+            }
+        });
+        // alert(alertMessage);
+    }
+</script>
+
 </body>
 </html>

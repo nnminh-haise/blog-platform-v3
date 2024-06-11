@@ -87,7 +87,6 @@
 
     <mvc:resources mapping="/images/**" location="/images/"/>
     <mvc:resources mapping="/blogs/**" location="/blogs/"/>
-    <mvc:resources mapping="/fonts/**" location="/fonts/"/>
     <mvc:resources mapping="/img/**" location="/img/"/>
     <mvc:resources mapping="/css/**" location="/css/"/>
     <mvc:resources mapping="/js/**" location="/js/"/>

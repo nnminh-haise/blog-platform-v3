@@ -11,7 +11,15 @@ public class ErrorResponse {
     private String error;
     private String message;
     private String description;
-    
+    private String redirectLink;
+    private String alertMessage;
+
+    public ErrorResponse(String error, String message, String description) {
+        this.error = error;
+        this.message = message;
+        this.description = description;
+    }
+
     public static ErrorResponse buildUnauthorized(String message, String description) {
         return new ErrorResponse(
                 ServiceErrorType.UNAUTHORIZED.toString(), message, description);
@@ -30,5 +38,15 @@ public class ErrorResponse {
     public static ErrorResponse buildUnknownServerError(String message, String description) {
         return new ErrorResponse(
                 ServiceErrorType.UNKNOWN_SERVICE_ERROR.toString(), message, description);
+    }
+
+    public ErrorResponse redirectTo(String redirectLink) {
+        this.redirectLink = redirectLink;
+        return this;
+    }
+
+    public ErrorResponse thenAlert(String alertMessage) {
+        this.alertMessage = alertMessage;
+        return this;
     }
 }

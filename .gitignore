@@ -41,3 +41,4 @@ build/
 src/main/webapp/WEB-INF/configs/spring-config-mvc.xml
 src/main/webapp/WEB-INF/configs/spring-config-mvc.xml
 src/main/webapp/WEB-INF/configs/spring-config-mvc.xml
+.idea/codeStyles/codeStyleConfig.xml

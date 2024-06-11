@@ -5,14 +5,18 @@
 <!DOCTYPE html>
 <html lang="en" >
 <head>
-  <!-- Required meta tags -->
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <title>Blog Manager</title>
-  <!-- plugins:css -->
-  <link rel="stylesheet" href="${pageContext.request.contextPath}/vendors/mdi/css/materialdesignicons.min.css">
-  <link rel="stylesheet" href="${pageContext.request.contextPath}/vendors/css/vendor.bundle.base.css">
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  <title>
+    Blog Manager
+  </title>
+  <link rel="stylesheet"
+        href="${pageContext.request.contextPath}/vendors/mdi/css/materialdesignicons.min.css">
+  <link rel="stylesheet"
+        href="${pageContext.request.contextPath}/vendors/css/vendor.bundle.base.css">
+  <link rel="stylesheet"
+        href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+
   <!-- Editor.js CDN -->
   <script src="https://cdn.jsdelivr.net/npm/@editorjs/editorjs@latest"></script>
 
@@ -79,19 +83,14 @@
         background: linear-gradient(to right, #84d9d2, #07cdae) !important;
       }
   </style>
-  <!-- endinject -->
-  <!-- Plugin css for this page -->
-  <!-- End plugin css for this page -->
-  <!-- inject:css -->
-  <!-- endinject -->
-  <!-- Layout styles -->
-  <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css">
-  <!-- End layout styles -->
-  <link rel="shortcut icon" href="${pageContext.request.contextPath}/images/favicon.ico" />
+
+  <link rel="stylesheet"
+        href="${pageContext.request.contextPath}/css/style.css">
+  <link rel="shortcut icon"
+        href="${pageContext.request.contextPath}/images/favicon.ico" />
 </head>
 <body>
 <div class="container-scroller">
-  <!-- partial:../../partials/_navbar.html -->
   <nav class="navbar default-layout-navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
     <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-center">
       <a class="navbar-brand brand-logo" href="${pageContext.request.contextPath}/index.htm">
@@ -102,9 +101,8 @@
       </a>
     </div>
   </nav>
-  <!-- partial -->
+
   <div class="container-fluid page-body-wrapper">
-    <!-- partial:../../partials/_sidebar.html -->
     <nav class="sidebar sidebar-offcanvas" id="sidebar">
       <ul class="nav">
         <li class="nav-item nav-profile">
@@ -113,8 +111,12 @@
               <img src="${adminInformation.picture}" alt="profile"/>
             </div>
             <div class="nav-profile-text d-flex flex-column">
-              <span class="font-weight-bold mb-2">${adminInformation.name}</span>
-              <span class="text-secondary text-small">${adminInformation.email}</span>
+              <span class="font-weight-bold mb-2">
+                ${adminInformation.name}
+              </span>
+              <span class="text-secondary text-small">
+                ${adminInformation.email}
+              </span>
             </div>
           </a>
         </li>
@@ -132,7 +134,7 @@
         </li>
       </ul>
     </nav>
-    <!-- partial -->
+
     <div class="main-panel">
       <div class="content-wrapper">
         <div class="page-header">

@@ -11,6 +11,7 @@ import com.example.javaee.model.Blog;
 import com.example.javaee.model.Category;
 import com.example.javaee.repository.BlogRepository;
 import jakarta.servlet.ServletContext;
+import jakarta.validation.Valid;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -65,7 +66,6 @@ public class BlogService {
 
     public Long countNumberOfPage(Integer size, String slug) {
         Long totalNumberOfBlog = this.blogRepository.countNumberOfBlog(slug);
-        System.out.println("[service] blog count:" + totalNumberOfBlog);
         return totalNumberOfBlog / size + (totalNumberOfBlog % size == 0 ? 0 : 1);
     }
 
@@ -89,9 +89,39 @@ public class BlogService {
         return this.blogRepository.findNumberOfPopularBlogsOrderBy(amount, orderBy);
     }
 
-    public ServiceResponse<Blog> create(CreateBlogDto payload) {
+    public ServiceResponse<Blog> create(@Valid CreateBlogDto payload) {
+        if (payload == null) {
+            return ServiceResponse.ofBadRequest(
+                    "Invalid Create Blog Dto",
+                    "Create Blog Dto Cannot Be Null");
+        }
+        if (payload.getTitle() == null || payload.getTitle().isEmpty()) {
+            return ServiceResponse.ofBadRequest(
+                    "Invalid Blog Title",
+                    "Blog Title Cannot Be Null Or Empty");
+        }
+        if (payload.getSubtitle() == null || payload.getSubtitle().isEmpty()) {
+            return ServiceResponse.ofBadRequest(
+                    "Invalid Blog Subtitle",
+                    "Blog Subtitle Cannot Be Null Or Empty");
+        }
+        if (payload.getAttachment() == null || payload.getAttachment().isEmpty()) {
+            return ServiceResponse.ofBadRequest(
+                    "Invalid Blog Thumbnail",
+                    "Blog Thumbnail Cannot Be Null Or Empty");
+        }
+
         final LocalDateTime currentTimestamp = LocalDateTime.now();
         final String slug = this.getSlug(payload.getTitle());
+
+        Blog newBlog = new Blog();
+        newBlog.setSlug(slug);
+        newBlog.setTitle(payload.getTitle());
+        newBlog.setSubTitle(payload.getSubtitle());
+        newBlog.setIsPopular(payload.getIsPopular());
+        newBlog.setDescription(payload.getDescription());
+        newBlog.setCreateAt(currentTimestamp);
+        newBlog.setUpdateAt(currentTimestamp);
 
         FilePathBuilder filePathBuilder = new FilePathBuilder();
         filePathBuilder
@@ -107,24 +137,17 @@ public class BlogService {
                     "File path:" + filePathBuilder.build());
         }
 
-        Blog newBlog = new Blog();
-        newBlog.setTitle(payload.getTitle());
-        newBlog.setSubTitle(payload.getSubtitle());
-        newBlog.setIsPopular(payload.getIsPopular());
-        newBlog.setDescription(payload.getDescription());
         newBlog.setAttachment(filePathBuilder.ofFile(payload.getAttachment()).build());
-        newBlog.setThumbnail(payload.getAttachment().getOriginalFilename()); // TODO: update this with correct logic
-        newBlog.setCreateAt(currentTimestamp);
-        newBlog.setUpdateAt(currentTimestamp);
-        newBlog.setSlug(slug);
+        newBlog.setThumbnail(payload.getAttachment().getOriginalFilename());
 
-        RepositoryResponse<Blog> response = this.blogRepository.create(newBlog);
-        if (response.hasErrorOf(RepositoryErrorType.CONSTRAINT_VIOLATION)) {
+        RepositoryResponse<Blog> createBlogRepositoryResponse = this.blogRepository.create(newBlog);
+        if (createBlogRepositoryResponse.hasErrorOf(RepositoryErrorType.CONSTRAINT_VIOLATION)) {
             return ServiceResponse.ofBadRequest(
-                    response.getMessage(), response.getDescription());
+                    createBlogRepositoryResponse.getMessage(),
+                    createBlogRepositoryResponse.getDescription());
         }
         return ServiceResponse.ofSuccess(
-                "Created new category detail!", null, newBlog);
+                "Success", "New Blog Created", newBlog);
     }
 
     public ServiceResponse<Blog> update(UUID id, UpdateBlogDto payload) {

@@ -52,7 +52,20 @@
     <h1>${errorResponse.error}</h1>
     <p>Message: ${errorResponse.message}</p>
     <p>Description: ${errorResponse.description}</p>
-    <a href="${pageContext.request.contextPath}/index.htm" class="back-link">Back to Home</a>
+    <button onclick="handleRedirectButton()" class="back-link">
+      Back to Home
+    </button>
   </div>
+
+  <script>
+    function handleRedirectButton() {
+        const redirectUrl = "${errorResponse.redirectLink}";
+        if (!redirectUrl) {
+            return;
+        }
+
+        window.location.href = redirectUrl;
+    }
+  </script>
 </body>
 </html>

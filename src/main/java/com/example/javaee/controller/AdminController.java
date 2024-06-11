@@ -17,6 +17,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -47,17 +48,22 @@ public class AdminController {
             @RequestParam(name = "size", defaultValue = "5", required = false) Integer size,
             @RequestParam(name = "orderBy", defaultValue = "asc", required = false) String orderBy,
             @RequestParam(name = "slug", required = false) String slug,
+            RedirectAttributes redirectAttributes,
             HttpServletRequest request,
             ModelMap modelMap) {
         ServiceResponse<OpenIdClaims> response = this.adminService.validateRequest(request);
         if (response.isError()) {
-            modelMap.addAttribute("errorResponse", response.buildError());
+            redirectAttributes.addFlashAttribute(
+                    "errorResponse",
+                    response.buildError());
             return "redirect:/error.htm";
         }
         if (!response.getData().isPresent()) {
-            modelMap.addAttribute("errorResponse", ErrorResponse.buildUnknownServerError(
-                    "User's Claim Not Found",
-                    "Cannot Find User's Claim Due To Unknown Server Error"));
+            redirectAttributes.addFlashAttribute(
+                    "errorResponse",
+                    ErrorResponse.buildUnknownServerError(
+                            "User's Claim Not Found",
+                            "Cannot Find User's Claim Due To Unknown Server Error"));
             return "redirect:/error.htm";
         }
         modelMap.addAttribute("adminInformation", response.getData().get());
@@ -66,9 +72,6 @@ public class AdminController {
 
         List<Blog> blogs = this.blogService.findAllBlogByCategorySlug(page, size, orderBy, slug);
         modelMap.addAttribute("blogList", blogs);
-
-        Long numberOfPage = this.blogService.countNumberOfPage(size, slug);
-        System.out.println("numberOfPage:" + numberOfPage);
 
         // * Send current requesting options
         modelMap.addAttribute("currentPage", page);
@@ -82,24 +85,28 @@ public class AdminController {
 
     @GetMapping("/insert.htm")
     public String createNewBlogViewRenderer(
+            RedirectAttributes redirectAttributes,
             HttpServletRequest request,
             ModelMap modelMap) {
         ServiceResponse<OpenIdClaims> response = this.adminService.validateRequest(request);
         if (response.isError()) {
-            ErrorResponse errorResponse = response.buildError();
-            modelMap.addAttribute("errorResponse", errorResponse);
+            redirectAttributes.addFlashAttribute("errorResponse", response.buildError());
             return "redirect:/error.htm";
         }
         if (!response.getData().isPresent()) {
-            modelMap.addAttribute("errorResponse", ErrorResponse.buildUnknownServerError(
-                    "Cannot Found User's Claim",
-                    "Cannot Find User's Claim Due To Unknown Server Error"));
+            redirectAttributes.addFlashAttribute(
+                    "errorResponse",
+                    ErrorResponse.buildUnknownServerError(
+                            "User's Claim Not Found",
+                            "Cannot Find User's Claim Due To Unknown Server Error"));
             return "redirect:/error.htm";
         }
         modelMap.addAttribute("adminInformation", response.getData().get());
 
+        // * Creating a new dto for a new blog
         modelMap.addAttribute("createBlogDto", new CreateBlogDto());
 
+        // * All available categories for the new blog
         List<Category> categories = this.categoryService.findAll();
         modelMap.addAttribute("categories", categories);
 
@@ -109,35 +116,44 @@ public class AdminController {
     @PostMapping("/insert.htm")
     public String creatingNewBlogHandler(
             @ModelAttribute("createBlogDto") CreateBlogDto createBlogDto,
-            @RequestParam("categories") String[] categorySlugs,
+            @RequestParam(value = "categories", required = false) List<String> categorySlugs,
+            RedirectAttributes redirectAttributes,
             HttpServletRequest request,
             ModelMap modelMap) {
         ServiceResponse<OpenIdClaims> response = this.adminService.validateRequest(request);
         if (response.isError()) {
-            ErrorResponse errorResponse = response.buildError();
-            modelMap.addAttribute("errorResponse", errorResponse);
+            redirectAttributes.addFlashAttribute("errorResponse", response.buildError());
             return "redirect:/error.htm";
         }
         if (!response.getData().isPresent()) {
-            modelMap.addAttribute("errorResponse", ErrorResponse.buildUnknownServerError(
-                    "Cannot Found User's Claim",
-                    "Cannot Find User's Claim Due To Unknown Server Error"));
+            redirectAttributes.addFlashAttribute(
+                    "errorResponse",
+                    ErrorResponse.buildUnknownServerError(
+                            "User's Claim Not Found",
+                            "Cannot Find User's Claim Due To Unknown Server Error"));
             return "redirect:/error.htm";
         }
         modelMap.addAttribute("adminInformation", response.getData().get());
 
         ServiceResponse<Blog> blogServiceResponse = this.blogService.create(createBlogDto);
         if (blogServiceResponse.isError() || !blogServiceResponse.getData().isPresent()) {
-            modelMap.addAttribute("errorResponse", blogServiceResponse.buildError());
+            redirectAttributes.addFlashAttribute("errorResponse", blogServiceResponse.buildError());
             return "redirect:/error.htm";
+        }
+        redirectAttributes.addFlashAttribute("alertMessage", blogServiceResponse.getDescription());
+
+        if (categorySlugs == null || categorySlugs.isEmpty()) {
+            return "redirect:/admin/edit/" + blogServiceResponse.getData().get().getSlug() + ".htm";
         }
 
         for (String slug: categorySlugs) {
             Optional<Category> category = this.categoryService.findBySlug(slug);
             if (!category.isPresent()) {
-                modelMap.addAttribute("errorResponse", ErrorResponse.buildUnknownServerError(
-                        "Category Not Found",
-                        "Cannot Find Any Category With Slug = " + slug));
+                redirectAttributes.addFlashAttribute(
+                        "errorResponse",
+                        ErrorResponse.buildUnknownServerError(
+                                "Category Not Found",
+                                "Cannot Find Any Category With Slug = " + slug));
                 return "redirect:/error.htm";
             }
 
@@ -147,7 +163,9 @@ public class AdminController {
             ServiceResponse<CategoryDetail> categoryDetailServiceResponse = this.categoryDetailService
                     .create(categoryDetailDto);
             if (categoryDetailServiceResponse.isError()) {
-                modelMap.addAttribute("errorResponse", categoryDetailServiceResponse.buildError());
+                redirectAttributes.addFlashAttribute(
+                        "errorResponse",
+                        categoryDetailServiceResponse.buildError());
                 return "redirect:/error.htm";
             }
         }
