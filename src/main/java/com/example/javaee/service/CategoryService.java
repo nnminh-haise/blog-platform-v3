@@ -69,11 +69,17 @@ public class CategoryService {
                 "Created new category!", null, newCategory);
     }
 
-    public ServiceResponse<Category> update(UUID id, UpdateCategoryDto dto) {
+    public ServiceResponse<Category> update(UUID id, @Valid UpdateCategoryDto dto) {
         Optional<Category> updatingCategory = this.categoryRepository.findById(id);
         if (!updatingCategory.isPresent()) {
             return ServiceResponse.ofNotFound(
                     "Category not found", "Cannot find any category with the given ID");
+        }
+
+        if (dto.getName() == null || dto.getName().isEmpty()) {
+            return ServiceResponse.ofBadRequest(
+                    "Invalid UpdateCategoryDto",
+                    "Category Name Cannot Be Null Or Empty");
         }
 
         LocalDateTime currentTimestamp = LocalDateTime.now();

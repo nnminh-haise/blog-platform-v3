@@ -136,7 +136,7 @@ MAIN
       <h5 class="font-weight-bold spanborder"><span>Read next</span></h5>
       <div class="row">
         <div class="col-lg-6">
-          <div class="card border-0 mb-4 box-shadow h-xl-300">
+          <div class="card border-0 mb-4 box-shadow h-xl-500">
             <div
                     style="
                             /* background-image: url('${favouriteBlogs.get(0).thumbnail}'); */
@@ -173,7 +173,7 @@ MAIN
           </div>
         </div>
         <div class="col-lg-6">
-          <div class="flex-md-row mb-4 box-shadow h-xl-300">
+          <div class="flex-md-row mb-4 box-shadow h-xl-500">
             <c:forEach var="blog" items="${favouriteBlogs}" varStatus="status">
               <c:if test="${status.index > 0}">
                 <div class="mb-3 d-flex align-items-center rounded-lg">
