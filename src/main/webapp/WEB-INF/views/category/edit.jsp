@@ -202,6 +202,26 @@
         window.location.href = url;
     }
 </script>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    const alertMessage = "${alertMessage}";
+    console.log("alert:", alertMessage);
+    if (alertMessage.length > 0) {
+        Swal.fire({
+            title: 'Blog Platform CMS Message',
+            text: alertMessage,
+            icon: 'info',
+            confirmButtonText: 'OK',
+            background: '#EEF5FF',
+            customClass: {
+                popup: 'custom-popup-class',
+                title: 'custom-title-class',
+                confirmButton: 'custom-confirm-button-class'
+            }
+        });
+    }
+</script>
 <!-- endinject -->
 <!-- Custom js for this page -->
 <!-- End custom js for this page -->

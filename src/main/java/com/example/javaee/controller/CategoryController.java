@@ -16,6 +16,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 import java.util.Optional;
@@ -96,20 +97,20 @@ public class CategoryController {
         return "category/insert";
     }
 
-    // TODO [Low prior]: upgrade error handling page
     @PostMapping("insert.htm")
     public String categoryInsertHandler(
             @ModelAttribute("createCategoryDto") CreateCategoryDto createCategoryDto,
+            RedirectAttributes redirectAttributes,
             HttpServletRequest request,
             ModelMap modelMap) {
         ServiceResponse<OpenIdClaims> response = this.adminService.validateRequest(request);
         if (response.isError()) {
             ErrorResponse errorResponse = response.buildError();
-            modelMap.addAttribute("errorResponse", errorResponse);
+            redirectAttributes.addFlashAttribute("errorResponse", errorResponse);
             return "redirect:/error.htm";
         }
         if (!response.getData().isPresent()) {
-            modelMap.addAttribute("errorResponse", ErrorResponse.buildUnknownServerError(
+            redirectAttributes.addFlashAttribute("errorResponse", ErrorResponse.buildUnknownServerError(
                     "Cannot Found User's Claim",
                     "Cannot Find User's Claim Due To Unknown Server Error"));
             return "redirect:/error.htm";
@@ -117,11 +118,12 @@ public class CategoryController {
         modelMap.addAttribute("adminInformation", response.getData().get());
 
         ServiceResponse<Category> creatingCategoryServiceResponse = this.categoryService.create(createCategoryDto);
-        if (!creatingCategoryServiceResponse.isSuccess()) {
-            modelMap.addAttribute("errorResponse", creatingCategoryServiceResponse.buildError());
+        if (creatingCategoryServiceResponse.isError()) {
+            redirectAttributes.addFlashAttribute("errorResponse", creatingCategoryServiceResponse.buildError());
             return "redirect:/error.htm";
         }
 
+        redirectAttributes.addFlashAttribute("alertMessage", "Category Created");
         return "redirect:/admin/categories/index.htm";
     }
 
@@ -131,16 +133,17 @@ public class CategoryController {
             @RequestParam(value = "page", defaultValue = "0", required = false) Integer page,
             @RequestParam(value = "size", defaultValue = "5", required = false) Integer size,
             @RequestParam(value = "orderBy", defaultValue = "asc", required = false) String orderBy,
+            RedirectAttributes redirectAttributes,
             HttpServletRequest request,
             ModelMap modelMap) {
         ServiceResponse<OpenIdClaims> response = this.adminService.validateRequest(request);
         if (response.isError()) {
             ErrorResponse errorResponse = response.buildError();
-            modelMap.addAttribute("errorResponse", errorResponse);
+            redirectAttributes.addFlashAttribute("errorResponse", errorResponse);
             return "redirect:/error.htm";
         }
         if (!response.getData().isPresent()) {
-            modelMap.addAttribute("errorResponse", ErrorResponse.buildUnknownServerError(
+            redirectAttributes.addFlashAttribute("errorResponse", ErrorResponse.buildUnknownServerError(
                     "Cannot Found User's Claim",
                     "Cannot Find User's Claim Due To Unknown Server Error"));
             return "redirect:/error.htm";
@@ -149,7 +152,7 @@ public class CategoryController {
 
         Optional<Category> requestedCategory = this.categoryService.findBySlug(slug);
         if (!requestedCategory.isPresent()) {
-            modelMap.addAttribute("errorResponse", ErrorResponse.buildBadRequest(
+            redirectAttributes.addFlashAttribute("errorResponse", ErrorResponse.buildBadRequest(
                     "Invalid Category Slug",
                     "Cannot Find Any Category With The Given Slug"));
             return "redirect:/error.htm";
@@ -179,16 +182,17 @@ public class CategoryController {
             @RequestParam(value = "size", defaultValue = "5", required = false) Integer size,
             @RequestParam(value = "orderBy", defaultValue = "asc", required = false) String orderBy,
             @ModelAttribute("updateCategoryDto") UpdateCategoryDto updateCategoryDto,
+            RedirectAttributes redirectAttributes,
             HttpServletRequest request,
             ModelMap modelMap) {
         ServiceResponse<OpenIdClaims> response = this.adminService.validateRequest(request);
         if (response.isError()) {
             ErrorResponse errorResponse = response.buildError();
-            modelMap.addAttribute("errorResponse", errorResponse);
+            redirectAttributes.addFlashAttribute("errorResponse", errorResponse);
             return "redirect:/error.htm";
         }
         if (!response.getData().isPresent()) {
-            modelMap.addAttribute("errorResponse", ErrorResponse.buildUnknownServerError(
+            redirectAttributes.addFlashAttribute("errorResponse", ErrorResponse.buildUnknownServerError(
                     "Cannot Found User's Claim",
                     "Cannot Find User's Claim Due To Unknown Server Error"));
             return "redirect:/error.htm";
@@ -197,7 +201,7 @@ public class CategoryController {
 
         Optional<Category> updatingCategory = this.categoryService.findBySlug(slug);
         if (!updatingCategory.isPresent()) {
-            modelMap.addAttribute("errorResponse", ErrorResponse.buildBadRequest(
+            redirectAttributes.addFlashAttribute("errorResponse", ErrorResponse.buildBadRequest(
                     "Cannot Found Category",
                     "Cannot Find Any Category With The Given Slug"));
             return "redirect:/error.htm";
@@ -206,10 +210,11 @@ public class CategoryController {
         ServiceResponse<Category> updatedCategoryResponse = this.categoryService.update(
                 updatingCategory.get().getId(), updateCategoryDto);
         if (updatedCategoryResponse.isError()) {
-            modelMap.addAttribute("errorResponse", updatedCategoryResponse.buildError());
+            redirectAttributes.addFlashAttribute("errorResponse", updatedCategoryResponse.buildError());
             return "redirect:/error.htm";
         }
 
+        redirectAttributes.addFlashAttribute("alertMessage", "Category Updated");
         return "redirect:/admin/categories/edit/" + updatedCategoryResponse.getData().get().getSlug() + ".htm";
     }
 
@@ -217,16 +222,17 @@ public class CategoryController {
     public String adminRemoveCategoryDetailHandler(
             @RequestParam(value = "blogSlug") String blogSlug,
             @RequestParam(value = "categorySlug") String categorySlug,
-            ModelMap modelMap,
-            HttpServletRequest request) {
+            RedirectAttributes redirectAttributes,
+            HttpServletRequest request,
+            ModelMap modelMap) {
         ServiceResponse<OpenIdClaims> response = this.adminService.validateRequest(request);
         if (response.isError()) {
             ErrorResponse errorResponse = response.buildError();
-            modelMap.addAttribute("errorResponse", errorResponse);
+            redirectAttributes.addFlashAttribute("errorResponse", errorResponse);
             return "redirect:/error.htm";
         }
         if (!response.getData().isPresent()) {
-            modelMap.addAttribute("errorResponse", ErrorResponse.buildUnknownServerError(
+            redirectAttributes.addFlashAttribute("errorResponse", ErrorResponse.buildUnknownServerError(
                     "Cannot Found User's Claim",
                     "Cannot Find User's Claim Due To Unknown Server Error"));
             return "redirect:/error.htm";
@@ -235,7 +241,7 @@ public class CategoryController {
 
         Optional<Blog> requestingBlog = this.blogService.findBySlug(blogSlug);
         if (!requestingBlog.isPresent()) {
-            modelMap.addAttribute("errorResponse", ErrorResponse.buildBadRequest(
+            redirectAttributes.addFlashAttribute("errorResponse", ErrorResponse.buildBadRequest(
                     "Blog Not Found",
                     "Cannot Find Any Blog With The Given Slug"));
             return "redirect:/error.htm";
@@ -243,7 +249,7 @@ public class CategoryController {
 
         Optional<Category> requestingCategory = this.categoryService.findBySlug(categorySlug);
         if (!requestingCategory.isPresent()) {
-            modelMap.addAttribute("errorResponse", ErrorResponse.buildBadRequest(
+            redirectAttributes.addFlashAttribute("errorResponse", ErrorResponse.buildBadRequest(
                     "Category Not Found",
                     "Cannot Find Any Category With The Given Slug"));
             return "redirect:/error.htm";
@@ -252,7 +258,7 @@ public class CategoryController {
         Optional<CategoryDetail> removingDetail = this.categoryDetailService.findByBlogIdAndCategoryId(
                 requestingBlog.get().getId(), requestingCategory.get().getId());
         if (!removingDetail.isPresent()) {
-            modelMap.addAttribute("errorResponse", ErrorResponse.buildBadRequest(
+            redirectAttributes.addFlashAttribute("errorResponse", ErrorResponse.buildBadRequest(
                     "Category Detail Not Found",
                     "Cannot Find Any Category Detail With The Given Slugs"));
             return "redirect:/error.htm";
@@ -260,7 +266,7 @@ public class CategoryController {
 
         ServiceResponse<CategoryDetail> removedDetailResponse = this.categoryDetailService.remove(removingDetail.get().getId());
         if (removedDetailResponse.isError()) {
-            modelMap.addAttribute("errorResponse", removedDetailResponse.buildError());
+            redirectAttributes.addFlashAttribute("errorResponse", removedDetailResponse.buildError());
             return "redirect:/error.htm";
         }
 
@@ -270,16 +276,17 @@ public class CategoryController {
     @GetMapping("/remove/{slug}.htm")
     public String adminCategoryRemoveCategoryHandler(
             @PathVariable("slug") String slug,
-            ModelMap modelMap,
-            HttpServletRequest request) {
+            RedirectAttributes redirectAttributes,
+            HttpServletRequest request,
+            ModelMap modelMap) {
         ServiceResponse<OpenIdClaims> response = this.adminService.validateRequest(request);
         if (response.isError()) {
             ErrorResponse errorResponse = response.buildError();
-            modelMap.addAttribute("errorResponse", errorResponse);
+            redirectAttributes.addFlashAttribute("errorResponse", errorResponse);
             return "redirect:/error.htm";
         }
         if (!response.getData().isPresent()) {
-            modelMap.addAttribute("errorResponse", ErrorResponse.buildUnknownServerError(
+            redirectAttributes.addFlashAttribute("errorResponse", ErrorResponse.buildUnknownServerError(
                     "Cannot Found User's Claim",
                     "Cannot Find User's Claim Due To Unknown Server Error"));
             return "redirect:/error.htm";
@@ -288,7 +295,7 @@ public class CategoryController {
 
         Optional<Category> removingCategory = this.categoryService.findBySlug(slug);
         if (!removingCategory.isPresent()) {
-            modelMap.addAttribute("errorResponse", ErrorResponse.buildBadRequest(
+            redirectAttributes.addFlashAttribute("errorResponse", ErrorResponse.buildBadRequest(
                     "Category Not Found",
                     "Cannot Find Any Category With The Given Slug"));
             return "redirect:/error.htm";
@@ -296,7 +303,7 @@ public class CategoryController {
 
         ServiceResponse<Category> serviceResponse = this.categoryService.delete(removingCategory.get().getId());
         if (serviceResponse.isError()) {
-            modelMap.addAttribute("errorResponse", serviceResponse.buildError());
+            redirectAttributes.addFlashAttribute("errorResponse", serviceResponse.buildError());
             return "redirect:/error.htm";
         }
 

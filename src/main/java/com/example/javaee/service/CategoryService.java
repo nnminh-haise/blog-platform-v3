@@ -7,6 +7,7 @@ import com.example.javaee.helper.RepositoryResponse;
 import com.example.javaee.helper.ServiceResponse;
 import com.example.javaee.model.Category;
 import com.example.javaee.repository.CategoryRepository;
+import jakarta.validation.Valid;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -45,13 +46,19 @@ public class CategoryService {
         return totalNumberOfCategory / size + (totalNumberOfCategory % size == 0 ? 0 : 1);
     }
 
-    public ServiceResponse<Category> create(CreateCategoryDto dto) {
+    public ServiceResponse<Category> create(@Valid CreateCategoryDto payload) {
+        if (payload.getName() == null || payload.getName().isEmpty()) {
+            return ServiceResponse.ofBadRequest(
+                    "Invalid CreateCategoryDto",
+                    "Category's Name Cannot Be Null Or Empty");
+        }
+
         LocalDateTime currentTimestamp = LocalDateTime.now();
         Category newCategory = new Category();
-        newCategory.setName(dto.getName());
+        newCategory.setName(payload.getName());
+        newCategory.setSlug(getSlug(payload.getName()));
         newCategory.setCreateAt(currentTimestamp);
         newCategory.setUpdateAt(currentTimestamp);
-        newCategory.setSlug(getSlug(dto.getName()));
 
         RepositoryResponse<Category> response = this.categoryRepository.create(newCategory);
         if (response.hasErrorOf(RepositoryErrorType.CONSTRAINT_VIOLATION)) {

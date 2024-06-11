@@ -117,23 +117,22 @@
                             Edit
                           </button>
                         </a>
-<%--                        <a href="${pageContext.request.contextPath}/admin/categories/delete/${category.slug}.htm" onclick="return confirm('are you sure')">--%>
-<%--                          <button type="button" class="btn btn-gradient-danger btn-fw">Delete</button>--%>
-<%--                        </a>--%>
                       </td>
                     </tr>
                   </c:forEach>
                   </tbody>
                 </table>
-                <div class="pagination-container" style="
-                        margin: 30px;
-                        text-align: right;
-                        top: 0;
-                        right: 100%;">
-                  <button type="button" onclick="handlePageLeftButton()">&#10094;</button>
-                  Page ${currentPage + 1} of ${totalNumberOfPage}
-                  <button type="button" onclick="handlePageRightButton()">&#10095;</button>
-                </div>
+                <c:if test="${totalNumberOfPage > 1}">
+                  <div class="pagination-container" style="
+                          margin: 30px;
+                          text-align: right;
+                          top: 0;
+                          right: 100%;">
+                    <button type="button" onclick="handlePageLeftButton()">&#10094;</button>
+                    Page ${currentPage + 1} of ${totalNumberOfPage}
+                    <button type="button" onclick="handlePageRightButton()">&#10095;</button>
+                  </div>
+                </c:if>
               </div>
             </div>
           </div>
@@ -176,6 +175,27 @@
     function handlePageRightButton() {
         const newPage = (+page === totalNumberOfPage - 1 ? 0 : +page + 1);
         window.location.href = baseUrl + "?page=" + newPage + "&size=" + size;
+    }
+</script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    const alertMessage = "${alertMessage}";
+    console.log("alert:", alertMessage);
+    if (alertMessage.length > 0) {
+        Swal.fire({
+            title: 'Blog Platform CMS Message',
+            text: alertMessage,
+            icon: 'info',
+            confirmButtonText: 'OK',
+            background: '#EEF5FF',
+            customClass: {
+                popup: 'custom-popup-class',
+                title: 'custom-title-class',
+                confirmButton: 'custom-confirm-button-class'
+            }
+        });
     }
 </script>
 <!-- endinject -->
