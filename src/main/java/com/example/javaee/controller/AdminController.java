@@ -176,29 +176,35 @@ public class AdminController {
     @GetMapping("/edit/{slug}.htm")
     public String adminEditBlogViewRenderer(
             @PathVariable(name = "slug") String slug,
+            RedirectAttributes redirectAttributes,
             HttpServletRequest request,
             ModelMap modelMap) {
         ServiceResponse<OpenIdClaims> response = this.adminService.validateRequest(request);
         if (response.isError()) {
             ErrorResponse errorResponse = response.buildError();
-            modelMap.addAttribute("errorResponse", errorResponse);
+            redirectAttributes.addFlashAttribute("errorResponse", errorResponse);
             return "redirect:/error.htm";
         }
         if (!response.getData().isPresent()) {
-            modelMap.addAttribute("errorResponse", ErrorResponse.buildUnknownServerError(
-                    "Cannot Found User's Claim",
-                    "Cannot Find User's Claim Due To Unknown Server Error"));
+            redirectAttributes.addFlashAttribute(
+                    "errorResponse",
+                    ErrorResponse.buildUnknownServerError(
+                            "Cannot Found User's Claim",
+                            "Cannot Find User's Claim Due To Unknown Server Error"));
             return "redirect:/error.htm";
         }
         modelMap.addAttribute("adminInformation", response.getData().get());
 
         Optional<Blog> requestedBlog = this.blogService.findBySlug(slug);
         if (!requestedBlog.isPresent()) {
-            modelMap.addAttribute("errorResponse", ErrorResponse.buildBadRequest(
-                    "Invalid Blog Slug",
-                    "Cannot Find Any Blog With The Given Slug"));
+            redirectAttributes.addFlashAttribute(
+                    "errorResponse",
+                    ErrorResponse.buildBadRequest(
+                            "Invalid Blog Slug",
+                            "Cannot Find Any Blog With The Given Slug"));
             return "redirect:/error.htm";
         }
+
         Blog blog = requestedBlog.get();
         modelMap.addAttribute("selectingBlog", blog);
 
@@ -225,69 +231,82 @@ public class AdminController {
     }
 
     @PostMapping(value = "/edit/{slug}.htm")
-    public String updateBlogHandler(ModelMap modelMap,
-            @RequestParam(value = "categories", required = false) String[] categorySlugs,
+    public String updateBlogHandler(
+            @RequestParam(value = "categories", required = false) List<String> selectingCategorySlugs,
             @ModelAttribute("updateBlogDto") UpdateBlogDto updateBlogDto,
             @PathVariable(name = "slug") String slug,
-            HttpServletRequest request) {
+            RedirectAttributes redirectAttributes,
+            HttpServletRequest request,
+            ModelMap modelMap) {
         ServiceResponse<OpenIdClaims> response = this.adminService.validateRequest(request);
         if (response.isError()) {
             ErrorResponse errorResponse = response.buildError();
-            modelMap.addAttribute("errorResponse", errorResponse);
+            redirectAttributes.addFlashAttribute("errorResponse", errorResponse);
             return "redirect:/error.htm";
         }
         if (!response.getData().isPresent()) {
-            modelMap.addAttribute("errorResponse", ErrorResponse.buildUnknownServerError(
-                    "Cannot Found User's Claim",
-                    "Cannot Find User's Claim Due To Unknown Server Error"));
+            redirectAttributes.addFlashAttribute(
+                    "errorResponse",
+                    ErrorResponse.buildUnknownServerError(
+                            "Cannot Found User's Claim",
+                            "Cannot Find User's Claim Due To Unknown Server Error"));
             return "redirect:/error.htm";
         }
         modelMap.addAttribute("adminInformation", response.getData().get());
 
         Optional<Blog> requestedBlog = this.blogService.findBySlug(slug);
         if (!requestedBlog.isPresent()) {
-            modelMap.addAttribute("errorResponse", ErrorResponse.buildBadRequest(
-                    "Invalid Blog Slug",
-                    "Cannot Find Any Blog With The Given Slug"));
+            redirectAttributes.addFlashAttribute(
+                    "errorResponse",
+                    ErrorResponse.buildBadRequest(
+                            "Invalid Blog Slug",
+                            "Cannot Find Any Blog With The Given Slug"));
             return "redirect:/error.htm";
         }
 
         ServiceResponse<Blog> blogServiceResponse = this.blogService.update(requestedBlog.get().getId(), updateBlogDto);
         if (blogServiceResponse.isError() || !blogServiceResponse.getData().isPresent()) {
-            modelMap.addAttribute("errorResponse", blogServiceResponse.buildError());
+            redirectAttributes.addFlashAttribute("errorResponse", blogServiceResponse.buildError());
             return "redirect:/error.htm";
         }
 
-        List<String> blogCategories = requestedBlog
-                .get()
-                .getCategories()
-                .stream()
-                .map(Category::getSlug)
-                .collect(Collectors.toList());
+//        List<Category> currentBlogCategories = requestedBlog.get().getCategories();
+//        for (Category currentBlogCategory: currentBlogCategories) {
+//            for (String selectingCategorySlug: selectingCategorySlugs) {
+//
+//            }
+//        }
 
-        for (String categorySlug: categorySlugs) {
-            if (blogCategories.stream().anyMatch(blogCategorySlug -> blogCategorySlug.equals(categorySlug))) {
-                continue;
-            }
-
-            Optional<Category> category = this.categoryService.findBySlug(categorySlug);
-            if (!category.isPresent()) {
-                modelMap.addAttribute("errorResponse", ErrorResponse.buildUnknownServerError(
-                        "Category Not Found",
-                        "Cannot Find Any Category With Slug = " + slug));
-                return "redirect:/error.htm";
-            }
-
-            CreateCategoryDetailDto categoryDetailDto = new CreateCategoryDetailDto();
-            categoryDetailDto.setBlogId(blogServiceResponse.getData().get().getId());
-            categoryDetailDto.setCategoryId(category.get().getId());
-            ServiceResponse<CategoryDetail> categoryDetailServiceResponse = this.categoryDetailService
-                    .create(categoryDetailDto);
-            if (categoryDetailServiceResponse.isError()) {
-                modelMap.addAttribute("errorResponse", categoryDetailServiceResponse.buildError());
-                return "redirect:/error.htm";
-            }
-        }
+//        List<String> blogCategories = requestedBlog
+//                .get()
+//                .getCategories()
+//                .stream()
+//                .map(Category::getSlug)
+//                .collect(Collectors.toList());
+//
+//        for (String categorySlug: categorySlugs) {
+//            if (blogCategories.stream().anyMatch(blogCategorySlug -> blogCategorySlug.equals(categorySlug))) {
+//                continue;
+//            }
+//
+//            Optional<Category> category = this.categoryService.findBySlug(categorySlug);
+//            if (!category.isPresent()) {
+//                modelMap.addAttribute("errorResponse", ErrorResponse.buildUnknownServerError(
+//                        "Category Not Found",
+//                        "Cannot Find Any Category With Slug = " + slug));
+//                return "redirect:/error.htm";
+//            }
+//
+//            CreateCategoryDetailDto categoryDetailDto = new CreateCategoryDetailDto();
+//            categoryDetailDto.setBlogId(blogServiceResponse.getData().get().getId());
+//            categoryDetailDto.setCategoryId(category.get().getId());
+//            ServiceResponse<CategoryDetail> categoryDetailServiceResponse = this.categoryDetailService
+//                    .create(categoryDetailDto);
+//            if (categoryDetailServiceResponse.isError()) {
+//                modelMap.addAttribute("errorResponse", categoryDetailServiceResponse.buildError());
+//                return "redirect:/error.htm";
+//            }
+//        }
 
         return "redirect:/admin/edit/" + requestedBlog.get().getSlug() + ".htm";
     }

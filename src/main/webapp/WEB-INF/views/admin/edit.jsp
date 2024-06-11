@@ -435,7 +435,6 @@
                 confirmButton: 'custom-confirm-button-class'
             }
         });
-        // alert(alertMessage);
     }
 </script>
 
