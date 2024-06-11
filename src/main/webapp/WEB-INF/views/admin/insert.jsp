@@ -173,9 +173,19 @@
                       </c:forEach>
                     </div>
                   </div>
+<%--                  <div class="form-group">--%>
+<%--                    <h6>Thumbnail</h6>--%>
+<%--                    <form:input type="file" path="attachment" name="thumbnail"/>--%>
+<%--                  </div>--%>
                   <div class="form-group">
-                    <h6>Thumbnail</h6>
-                    <form:input type="file" path="attachment" name="thumbnail"/>
+                    <label>File upload</label>
+                    <form:input type="file" path="attachment" name="attachment" class="file-upload-default" />
+                    <div class="input-group col-xs-12">
+                      <input type="text" class="form-control file-upload-info"  disabled="true" placeholder="Upload Image" />
+                      <span class="input-group-append">
+                        <button class="file-upload-browse btn btn-gradient-primary" type="button">Upload</button>
+                      </span>
+                    </div>
                   </div>
                   <div class="row">
                     <div class="col-md-6">
