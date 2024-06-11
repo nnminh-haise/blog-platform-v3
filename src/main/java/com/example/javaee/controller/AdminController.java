@@ -293,7 +293,7 @@ public class AdminController {
             }
 
             redirectAttributes.addFlashAttribute("alertMessage", "Blog updated");
-            return "redirect:/admin/edit/" + requestedBlog.get().getSlug() + ".htm";
+            return "redirect:/admin/edit/" + blogServiceResponse.getData().get().getSlug() + ".htm";
         }
 
         List<Category> currentBlogCategories = requestedBlog.get().getCategories();
