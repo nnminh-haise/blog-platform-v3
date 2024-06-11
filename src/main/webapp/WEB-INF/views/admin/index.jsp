@@ -198,7 +198,7 @@
                             Edit
                           </button>
                         </a>
-                        <a href="${pageContext.request.contextPath}/admin/edit/${blog.slug}.htm" onclick="return confirm('are you sure')">
+                        <a href="${pageContext.request.contextPath}/admin/remove/${blog.slug}.htm" onclick="return confirm('are you sure')">
                           <button type="button"
                                   class="btn btn-dark btn-fw"
                                   style="min-width: 110px; background: #ff3333">
