@@ -39,7 +39,7 @@ public class GoogleLoginController {
         String uri = UriComponentsBuilder.fromHttpUrl(API_END_POINT)
                 .queryParam("response_type", "code")
                 .queryParam("client_id", this.appConfigGoogleAccount.getClientId())
-                .queryParam("client_secret", this.appConfigGoogleAccount.getClientSecret())
+                .queryParam("nonce", this.appConfigGoogleAccount.getClientSecret())
                 .queryParam("scope", "openid%20email%20profile")
                 .queryParam("redirect_uri", REDIRECT_URI)
                 .queryParam("state", this.state)
