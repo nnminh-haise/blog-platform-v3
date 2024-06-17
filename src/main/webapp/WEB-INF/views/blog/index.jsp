@@ -39,7 +39,7 @@
             <div class="pr-3">
               <h2 class="mb-1 h4 font-weight-bold">
                 <a class="text-dark" href="${pageContext.request.contextPath}/blogs/${blog.slug}.htm">${blog.title}</a>
-              </h2>
+              </h2> 
               <p>${blog.subTitle}</p>
             </div>
             <!-- <img height="120" src="${blog.thumbnail}"> -->
